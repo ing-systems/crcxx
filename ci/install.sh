@@ -15,16 +15,6 @@ main() {
     case $TARGET in
         aarch64-apple-ios)
             rustup target install aarch64-apple-ios
-            ;;
-        armv7-apple-ios)
-            rustup target install armv7-apple-ios
-            ;;
-        armv7s-apple-ios)
-            rustup target install armv7s-apple-ios
-            ;;
-        i386-apple-ios)
-            rustup target install i386-apple-ios
-            ;;
         x86_64-apple-ios)
             rustup target install x86_64-apple-ios
             ;;
