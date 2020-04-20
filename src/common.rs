@@ -16,7 +16,6 @@ pub(crate) const SLICE_8: usize = 8;
 pub(crate) const SLICE_16: usize = 16;
 pub(crate) const SLICE_32: usize = 32;
 
-#[macro_export]
 macro_rules! imp_crc_update_lut_32 {
     ($name: ident, $ty: ty) => {
         #[inline]
@@ -40,7 +39,6 @@ macro_rules! imp_crc_update_lut_32 {
     };
 }
 
-#[macro_export]
 macro_rules! imp_crc_update_ref_lut_32 {
     ($name: ident, $ty: ty) => {
         #[inline]
@@ -64,7 +62,6 @@ macro_rules! imp_crc_update_ref_lut_32 {
     };
 }
 
-#[macro_export]
 macro_rules! imp_crc_update_lut_256 {
     ($name: ident, $ty: ty) => {
         #[inline]
@@ -88,7 +85,6 @@ macro_rules! imp_crc_update_lut_256 {
     };
 }
 
-#[macro_export]
 macro_rules! imp_crc_update_ref_lut_256 {
     ($name: ident, $ty: ty) => {
         #[inline]
@@ -112,7 +108,6 @@ macro_rules! imp_crc_update_ref_lut_256 {
     };
 }
 
-#[macro_export]
 macro_rules! imp_make_sliced_lut {
     ($name: ident, $ty: ty, $make_base_lut_256: path) => {
         pub fn $name(poly: $ty, reflect: bool) -> [[$ty; 256]; SLICES] {
