@@ -1,0 +1,30 @@
+[package]
+name = "crcxx"
+version = "0.2.0"
+license = "Apache-2.0"
+authors = ["ING Systems <contact@ing-systems.com>"]
+description = "universal slice-by-4/8/16/32 implementation of CRC-8/16/32/64 algorithms"
+documentation = "https://docs.rs/crcxx"
+edition = "2018"
+homepage = "https://github.com/ing-systems/crcxx"
+repository = "https://github.com/ing-systems/crcxx"
+readme = "README.md"
+keywords = ["crc", "crc8", "crc16", "crc32", "crc64", "hash"]
+categories = ["algorithms"]
+
+[features]
+default = ["slice-by-16"]
+slice-by-4 = []
+slice-by-8 = []
+slice-by-16 = []
+slice-by-32 = []
+
+[dependencies]
+
+[dev-dependencies]
+rand = "0.7"
+criterion = "0.3"
+
+[[bench]]
+name = "benchmark"
+harness = false
