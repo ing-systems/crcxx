@@ -9,7 +9,6 @@ imp_make_sliced_lut!(make_sliced_lut, u16, make_lut_256);
 imp_crc_update_lut_32!(update_lut_32, u16);
 imp_crc_update_lut_256!(update_lut_256, u16);
 imp_crc_update_slice_by!(update_slice_by, u16);
-
 imp_reflect_value!(reflect_value_16, u16);
 imp_reflect_byte!(reflect_byte_16, u16);
 
@@ -229,7 +228,7 @@ fn update_slice_by_32<'a, const REFLECT: bool>(
 mod tests {
     use super::*;
 
-    const SLICES: usize = 32;
+    const SLICES: usize = crate::MAX_SLICES;
 
     #[test]
     fn with_reflect() {

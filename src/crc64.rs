@@ -205,7 +205,7 @@ fn update_slice_by_32<'a, const REFLECT: bool>(
 mod tests {
     use super::*;
 
-    const SLICES: usize = 32;
+    const SLICES: usize = crate::MAX_SLICES;
 
     #[test]
     fn with_reflect() {
