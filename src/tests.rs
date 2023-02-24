@@ -19,7 +19,7 @@ fn gen_rand_data(min_data_size: usize, max_data_size: usize) -> Box<[u8]> {
 
 #[test]
 fn test_rand_crc8() {
-    let lut = crc8::make_sliced_lut(0x07, false);
+    let lut = crc8::make_sliced_lut(8, 0x07, false);
 
     for _ in 0..ITERATIONS {
         let data = gen_rand_data(MIN_DATA_SIZE, MAX_DATA_SIZE);
@@ -33,7 +33,7 @@ fn test_rand_crc8() {
 
 #[test]
 fn test_rand_crc8_reflected() {
-    let lut = crc8::make_sliced_lut(0x07, true);
+    let lut = crc8::make_sliced_lut(8, 0x07, true);
 
     for _ in 0..ITERATIONS {
         let data = gen_rand_data(MIN_DATA_SIZE, MAX_DATA_SIZE);
@@ -47,7 +47,7 @@ fn test_rand_crc8_reflected() {
 
 #[test]
 fn test_rand_crc16() {
-    let lut = crc16::make_sliced_lut::<MAX_SLICES>(0x1021, false);
+    let lut = crc16::make_sliced_lut::<MAX_SLICES>(16, 0x1021, false);
 
     for _ in 0..ITERATIONS {
         let data = gen_rand_data(MIN_DATA_SIZE, MAX_DATA_SIZE);
@@ -61,7 +61,7 @@ fn test_rand_crc16() {
 
 #[test]
 fn test_rand_crc16_reflected() {
-    let lut = crc16::make_sliced_lut::<MAX_SLICES>(0x8005, true);
+    let lut = crc16::make_sliced_lut::<MAX_SLICES>(16, 0x8005, true);
 
     for _ in 0..ITERATIONS {
         let data = gen_rand_data(MIN_DATA_SIZE, MAX_DATA_SIZE);
@@ -75,7 +75,7 @@ fn test_rand_crc16_reflected() {
 
 #[test]
 fn test_rand_crc32() {
-    let lut = crc32::make_sliced_lut::<MAX_SLICES>(0x8141_41ab, false);
+    let lut = crc32::make_sliced_lut::<MAX_SLICES>(32, 0x8141_41ab, false);
 
     for _ in 0..ITERATIONS {
         let data = gen_rand_data(MIN_DATA_SIZE, MAX_DATA_SIZE);
@@ -89,7 +89,7 @@ fn test_rand_crc32() {
 
 #[test]
 fn test_rand_crc32_reflected() {
-    let lut = crc32::make_sliced_lut::<MAX_SLICES>(0x04C1_1DB7, true);
+    let lut = crc32::make_sliced_lut::<MAX_SLICES>(32, 0x04C1_1DB7, true);
 
     for _ in 0..ITERATIONS {
         let data = gen_rand_data(MIN_DATA_SIZE, MAX_DATA_SIZE);
@@ -103,7 +103,7 @@ fn test_rand_crc32_reflected() {
 
 #[test]
 fn test_rand_crc64() {
-    let lut = crc64::make_sliced_lut::<MAX_SLICES>(0x42f0_e1eb_a9ea_3693, false);
+    let lut = crc64::make_sliced_lut::<MAX_SLICES>(64, 0x42f0_e1eb_a9ea_3693, false);
 
     for _ in 0..ITERATIONS {
         let data = gen_rand_data(MIN_DATA_SIZE, MAX_DATA_SIZE);
@@ -117,7 +117,7 @@ fn test_rand_crc64() {
 
 #[test]
 fn test_rand_crc64_reflected() {
-    let lut = crc64::make_sliced_lut::<MAX_SLICES>(0x42f0_e1eb_a9ea_3693, true);
+    let lut = crc64::make_sliced_lut::<MAX_SLICES>(64, 0x42f0_e1eb_a9ea_3693, true);
 
     for _ in 0..ITERATIONS {
         let data = gen_rand_data(MIN_DATA_SIZE, MAX_DATA_SIZE);

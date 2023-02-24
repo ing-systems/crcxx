@@ -61,34 +61,23 @@ macro_rules! imp_make_lut_32 {
 
 #[macro_export]
 macro_rules! imp_make_lut_256 {
-    ($name: ident, $ty: ty, $reflect_byte: path, $reflect_value: path) => {
-        pub const fn $name(poly: $ty, reflect: bool) -> [$ty; 256] {
+    ($name: ident, $ty: ty, $crc: path) => {
+        pub const fn $name(width: u8, poly: $ty, reflect: bool) -> [$ty; 256] {
             const BITS: usize = ::core::mem::size_of::<$ty>() * 8;
-            const TOP_BIT: $ty = 1 << (BITS - 1);
+
+            let poly = if reflect {
+                let poly = poly.reverse_bits();
+                poly >> (BITS - width as usize)
+            } else {
+                poly << (BITS - width as usize)
+            };
 
             let mut table = [0 as $ty; 256];
 
-            let mut index = 0;
-            while index < 256 {
-                let byte = if reflect { $reflect_byte(index as $ty) } else { index as $ty };
-
-                let mut value: $ty = byte << (BITS - 8);
-
-                // Step through all the bits in the byte
-                let mut bit = 0;
-                while bit < 8 {
-                    if (value & TOP_BIT) != 0 {
-                        value = (value << 1) ^ poly
-                    } else {
-                        value <<= 1
-                    };
-
-                    bit += 1;
-                }
-
-                table[index] = if reflect { $reflect_value(value) } else { value };
-
-                index += 1;
+            let mut i = 0;
+            while i < table.len() {
+                table[i] = $crc(poly, reflect, i as $ty);
+                i += 1;
             }
 
             table
@@ -99,7 +88,9 @@ macro_rules! imp_make_lut_256 {
 #[macro_export]
 macro_rules! imp_make_lut_slice_by {
     ($name: ident, $ty: ty, $make_base_lut_256: path) => {
-        pub const fn $name<const SLICES: usize>(poly: $ty, reflect: bool) -> [[$ty; 256]; SLICES] {
+        pub const fn $name<const SLICES: usize>(
+            width: u8, poly: $ty, reflect: bool,
+        ) -> [[$ty; 256]; SLICES] {
             const BITS: usize = ::core::mem::size_of::<$ty>() * 8;
             const SHIFT: usize = if BITS > 8 { 8 } else { 0 };
 
@@ -107,7 +98,7 @@ macro_rules! imp_make_lut_slice_by {
             $crate::cg_assert::assert_power_of_two::<SLICES>();
 
             let mut lut = [[0 as $ty; 256]; SLICES];
-            lut[0] = $make_base_lut_256(poly, reflect);
+            lut[0] = $make_base_lut_256(width, poly, reflect);
 
             if reflect {
                 let mut n = 0;

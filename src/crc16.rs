@@ -2,8 +2,9 @@ use crate::{
     imp_make_lut_256, imp_make_lut_32, imp_make_lut_slice_by, imp_reflect_byte, imp_reflect_value,
 };
 
+imp_crc!(crc16, u16);
 imp_make_lut_32!(make_lut_32, u16, reflect_byte_16, reflect_value_16);
-imp_make_lut_256!(make_lut_256, u16, reflect_byte_16, reflect_value_16);
+imp_make_lut_256!(make_lut_256, u16, crc16);
 imp_make_lut_slice_by!(make_sliced_lut, u16, make_lut_256);
 
 imp_crc_update_lut_32!(update_lut_32, u16);
@@ -237,6 +238,7 @@ mod tests {
         const INIT: u16 = 0x0000;
         const REFLECT: bool = true;
         const XOR_OUT: u16 = 0x0000;
+        const WIDTH: u8 = 16;
 
         const SAMPLES: [(&str, u16); 8] = [
             ("", 0x0000),
@@ -250,8 +252,8 @@ mod tests {
         ];
 
         let lut32 = make_lut_32(POLY, REFLECT);
-        let lut256 = make_lut_256(POLY, REFLECT);
-        let lut256x_n = make_sliced_lut::<SLICES>(POLY, REFLECT);
+        let lut256 = make_lut_256(WIDTH, POLY, REFLECT);
+        let lut256x_n = make_sliced_lut::<SLICES>(WIDTH, POLY, REFLECT);
 
         for sample in SAMPLES {
             assert_eq!(
@@ -276,6 +278,7 @@ mod tests {
         const INIT: u16 = 0xFFFF;
         const REFLECT: bool = false;
         const XOR_OUT: u16 = 0x0000;
+        const WIDTH: u8 = 16;
 
         const SAMPLES: [(&str, u16); 8] = [
             ("", 0xFFFF),
@@ -289,8 +292,8 @@ mod tests {
         ];
 
         let lut32 = make_lut_32(POLY, REFLECT);
-        let lut256 = make_lut_256(POLY, REFLECT);
-        let lut256x_n = make_sliced_lut::<SLICES>(POLY, REFLECT);
+        let lut256 = make_lut_256(WIDTH, POLY, REFLECT);
+        let lut256x_n = make_sliced_lut::<SLICES>(WIDTH, POLY, REFLECT);
 
         for sample in SAMPLES {
             assert_eq!(

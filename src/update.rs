@@ -1,3 +1,29 @@
+macro_rules! imp_crc {
+    ($name: ident, $ty: ty) => {
+        pub(crate) const fn $name(poly: $ty, reflect: bool, mut value: $ty) -> $ty {
+            const BITS: usize = ::core::mem::size_of::<$ty>() * 8;
+
+            if reflect {
+                let mut i = 0;
+                while i < 8 {
+                    value = (value >> 1) ^ ((value & 1) * poly);
+                    i += 1;
+                }
+            } else {
+                value <<= (BITS - 8);
+
+                let mut i = 0;
+                while i < 8 {
+                    value = (value << 1) ^ (((value >> (BITS - 1)) & 1) * poly);
+                    i += 1;
+                }
+            }
+
+            value
+        }
+    };
+}
+
 macro_rules! imp_crc_update_lut_32 {
     ($name: ident, $ty: ty) => {
         #[inline]
