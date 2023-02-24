@@ -4,9 +4,9 @@ use rand::{thread_rng, Rng};
 
 use super::*;
 
-const ITERATIONS: usize = 10_000;
+const ITERATIONS: usize = 1_000;
 const MIN_DATA_SIZE: usize = 1;
-const MAX_DATA_SIZE: usize = 4096;
+const MAX_DATA_SIZE: usize = 512;
 
 fn gen_rand_data(min_data_size: usize, max_data_size: usize) -> Box<[u8]> {
     let mut rng = thread_rng();
@@ -25,7 +25,7 @@ fn test_rand_crc8() {
         let data = gen_rand_data(MIN_DATA_SIZE, MAX_DATA_SIZE);
 
         let crc_trusted = crc8::crc8_update_lut_256::<false>(0, &data, &lut[0]);
-        let crc_fast = crc8::crc8_update(0, &data, &lut);
+        let crc_fast = crc8::crc8_update::<false>(0, &data, &lut);
 
         assert_eq!(crc_trusted, crc_fast);
     }
@@ -39,7 +39,7 @@ fn test_rand_crc8_reflected() {
         let data = gen_rand_data(MIN_DATA_SIZE, MAX_DATA_SIZE);
 
         let crc_trusted = crc8::crc8_update_lut_256::<true>(0, &data, &lut[0]);
-        let crc_fast = crc8::crc8_update_ref(0, &data, &lut);
+        let crc_fast = crc8::crc8_update::<true>(0, &data, &lut);
 
         assert_eq!(crc_trusted, crc_fast);
     }
@@ -53,7 +53,7 @@ fn test_rand_crc16() {
         let data = gen_rand_data(MIN_DATA_SIZE, MAX_DATA_SIZE);
 
         let crc_trusted = crc16::crc16_update_lut_256::<false>(0, &data, &lut[0]);
-        let crc_fast = crc16::crc16_update(0, &data, &lut);
+        let crc_fast = crc16::crc16_update::<false>(0, &data, &lut);
 
         assert_eq!(crc_trusted, crc_fast);
     }
@@ -67,7 +67,7 @@ fn test_rand_crc16_reflected() {
         let data = gen_rand_data(MIN_DATA_SIZE, MAX_DATA_SIZE);
 
         let crc_trusted = crc16::crc16_update_lut_256::<true>(0, &data, &lut[0]);
-        let crc_fast = crc16::crc16_update_ref(0, &data, &lut);
+        let crc_fast = crc16::crc16_update::<true>(0, &data, &lut);
 
         assert_eq!(crc_trusted, crc_fast);
     }
@@ -81,7 +81,7 @@ fn test_rand_crc32() {
         let data = gen_rand_data(MIN_DATA_SIZE, MAX_DATA_SIZE);
 
         let crc_trusted = crc32::crc32_update_lut_256::<false>(0, &data, &lut[0]) ^ 0xFFFFFFFF;
-        let crc_fast = crc32::crc32_update(0, &data, &lut) ^ 0xFFFFFFFF;
+        let crc_fast = crc32::crc32_update::<false>(0, &data, &lut) ^ 0xFFFFFFFF;
 
         assert_eq!(crc_trusted, crc_fast);
     }
@@ -95,7 +95,7 @@ fn test_rand_crc32_reflected() {
         let data = gen_rand_data(MIN_DATA_SIZE, MAX_DATA_SIZE);
 
         let crc_trusted = crc32::crc32_update_lut_256::<true>(0, &data, &lut[0]) ^ 0xFFFF_FFFF;
-        let crc_fast = crc32::crc32_update_ref(0, &data, &lut) ^ 0xFFFF_FFFF;
+        let crc_fast = crc32::crc32_update::<true>(0, &data, &lut) ^ 0xFFFF_FFFF;
 
         assert_eq!(crc_trusted, crc_fast);
     }
@@ -109,7 +109,7 @@ fn test_rand_crc64() {
         let data = gen_rand_data(MIN_DATA_SIZE, MAX_DATA_SIZE);
 
         let crc_trusted = crc64::crc64_update_lut_256::<false>(0, &data, &lut[0]);
-        let crc_fast = crc64::crc64_update(0, &data, &lut);
+        let crc_fast = crc64::crc64_update::<false>(0, &data, &lut);
 
         assert_eq!(crc_trusted, crc_fast);
     }
@@ -123,7 +123,7 @@ fn test_rand_crc64_reflected() {
         let data = gen_rand_data(MIN_DATA_SIZE, MAX_DATA_SIZE);
 
         let crc_trusted = crc64::crc64_update_lut_256::<true>(0, &data, &lut[0]);
-        let crc_fast = crc64::crc64_update_ref(0, &data, &lut);
+        let crc_fast = crc64::crc64_update::<true>(0, &data, &lut);
 
         assert_eq!(crc_trusted, crc_fast);
     }

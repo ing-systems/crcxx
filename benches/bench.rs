@@ -13,7 +13,7 @@ pub fn bench_crc16(c: &mut Criterion) {
 
         group.throughput(Throughput::Bytes(*size as u64));
         group.bench_function(BenchmarkId::new("update", *size), |b| {
-            b.iter(|| black_box(crc16::crc16_update_ref(0, black_box(&bytes), &lut)))
+            b.iter(|| black_box(crc16::crc16_update::<true>(0, black_box(&bytes), &lut)))
         });
     }
 
@@ -30,7 +30,7 @@ pub fn bench_crc32(c: &mut Criterion) {
 
         group.throughput(Throughput::Bytes(*size as u64));
         group.bench_function(BenchmarkId::new("update", *size), |b| {
-            b.iter(|| black_box(crc32::crc32_update_ref(0, black_box(&bytes), &lut)))
+            b.iter(|| black_box(crc32::crc32_update::<true>(0, black_box(&bytes), &lut)))
         });
     }
 
@@ -47,7 +47,7 @@ pub fn bench_crc64(c: &mut Criterion) {
 
         group.throughput(Throughput::Bytes(*size as u64));
         group.bench_function(BenchmarkId::new("update", *size), |b| {
-            b.iter(|| black_box(crc64::crc64_update_ref(0, black_box(&bytes), &lut)))
+            b.iter(|| black_box(crc64::crc64_update::<true>(0, black_box(&bytes), &lut)))
         });
     }
 

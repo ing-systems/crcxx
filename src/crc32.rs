@@ -1,4 +1,7 @@
-use crate::{common::*, imp_make_lut_32, imp_make_lut_256, imp_make_sliced_lut, imp_reflect_value, imp_reflect_byte};
+use crate::common::*;
+use crate::{
+    imp_make_lut_256, imp_make_lut_32, imp_make_sliced_lut, imp_reflect_byte, imp_reflect_value,
+};
 
 imp_make_lut_32!(crc32_make_lut_32, u32, reflect_byte_32, reflect_value_32);
 imp_make_lut_256!(crc32_make_lut_256, u32, reflect_byte_32, reflect_value_32);
@@ -10,31 +13,9 @@ imp_crc_update_lut_256!(crc32_update_lut_256, u32);
 imp_reflect_value!(reflect_value_32, u32);
 imp_reflect_byte!(reflect_byte_32, u32);
 
-pub fn crc32_update(mut crc: u32, mut bytes: &[u8], lut: &[[u32; 256]]) -> u32 {
-    const REFLECT: bool = false;
-
-    if SLICES >= 32 && lut.len() >= SLICE_32 && bytes.len() >= SLICE_32 {
-        (crc, bytes) = update_slice_by_32::<REFLECT>(crc, bytes, lut);
-    }
-
-    if SLICES >= 16 && lut.len() >= SLICE_16 && bytes.len() >= SLICE_16 {
-        (crc, bytes) = update_slice_by_16::<REFLECT>(crc, bytes, lut);
-    }
-
-    if SLICES >= 8 && lut.len() >= SLICE_8 && bytes.len() >= SLICE_8 {
-        (crc, bytes) = update_slice_by_8::<REFLECT>(crc, bytes, lut);
-    }
-
-    if SLICES >= 4 && lut.len() >= SLICE_4 && bytes.len() >= SLICE_4 {
-        (crc, bytes) = update_slice_by_4::<REFLECT>(crc, bytes, lut);
-    }
-
-    crc32_update_lut_256::<REFLECT>(crc, bytes, &lut[0])
-}
-
-pub fn crc32_update_ref(mut crc: u32, mut bytes: &[u8], lut: &[[u32; 256]]) -> u32 {
-    const REFLECT: bool = true;
-
+pub fn crc32_update<const REFLECT: bool>(
+    mut crc: u32, mut bytes: &[u8], lut: &[[u32; 256]],
+) -> u32 {
     if SLICES >= 32 && lut.len() >= SLICE_32 && bytes.len() >= SLICE_32 {
         (crc, bytes) = update_slice_by_32::<REFLECT>(crc, bytes, lut);
     }
