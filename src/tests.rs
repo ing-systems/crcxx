@@ -75,13 +75,13 @@ fn test_rand_crc16_reflected() {
 
 #[test]
 fn test_rand_crc32() {
-    let lut = crc32::make_sliced_lut::<MAX_SLICES>(0x814141ab, false);
+    let lut = crc32::make_sliced_lut::<MAX_SLICES>(0x8141_41ab, false);
 
     for _ in 0..ITERATIONS {
         let data = gen_rand_data(MIN_DATA_SIZE, MAX_DATA_SIZE);
 
-        let crc_trusted = crc32::update_lut_256::<false>(0, &data, &lut[0]) ^ 0xFFFFFFFF;
-        let crc_fast = crc32::update_slice_by::<MAX_SLICES, false>(0, &data, &lut) ^ 0xFFFFFFFF;
+        let crc_trusted = crc32::update_lut_256::<false>(0, &data, &lut[0]) ^ 0xFFFF_FFFF;
+        let crc_fast = crc32::update_slice_by::<MAX_SLICES, false>(0, &data, &lut) ^ 0xFFFF_FFFF;
 
         assert_eq!(crc_trusted, crc_fast);
     }

@@ -1,10 +1,10 @@
 use crate::{
-    imp_make_lut_256, imp_make_lut_32, imp_make_sliced_lut, imp_reflect_byte, imp_reflect_value,
+    imp_make_lut_256, imp_make_lut_32, imp_make_lut_slice_by, imp_reflect_byte, imp_reflect_value,
 };
 
 imp_make_lut_32!(make_lut_32, u64, reflect_byte_64, reflect_value_64);
 imp_make_lut_256!(make_lut_256, u64, reflect_byte_64, reflect_value_64);
-imp_make_sliced_lut!(make_sliced_lut, u64, make_lut_256);
+imp_make_lut_slice_by!(make_sliced_lut, u64, make_lut_256);
 
 imp_crc_update_lut_32!(update_lut_32, u64);
 imp_crc_update_lut_256!(update_lut_256, u64);
@@ -210,22 +210,22 @@ mod tests {
     #[test]
     fn with_reflect() {
         // CRC-64/XZ
-        const POLY: u64 = 0x42F0E1EBA9EA3693;
-        const INIT: u64 = 0xFFFFFFFFFFFFFFFF;
+        const POLY: u64 = 0x42F0_E1EB_A9EA_3693;
+        const INIT: u64 = 0xFFFF_FFFF_FFFF_FFFF;
         const REFLECT: bool = true;
-        const XOR_OUT: u64 = 0xFFFFFFFFFFFFFFFF;
+        const XOR_OUT: u64 = 0xFFFF_FFFF_FFFF_FFFF;
 
         const SAMPLES: [(&str, u64); 8] = [
-            ("", 0x0000000000000000),
-            ("0", 0x9901423B97329582),
-            ("012", 0x413D0F0670A0E4D2),
-            ("0123456", 0x8C880A3669E295FF),
-            ("123456789", 0x995DC9BBDF1939FA),
-            ("0123456789ABCDE", 0x346E97EBC42A4A0B),
-            ("0123456789ABCDEFGHIJKLMNOPQRSTU", 0xD5A91BD8F8425127),
+            ("", 0x0000_0000_0000_0000),
+            ("0", 0x9901_423B_9732_9582),
+            ("012", 0x413D_0F06_70A0_E4D2),
+            ("0123456", 0x8C88_0A36_69E2_95FF),
+            ("123456789", 0x995D_C9BB_DF19_39FA),
+            ("0123456789ABCDE", 0x346E_97EB_C42A_4A0B),
+            ("0123456789ABCDEFGHIJKLMNOPQRSTU", 0xD5A9_1BD8_F842_5127),
             (
                 "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-                0xDCFCA5E374A1D0EE,
+                0xDCFC_A5E3_74A1_D0EE,
             ),
         ];
 
@@ -252,22 +252,22 @@ mod tests {
     #[test]
     fn without_reflect() {
         // CRC-64/WE
-        const POLY: u64 = 0x42F0E1EBA9EA3693;
-        const INIT: u64 = 0xFFFFFFFFFFFFFFFF;
+        const POLY: u64 = 0x42F0_E1EB_A9EA_3693;
+        const INIT: u64 = 0xFFFF_FFFF_FFFF_FFFF;
         const REFLECT: bool = false;
-        const XOR_OUT: u64 = 0xFFFFFFFFFFFFFFFF;
+        const XOR_OUT: u64 = 0xFFFF_FFFF_FFFF_FFFF;
 
         const SAMPLES: [(&str, u64); 8] = [
-            ("", 0x0000000000000000),
-            ("0", 0x30BB6F267FA73BC9),
-            ("012", 0x0715CFE749A84CAB),
-            ("0123456", 0x31C786D35D6256F8),
-            ("123456789", 0x62EC59E3F1A4F00A),
-            ("0123456789ABCDE", 0xB8E6113E7DD14D64),
-            ("0123456789ABCDEFGHIJKLMNOPQRSTU", 0xDE67FFFA1EB97FED),
+            ("", 0x0000_0000_0000_0000),
+            ("0", 0x30BB_6F26_7FA7_3BC9),
+            ("012", 0x0715_CFE7_49A8_4CAB),
+            ("0123456", 0x31C7_86D3_5D62_56F8),
+            ("123456789", 0x62EC_59E3_F1A4_F00A),
+            ("0123456789ABCDE", 0xB8E6_113E_7DD1_4D64),
+            ("0123456789ABCDEFGHIJKLMNOPQRSTU", 0xDE67_FFFA_1EB9_7FED),
             (
                 "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-                0x2FF6ED4D2950A870,
+                0x2FF6_ED4D_2950_A870,
             ),
         ];
 

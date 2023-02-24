@@ -1,10 +1,10 @@
 use crate::{
-    imp_make_lut_256, imp_make_lut_32, imp_make_sliced_lut, imp_reflect_byte, imp_reflect_value,
+    imp_make_lut_256, imp_make_lut_32, imp_make_lut_slice_by, imp_reflect_byte, imp_reflect_value,
 };
 
 imp_make_lut_32!(make_lut_32, u16, reflect_byte_16, reflect_value_16);
 imp_make_lut_256!(make_lut_256, u16, reflect_byte_16, reflect_value_16);
-imp_make_sliced_lut!(make_sliced_lut, u16, make_lut_256);
+imp_make_lut_slice_by!(make_sliced_lut, u16, make_lut_256);
 
 imp_crc_update_lut_32!(update_lut_32, u16);
 imp_crc_update_lut_256!(update_lut_256, u16);

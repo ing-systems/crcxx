@@ -5,43 +5,43 @@
 
 #[allow(dead_code)]
 #[allow(path_statements)]
-pub(crate) const fn cg_assert_eq<const L: usize, const R: usize>() {
+pub const fn assert_eq<const L: usize, const R: usize>() {
     Assert::<L, R>::EQ;
 }
 
 #[allow(dead_code)]
 #[allow(path_statements)]
-pub(crate) const fn cg_assert_ne<const L: usize, const R: usize>() {
+pub const fn assert_ne<const L: usize, const R: usize>() {
     Assert::<L, R>::NOT_EQ;
 }
 
 #[allow(dead_code)]
 #[allow(path_statements)]
-pub(crate) const fn cg_assert_lt<const N: usize, const MAX: usize>() {
+pub const fn assert_lt<const N: usize, const MAX: usize>() {
     Assert::<N, MAX>::LESS;
 }
 
 #[allow(dead_code)]
 #[allow(path_statements)]
-pub(crate) const fn cg_assert_gt<const N: usize, const MIN: usize>() {
+pub const fn assert_gt<const N: usize, const MIN: usize>() {
     Assert::<N, MIN>::GREATER;
 }
 
 #[allow(dead_code)]
 #[allow(path_statements)]
-pub(crate) const fn cg_assert_lt_eq<const N: usize, const MAX: usize>() {
+pub const fn assert_lt_eq<const N: usize, const MAX: usize>() {
     Assert::<N, MAX>::LESS_EQ;
 }
 
 #[allow(dead_code)]
 #[allow(path_statements)]
-pub(crate) const fn cg_assert_gt_eq<const N: usize, const MIN: usize>() {
+pub const fn assert_gt_eq<const N: usize, const MIN: usize>() {
     Assert::<N, MIN>::GREATER_EQ;
 }
 
 #[allow(dead_code)]
 #[allow(path_statements)]
-pub(crate) const fn cg_assert_power_of_two<const N: usize>() {
+pub const fn assert_power_of_two<const N: usize>() {
     Assert::<N, 0>::GREATER;
     Assert::<N, 0>::POWER_OF_TWO;
 }

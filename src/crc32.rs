@@ -1,10 +1,10 @@
 use crate::{
-    imp_make_lut_256, imp_make_lut_32, imp_make_sliced_lut, imp_reflect_byte, imp_reflect_value,
+    imp_make_lut_256, imp_make_lut_32, imp_make_lut_slice_by, imp_reflect_byte, imp_reflect_value,
 };
 
 imp_make_lut_32!(make_lut_32, u32, reflect_byte_32, reflect_value_32);
 imp_make_lut_256!(make_lut_256, u32, reflect_byte_32, reflect_value_32);
-imp_make_sliced_lut!(make_sliced_lut, u32, make_lut_256);
+imp_make_lut_slice_by!(make_sliced_lut, u32, make_lut_256);
 
 imp_crc_update_lut_32!(update_lut_32, u32);
 imp_crc_update_lut_256!(update_lut_256, u32);
@@ -234,22 +234,22 @@ mod tests {
     #[test]
     fn with_reflect() {
         // CRC-32/JAMCRC
-        const POLY: u32 = 0x04C11DB7;
-        const INIT: u32 = 0xFFFFFFFF;
+        const POLY: u32 = 0x04C1_1DB7;
+        const INIT: u32 = 0xFFFF_FFFF;
         const REFLECT: bool = true;
-        const XOR_OUT: u32 = 0x00000000;
+        const XOR_OUT: u32 = 0x0000_0000;
 
         const SAMPLES: [(&str, u32); 8] = [
-            ("", 0xFFFFFFFF),
-            ("0", 0x0B2420DE),
-            ("012", 0x2A5F954F),
-            ("0123456", 0x7240F711),
-            ("123456789", 0x340BC6D9),
-            ("0123456789ABCDE", 0x1E8286DD),
-            ("0123456789ABCDEFGHIJKLMNOPQRSTU", 0x7065C834),
+            ("", 0xFFFF_FFFF),
+            ("0", 0x0B24_20DE),
+            ("012", 0x2A5F_954F),
+            ("0123456", 0x7240_F711),
+            ("123456789", 0x340B_C6D9),
+            ("0123456789ABCDE", 0x1E82_86DD),
+            ("0123456789ABCDEFGHIJKLMNOPQRSTU", 0x7065_C834),
             (
                 "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-                0x9F25C09C,
+                0x9F25_C09C,
             ),
         ];
 
@@ -276,22 +276,22 @@ mod tests {
     #[test]
     fn without_reflect() {
         // CRC-32/POSIX
-        const POLY: u32 = 0x04C11DB7;
-        const INIT: u32 = 0x00000000;
+        const POLY: u32 = 0x04C1_1DB7;
+        const INIT: u32 = 0x0000_0000;
         const REFLECT: bool = false;
-        const XOR_OUT: u32 = 0xFFFFFFFF;
+        const XOR_OUT: u32 = 0xFFFF_FFFF;
 
         const SAMPLES: [(&str, u32); 8] = [
-            ("", 0xFFFFFFFF),
-            ("0", 0x2BCD926F),
-            ("012", 0xE63B9D78),
-            ("0123456", 0x33232AE1),
-            ("123456789", 0x765E7680),
-            ("0123456789ABCDE", 0x13ADFEB0),
-            ("0123456789ABCDEFGHIJKLMNOPQRSTU", 0x3F88F4AD),
+            ("", 0xFFFF_FFFF),
+            ("0", 0x2BCD_926F),
+            ("012", 0xE63B_9D78),
+            ("0123456", 0x3323_2AE1),
+            ("123456789", 0x765E_7680),
+            ("0123456789ABCDE", 0x13AD_FEB0),
+            ("0123456789ABCDEFGHIJKLMNOPQRSTU", 0x3F88_F4AD),
             (
                 "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-                0x1A9A735F,
+                0x1A9A_735F,
             ),
         ];
 

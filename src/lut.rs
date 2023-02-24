@@ -97,14 +97,14 @@ macro_rules! imp_make_lut_256 {
 }
 
 #[macro_export]
-macro_rules! imp_make_sliced_lut {
+macro_rules! imp_make_lut_slice_by {
     ($name: ident, $ty: ty, $make_base_lut_256: path) => {
         pub const fn $name<const SLICES: usize>(poly: $ty, reflect: bool) -> [[$ty; 256]; SLICES] {
-            $crate::cg_assert::cg_assert_lt_eq::<SLICES, { $crate::MAX_SLICES }>();
-            $crate::cg_assert::cg_assert_power_of_two::<SLICES>();
-
             const BITS: usize = ::core::mem::size_of::<$ty>() * 8;
             const SHIFT: usize = if BITS > 8 { 8 } else { 0 };
+
+            $crate::cg_assert::assert_lt_eq::<SLICES, { $crate::MAX_SLICES }>();
+            $crate::cg_assert::assert_power_of_two::<SLICES>();
 
             let mut lut = [[0 as $ty; 256]; SLICES];
             lut[0] = $make_base_lut_256(poly, reflect);
