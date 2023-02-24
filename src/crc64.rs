@@ -209,7 +209,7 @@ mod tests {
 
     #[test]
     fn with_reflect() {
-        // CRC-64/ECMA
+        // CRC-64/XZ
         const POLY: u64 = 0x42F0E1EBA9EA3693;
         const INIT: u64 = 0xFFFFFFFFFFFFFFFF;
         const REFLECT: bool = true;
@@ -226,6 +226,48 @@ mod tests {
             (
                 "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ",
                 0xDCFCA5E374A1D0EE,
+            ),
+        ];
+
+        let lut32 = make_lut_32(POLY, REFLECT);
+        let lut256 = make_lut_256(POLY, REFLECT);
+        let lut256x_n = make_sliced_lut::<SLICES>(POLY, REFLECT);
+
+        for sample in SAMPLES {
+            assert_eq!(
+                update_lut_32::<REFLECT>(INIT, sample.0.as_bytes(), &lut32) ^ XOR_OUT,
+                sample.1
+            );
+            assert_eq!(
+                update_lut_256::<REFLECT>(INIT, sample.0.as_bytes(), &lut256) ^ XOR_OUT,
+                sample.1
+            );
+            assert_eq!(
+                update_slice_by::<SLICES, REFLECT>(INIT, sample.0.as_bytes(), &lut256x_n) ^ XOR_OUT,
+                sample.1
+            );
+        }
+    }
+
+    #[test]
+    fn without_reflect() {
+        // CRC-64/WE
+        const POLY: u64 = 0x42F0E1EBA9EA3693;
+        const INIT: u64 = 0xFFFFFFFFFFFFFFFF;
+        const REFLECT: bool = false;
+        const XOR_OUT: u64 = 0xFFFFFFFFFFFFFFFF;
+
+        const SAMPLES: [(&str, u64); 8] = [
+            ("", 0x0000000000000000),
+            ("0", 0x30BB6F267FA73BC9),
+            ("012", 0x0715CFE749A84CAB),
+            ("0123456", 0x31C786D35D6256F8),
+            ("123456789", 0x62EC59E3F1A4F00A),
+            ("0123456789ABCDE", 0xB8E6113E7DD14D64),
+            ("0123456789ABCDEFGHIJKLMNOPQRSTU", 0xDE67FFFA1EB97FED),
+            (
+                "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+                0x2FF6ED4D2950A870,
             ),
         ];
 
