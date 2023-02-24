@@ -1,7 +1,7 @@
 use crcxx::*;
 use criterion::*;
 
-const CHUNK_SIZES: [u32; 6] = [3, 7, 15, 31, 63, 127];
+const CHUNK_SIZES: [u32; 3] = [32, 16 * 10424, 64 * 1024];
 
 pub fn bench_crc16(c: &mut Criterion) {
     let lut = crc16::crc16_make_sliced_lut(0x8005, true);
@@ -13,7 +13,7 @@ pub fn bench_crc16(c: &mut Criterion) {
 
         group.throughput(Throughput::Bytes(*size as u64));
         group.bench_function(BenchmarkId::new("update", *size), |b| {
-            b.iter(|| black_box(crc16::crc16_update_ref(0, &bytes, &lut)))
+            b.iter(|| black_box(crc16::crc16_update_ref(0, black_box(&bytes), &lut)))
         });
     }
 
@@ -30,7 +30,7 @@ pub fn bench_crc32(c: &mut Criterion) {
 
         group.throughput(Throughput::Bytes(*size as u64));
         group.bench_function(BenchmarkId::new("update", *size), |b| {
-            b.iter(|| black_box(crc32::crc32_update_ref(0, &bytes, &lut)))
+            b.iter(|| black_box(crc32::crc32_update_ref(0, black_box(&bytes), &lut)))
         });
     }
 
@@ -47,7 +47,7 @@ pub fn bench_crc64(c: &mut Criterion) {
 
         group.throughput(Throughput::Bytes(*size as u64));
         group.bench_function(BenchmarkId::new("update", *size), |b| {
-            b.iter(|| black_box(crc64::crc64_update_ref(0, &bytes, &lut)))
+            b.iter(|| black_box(crc64::crc64_update_ref(0, black_box(&bytes), &lut)))
         });
     }
 
