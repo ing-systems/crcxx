@@ -1,10 +1,7 @@
 use crate::common::*;
 
 imp_crc_update_lut_32!(crc8_update_lut_32, u8);
-imp_crc_update_ref_lut_32!(crc8_update_ref_lut_32, u8);
-
 imp_crc_update_lut_256!(crc8_update_lut_256, u8);
-imp_crc_update_ref_lut_256!(crc8_update_ref_lut_256, u8);
 
 imp_make_sliced_lut!(crc8_make_sliced_lut, u8, crate::lut::crc8_make_lut_256);
 
@@ -27,7 +24,7 @@ pub fn crc8_update(mut crc: u8, mut bytes: &[u8], lut: &[[u8; 256]]) -> u8 {
         (crc, bytes) = update_slice_by_4::<REFLECT>(crc, bytes, lut);
     }
 
-    crc8_update_lut_256(crc, bytes, &lut[0])
+    crc8_update_lut_256::<REFLECT>(crc, bytes, &lut[0])
 }
 
 pub fn crc8_update_ref(mut crc: u8, mut bytes: &[u8], lut: &[[u8; 256]]) -> u8 {
@@ -49,7 +46,7 @@ pub fn crc8_update_ref(mut crc: u8, mut bytes: &[u8], lut: &[[u8; 256]]) -> u8 {
         (crc, bytes) = update_slice_by_4::<REFLECT>(crc, bytes, lut);
     }
 
-    crc8_update_ref_lut_256(crc, bytes, &lut[0])
+    crc8_update_lut_256::<REFLECT>(crc, bytes, &lut[0])
 }
 
 #[inline]
