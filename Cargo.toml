@@ -12,13 +12,6 @@ readme = "README.md"
 keywords = ["crc", "crc8", "crc16", "crc32", "crc64"]
 categories = ["algorithms"]
 
-[features]
-default = ["slice-by-16"]
-slice-by-4 = []
-slice-by-8 = []
-slice-by-16 = []
-slice-by-32 = []
-
 [dependencies]
 
 [dev-dependencies]

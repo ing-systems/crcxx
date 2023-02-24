@@ -1,4 +1,3 @@
-use crate::common::*;
 use crate::{
     imp_make_lut_256, imp_make_lut_32, imp_make_sliced_lut, imp_reflect_byte, imp_reflect_value,
 };
@@ -13,18 +12,18 @@ imp_crc_update_lut_256!(crc64_update_lut_256, u64);
 imp_reflect_value!(reflect_value_64, u64);
 imp_reflect_byte!(reflect_byte_64, u64);
 
-pub fn crc64_update<const REFLECT: bool>(
+pub fn crc64_update_slice_by<const SLICES: usize, const REFLECT: bool>(
     mut crc: u64, mut bytes: &[u8], lut: &[[u64; 256]],
 ) -> u64 {
-    if SLICES >= 32 && lut.len() >= SLICE_32 && bytes.len() >= SLICE_32 {
+    if SLICES >= 32 {
         (crc, bytes) = update_slice_by_32::<REFLECT>(crc, bytes, lut);
     }
 
-    if SLICES >= 16 && lut.len() >= SLICE_16 && bytes.len() >= SLICE_16 {
+    if SLICES >= 16 {
         (crc, bytes) = update_slice_by_16::<REFLECT>(crc, bytes, lut);
     }
 
-    if SLICES >= 8 && lut.len() >= SLICE_8 && bytes.len() >= SLICE_8 {
+    if SLICES >= 8 {
         (crc, bytes) = update_slice_by_8::<REFLECT>(crc, bytes, lut);
     }
 
@@ -216,6 +215,8 @@ fn update_slice_by_32<'a, const REFLECT: bool>(
 mod tests {
     use super::*;
 
+    const SLICES: usize = 32;
+
     #[test]
     fn with_reflect() {
         // CRC-64/ECMA
@@ -240,7 +241,7 @@ mod tests {
 
         let lut32 = crc64_make_lut_32(POLY, REFLECT);
         let lut256 = crc64_make_lut_256(POLY, REFLECT);
-        let lut256x_n = crc64_make_sliced_lut(POLY, REFLECT);
+        let lut256x_n = crc64_make_sliced_lut::<SLICES>(POLY, REFLECT);
 
         for sample in SAMPLES {
             assert_eq!(
@@ -252,7 +253,8 @@ mod tests {
                 sample.1
             );
             assert_eq!(
-                crc64_update::<REFLECT>(INIT, sample.0.as_bytes(), &lut256x_n) ^ XOR_OUT,
+                crc64_update_slice_by::<SLICES, REFLECT>(INIT, sample.0.as_bytes(), &lut256x_n)
+                    ^ XOR_OUT,
                 sample.1
             );
         }

@@ -1,4 +1,3 @@
-use crate::common::*;
 use crate::{
     imp_make_lut_256, imp_make_lut_32, imp_make_sliced_lut, imp_reflect_byte, imp_reflect_value,
 };
@@ -13,22 +12,24 @@ imp_crc_update_lut_256!(crc8_update_lut_256, u8);
 imp_reflect_value!(reflect_value_8, u8);
 imp_reflect_byte!(reflect_byte_8, u8);
 
-pub fn crc8_update<const REFLECT: bool>(mut crc: u8, mut bytes: &[u8], lut: &[[u8; 256]]) -> u8 {
+pub fn crc8_update_slice_by<const SLICES: usize, const REFLECT: bool>(
+    mut crc: u8, mut bytes: &[u8], lut: &[[u8; 256]; SLICES],
+) -> u8 {
     const REFLECT: bool = false;
 
-    if SLICES >= 32 && lut.len() >= SLICE_32 && bytes.len() >= SLICE_32 {
+    if SLICES >= 32 {
         (crc, bytes) = update_slice_by_32::<REFLECT>(crc, bytes, lut);
     }
 
-    if SLICES >= 16 && lut.len() >= SLICE_16 && bytes.len() >= SLICE_16 {
+    if SLICES >= 16 {
         (crc, bytes) = update_slice_by_16::<REFLECT>(crc, bytes, lut);
     }
 
-    if SLICES >= 8 && lut.len() >= SLICE_8 && bytes.len() >= SLICE_8 {
+    if SLICES >= 8 {
         (crc, bytes) = update_slice_by_8::<REFLECT>(crc, bytes, lut);
     }
 
-    if SLICES >= 4 && lut.len() >= SLICE_4 && bytes.len() >= SLICE_4 {
+    if SLICES >= 4 {
         (crc, bytes) = update_slice_by_4::<REFLECT>(crc, bytes, lut);
     }
 
@@ -251,6 +252,8 @@ fn update_slice_by_32<'a, const REFLECT: bool>(
 mod tests {
     use super::*;
 
+    const SLICES: usize = 32;
+
     #[test]
     fn with_reflect() {
         // CRC-8/WCDMA
@@ -272,7 +275,7 @@ mod tests {
 
         let lut32 = crc8_make_lut_32(POLY, REFLECT);
         let lut256 = crc8_make_lut_256(POLY, REFLECT);
-        let lut256x_n = crc8_make_sliced_lut(POLY, REFLECT);
+        let lut256x_n = crc8_make_sliced_lut::<SLICES>(POLY, REFLECT);
 
         for sample in SAMPLES {
             assert_eq!(
@@ -284,7 +287,8 @@ mod tests {
                 sample.1
             );
             assert_eq!(
-                crc8_update::<REFLECT>(INIT, sample.0.as_bytes(), &lut256x_n) ^ XOR_OUT,
+                crc8_update_slice_by::<SLICES, REFLECT>(INIT, sample.0.as_bytes(), &lut256x_n)
+                    ^ XOR_OUT,
                 sample.1
             );
         }
@@ -323,7 +327,8 @@ mod tests {
                 sample.1
             );
             assert_eq!(
-                crc8_update::<REFLECT>(INIT, sample.0.as_bytes(), &lut256x_n) ^ XOR_OUT,
+                crc8_update_slice_by::<SLICES, REFLECT>(INIT, sample.0.as_bytes(), &lut256x_n)
+                    ^ XOR_OUT,
                 sample.1
             );
         }

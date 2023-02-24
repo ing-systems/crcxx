@@ -1,21 +1,3 @@
-// 8, 16, or 32
-// Currently I don't see any other way of doing it:
-// https://github.com/rust-lang/rust/issues/49146
-// https://github.com/rust-lang/cargo/issues/2980
-#[cfg(feature = "slice-by-4")]
-pub(crate) const SLICES: usize = 4;
-#[cfg(feature = "slice-by-8")]
-pub(crate) const SLICES: usize = 8;
-#[cfg(feature = "slice-by-16")]
-pub(crate) const SLICES: usize = 16;
-#[cfg(feature = "slice-by-32")]
-pub(crate) const SLICES: usize = 32;
-
-pub(crate) const SLICE_4: usize = 4;
-pub(crate) const SLICE_8: usize = 8;
-pub(crate) const SLICE_16: usize = 16;
-pub(crate) const SLICE_32: usize = 32;
-
 macro_rules! imp_crc_update_lut_32 {
     ($name: ident, $ty: ty) => {
         #[inline]
