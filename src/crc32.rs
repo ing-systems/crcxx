@@ -1,18 +1,13 @@
-use crate::{
-    imp_make_lut_256, imp_make_lut_32, imp_make_lut_slice_by, imp_reflect_byte, imp_reflect_value,
-};
+use crate::{imp_make_lut_256, imp_make_lut_32, imp_make_lut_slice_by};
 
 imp_crc!(crc32, u32);
-imp_make_lut_32!(make_lut_32, u32, reflect_byte_32, reflect_value_32);
+imp_make_lut_32!(make_lut_32, u32, crc32);
 imp_make_lut_256!(make_lut_256, u32, crc32);
 imp_make_lut_slice_by!(make_sliced_lut, u32, make_lut_256);
 
 imp_crc_update_lut_32!(update_lut_32, u32);
 imp_crc_update_lut_256!(update_lut_256, u32);
 imp_crc_update_slice_by!(update_slice_by, u32);
-
-imp_reflect_value!(reflect_value_32, u32);
-imp_reflect_byte!(reflect_byte_32, u32);
 
 #[inline]
 fn update_slice_by_4<'a>(
@@ -255,7 +250,7 @@ mod tests {
             ),
         ];
 
-        let lut32 = make_lut_32(POLY, REFLECT);
+        let lut32 = make_lut_32(WIDTH, POLY, REFLECT);
         let lut256 = make_lut_256(WIDTH, POLY, REFLECT);
         let lut256x_n = make_sliced_lut::<SLICES>(WIDTH, POLY, REFLECT);
 
@@ -298,7 +293,7 @@ mod tests {
             ),
         ];
 
-        let lut32 = make_lut_32(POLY, REFLECT);
+        let lut32 = make_lut_32(WIDTH, POLY, REFLECT);
         let lut256 = make_lut_256(WIDTH, POLY, REFLECT);
         let lut256x_n = make_sliced_lut::<SLICES>(WIDTH, POLY, REFLECT);
 

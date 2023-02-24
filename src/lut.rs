@@ -1,56 +1,27 @@
 #[macro_export]
 macro_rules! imp_make_lut_32 {
-    ($name: ident, $ty: ty, $reflect_byte: path, $reflect_value: path) => {
-        pub const fn $name(poly: $ty, reflect: bool) -> [$ty; 32] {
+    ($name: ident, $ty: ty, $crc: path) => {
+        pub const fn $name(width: u8, poly: $ty, reflect: bool) -> [$ty; 32] {
             const BITS: usize = ::core::mem::size_of::<$ty>() * 8;
-            const TOP_BIT: $ty = 1 << (BITS - 1);
+
+            let poly = if reflect {
+                let poly = poly.reverse_bits();
+                poly >> (BITS - width as usize)
+            } else {
+                poly << (BITS - width as usize)
+            };
 
             let mut table = [0 as $ty; 32];
 
             let mut index = 0;
             while index < 16 {
-                let byte = if reflect { $reflect_byte(index as $ty) } else { index as $ty };
-
-                let mut value: $ty = byte << (BITS - 8);
-
-                // Step through all the bits in the byte
-                let mut bit = 0;
-                while bit < 8 {
-                    if (value & TOP_BIT) != 0 {
-                        value = (value << 1) ^ poly
-                    } else {
-                        value <<= 1
-                    }
-
-                    bit += 1;
-                }
-
-                table[index] = if reflect { $reflect_value(value) } else { value };
-
+                table[index] = $crc(poly, reflect, index as $ty);
                 index += 1;
             }
 
             let mut index = 0;
             while index < 16 {
-                let byte =
-                    if reflect { $reflect_byte((index << 4) as $ty) } else { (index << 4) as $ty };
-
-                let mut value: $ty = byte << (BITS - 8);
-
-                // Step through all the bits in the byte
-                let mut bit = 0;
-                while bit < 8 {
-                    if (value & TOP_BIT) != 0 {
-                        value = (value << 1) ^ poly
-                    } else {
-                        value <<= 1
-                    }
-
-                    bit += 1;
-                }
-
-                table[index + 16] = if reflect { $reflect_value(value) } else { value };
-
+                table[index + 16] = $crc(poly, reflect, (index << 4) as $ty);
                 index += 1;
             }
 

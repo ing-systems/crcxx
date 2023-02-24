@@ -1,18 +1,13 @@
-use crate::{
-    imp_make_lut_256, imp_make_lut_32, imp_make_lut_slice_by, imp_reflect_byte, imp_reflect_value,
-};
+use crate::{imp_make_lut_256, imp_make_lut_32, imp_make_lut_slice_by};
 
 imp_crc!(crc8, u8);
-imp_make_lut_32!(make_lut_32, u8, reflect_byte_8, reflect_value_8);
+imp_make_lut_32!(make_lut_32, u8, crc8);
 imp_make_lut_256!(make_lut_256, u8, crc8);
 imp_make_lut_slice_by!(make_sliced_lut, u8, make_lut_256);
 
 imp_crc_update_lut_32!(update_lut_32, u8);
 imp_crc_update_lut_256!(update_lut_256, u8);
 imp_crc_update_slice_by!(update_slice_by, u8);
-
-imp_reflect_value!(reflect_value_8, u8);
-imp_reflect_byte!(reflect_byte_8, u8);
 
 #[inline]
 fn update_slice_by_4<'a>(
@@ -252,7 +247,7 @@ mod tests {
             ("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ", 0x78),
         ];
 
-        let lut32 = make_lut_32(POLY, REFLECT);
+        let lut32 = make_lut_32(WIDTH, POLY, REFLECT);
         let lut256 = make_lut_256(WIDTH, POLY, REFLECT);
         let lut256x_n = make_sliced_lut::<SLICES>(WIDTH, POLY, REFLECT);
 
@@ -292,7 +287,7 @@ mod tests {
             ("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ", 0xF6),
         ];
 
-        let lut32 = make_lut_32(POLY, REFLECT);
+        let lut32 = make_lut_32(WIDTH, POLY, REFLECT);
         let lut256 = make_lut_256(WIDTH, POLY, REFLECT);
         let lut256x_n = make_sliced_lut(WIDTH, POLY, REFLECT);
 

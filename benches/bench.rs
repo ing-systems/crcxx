@@ -5,7 +5,7 @@ const CHUNK_SIZES: [u32; 6] = [3, 5, 7, 11, 13, 16 * 10424];
 const SLICES: usize = 16;
 
 pub fn bench_lut_32(c: &mut Criterion) {
-    let lut = crc8::make_lut_32(0x9B, true);
+    let lut = crc8::make_lut_32(8, 0x9B, true);
 
     let mut group = c.benchmark_group("CRC8");
 
@@ -56,7 +56,7 @@ pub fn bench_slice_by(c: &mut Criterion) {
 }
 
 pub fn bench_crc16_lut_32(c: &mut Criterion) {
-    let lut = crc16::make_lut_32(0x8005, true);
+    let lut = crc16::make_lut_32(16, 0x8005, true);
 
     let mut group = c.benchmark_group("CRC16");
 
@@ -107,7 +107,7 @@ pub fn bench_crc16_slice_by(c: &mut Criterion) {
 }
 
 pub fn bench_crc32_lut_32(c: &mut Criterion) {
-    let lut = crc32::make_lut_32(0x04C1_1DB7, true);
+    let lut = crc32::make_lut_32(32, 0x04C1_1DB7, true);
 
     let mut group = c.benchmark_group("CRC32");
 
@@ -158,7 +158,7 @@ pub fn bench_crc32_slice_by(c: &mut Criterion) {
 }
 
 pub fn bench_crc64_lut_32(c: &mut Criterion) {
-    let lut = crc64::make_lut_32(0x04C1_1DB7, true);
+    let lut = crc64::make_lut_32(64, 0x04C1_1DB7, true);
 
     let mut group = c.benchmark_group("CRC64");
 
