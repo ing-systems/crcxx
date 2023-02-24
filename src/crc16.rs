@@ -246,3 +246,86 @@ fn update_slice_by_32<'a, const REFLECT: bool>(
 
     (crc, bytes)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn with_reflect() {
+        // CRC-16/KERMIT
+        const POLY: u16 = 0x1021;
+        const INIT: u16 = 0x0000;
+        const REFLECT: bool = true;
+        const XOR_OUT: u16 = 0x0000;
+
+        const SAMPLES: [(&str, u16); 8] = [
+            ("", 0x0000),
+            ("0", 0x3183),
+            ("012", 0x3B45),
+            ("0123456", 0xC7B7),
+            ("123456789", 0x2189),
+            ("0123456789ABCDE", 0x9FFE),
+            ("0123456789ABCDEFGHIJKLMNOPQRSTU", 0x19D4),
+            ("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ", 0xDC1A),
+        ];
+
+        let lut32 = crc16_make_lut_32(POLY, REFLECT);
+        let lut256 = crc16_make_lut_256(POLY, REFLECT);
+        let lut256x_n = crc16_make_sliced_lut(POLY, REFLECT);
+
+        for sample in SAMPLES {
+            assert_eq!(
+                crc16_update_lut_32::<REFLECT>(INIT, sample.0.as_bytes(), &lut32) ^ XOR_OUT,
+                sample.1
+            );
+            assert_eq!(
+                crc16_update_lut_256::<REFLECT>(INIT, sample.0.as_bytes(), &lut256) ^ XOR_OUT,
+                sample.1
+            );
+            assert_eq!(
+                crc16_update::<REFLECT>(INIT, sample.0.as_bytes(), &lut256x_n) ^ XOR_OUT,
+                sample.1
+            );
+        }
+    }
+
+    #[test]
+    fn without_reflect() {
+        // CRC-16/CDMA2000
+        const POLY: u16 = 0xC867;
+        const INIT: u16 = 0xFFFF;
+        const REFLECT: bool = false;
+        const XOR_OUT: u16 = 0x0000;
+
+        const SAMPLES: [(&str, u16); 8] = [
+            ("", 0xFFFF),
+            ("0", 0x0528),
+            ("012", 0x1E42),
+            ("0123456", 0x998F),
+            ("123456789", 0x4C06),
+            ("0123456789ABCDE", 0x86F3),
+            ("0123456789ABCDEFGHIJKLMNOPQRSTU", 0xCDB1),
+            ("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ", 0x53EC),
+        ];
+
+        let lut32 = crc16_make_lut_32(POLY, REFLECT);
+        let lut256 = crc16_make_lut_256(POLY, REFLECT);
+        let lut256x_n = crc16_make_sliced_lut(POLY, REFLECT);
+
+        for sample in SAMPLES {
+            assert_eq!(
+                crc16_update_lut_32::<REFLECT>(INIT, sample.0.as_bytes(), &lut32) ^ XOR_OUT,
+                sample.1
+            );
+            assert_eq!(
+                crc16_update_lut_256::<REFLECT>(INIT, sample.0.as_bytes(), &lut256) ^ XOR_OUT,
+                sample.1
+            );
+            assert_eq!(
+                crc16_update::<REFLECT>(INIT, sample.0.as_bytes(), &lut256x_n) ^ XOR_OUT,
+                sample.1
+            );
+        }
+    }
+}

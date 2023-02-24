@@ -246,3 +246,92 @@ fn update_slice_by_32<'a, const REFLECT: bool>(
 
     (crc, bytes)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn with_reflect() {
+        // CRC-32/JAMCRC
+        const POLY: u32 = 0x04C11DB7;
+        const INIT: u32 = 0xFFFFFFFF;
+        const REFLECT: bool = true;
+        const XOR_OUT: u32 = 0x00000000;
+
+        const SAMPLES: [(&str, u32); 8] = [
+            ("", 0xFFFFFFFF),
+            ("0", 0x0B2420DE),
+            ("012", 0x2A5F954F),
+            ("0123456", 0x7240F711),
+            ("123456789", 0x340BC6D9),
+            ("0123456789ABCDE", 0x1E8286DD),
+            ("0123456789ABCDEFGHIJKLMNOPQRSTU", 0x7065C834),
+            (
+                "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+                0x9F25C09C,
+            ),
+        ];
+
+        let lut32 = crc32_make_lut_32(POLY, REFLECT);
+        let lut256 = crc32_make_lut_256(POLY, REFLECT);
+        let lut256x_n = crc32_make_sliced_lut(POLY, REFLECT);
+
+        for sample in SAMPLES {
+            assert_eq!(
+                crc32_update_lut_32::<REFLECT>(INIT, sample.0.as_bytes(), &lut32) ^ XOR_OUT,
+                sample.1
+            );
+            assert_eq!(
+                crc32_update_lut_256::<REFLECT>(INIT, sample.0.as_bytes(), &lut256) ^ XOR_OUT,
+                sample.1
+            );
+            assert_eq!(
+                crc32_update::<REFLECT>(INIT, sample.0.as_bytes(), &lut256x_n) ^ XOR_OUT,
+                sample.1
+            );
+        }
+    }
+
+    #[test]
+    fn without_reflect() {
+        // CRC-32/POSIX
+        const POLY: u32 = 0x04C11DB7;
+        const INIT: u32 = 0x00000000;
+        const REFLECT: bool = false;
+        const XOR_OUT: u32 = 0xFFFFFFFF;
+
+        const SAMPLES: [(&str, u32); 8] = [
+            ("", 0xFFFFFFFF),
+            ("0", 0x2BCD926F),
+            ("012", 0xE63B9D78),
+            ("0123456", 0x33232AE1),
+            ("123456789", 0x765E7680),
+            ("0123456789ABCDE", 0x13ADFEB0),
+            ("0123456789ABCDEFGHIJKLMNOPQRSTU", 0x3F88F4AD),
+            (
+                "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+                0x1A9A735F,
+            ),
+        ];
+
+        let lut32 = crc32_make_lut_32(POLY, REFLECT);
+        let lut256 = crc32_make_lut_256(POLY, REFLECT);
+        let lut256x_n = crc32_make_sliced_lut(POLY, REFLECT);
+
+        for sample in SAMPLES {
+            assert_eq!(
+                crc32_update_lut_32::<REFLECT>(INIT, sample.0.as_bytes(), &lut32) ^ XOR_OUT,
+                sample.1
+            );
+            assert_eq!(
+                crc32_update_lut_256::<REFLECT>(INIT, sample.0.as_bytes(), &lut256) ^ XOR_OUT,
+                sample.1
+            );
+            assert_eq!(
+                crc32_update::<REFLECT>(INIT, sample.0.as_bytes(), &lut256x_n) ^ XOR_OUT,
+                sample.1
+            );
+        }
+    }
+}

@@ -246,3 +246,86 @@ fn update_slice_by_32<'a, const REFLECT: bool>(
 
     (crc, bytes)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn with_reflect() {
+        // CRC-8/WCDMA
+        const POLY: u8 = 0x9B;
+        const INIT: u8 = 0x00;
+        const REFLECT: bool = true;
+        const XOR_OUT: u8 = 0x00;
+
+        const SAMPLES: [(&str, u8); 8] = [
+            ("", 0x00),
+            ("0", 0x1B),
+            ("012", 0x96),
+            ("0123456", 0xE6),
+            ("123456789", 0x25),
+            ("0123456789ABCDE", 0x2C),
+            ("0123456789ABCDEFGHIJKLMNOPQRSTU", 0x67),
+            ("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ", 0x78),
+        ];
+
+        let lut32 = crc8_make_lut_32(POLY, REFLECT);
+        let lut256 = crc8_make_lut_256(POLY, REFLECT);
+        let lut256x_n = crc8_make_sliced_lut(POLY, REFLECT);
+
+        for sample in SAMPLES {
+            assert_eq!(
+                crc8_update_lut_32::<REFLECT>(INIT, sample.0.as_bytes(), &lut32) ^ XOR_OUT,
+                sample.1
+            );
+            assert_eq!(
+                crc8_update_lut_256::<REFLECT>(INIT, sample.0.as_bytes(), &lut256) ^ XOR_OUT,
+                sample.1
+            );
+            assert_eq!(
+                crc8_update::<REFLECT>(INIT, sample.0.as_bytes(), &lut256x_n) ^ XOR_OUT,
+                sample.1
+            );
+        }
+    }
+
+    #[test]
+    fn without_reflect() {
+        // CRC-8/ITU
+        const POLY: u8 = 0x07;
+        const INIT: u8 = 0x00;
+        const REFLECT: bool = false;
+        const XOR_OUT: u8 = 0x55;
+
+        const SAMPLES: [(&str, u8); 8] = [
+            ("", 0x55),
+            ("0", 0xC5),
+            ("012", 0xC6),
+            ("0123456", 0xDA),
+            ("123456789", 0xA1),
+            ("0123456789ABCDE", 0x85),
+            ("0123456789ABCDEFGHIJKLMNOPQRSTU", 0x3D),
+            ("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ", 0xF6),
+        ];
+
+        let lut32 = crc8_make_lut_32(POLY, REFLECT);
+        let lut256 = crc8_make_lut_256(POLY, REFLECT);
+        let lut256x_n = crc8_make_sliced_lut(POLY, REFLECT);
+
+        for sample in SAMPLES {
+            assert_eq!(
+                crc8_update_lut_32::<REFLECT>(INIT, sample.0.as_bytes(), &lut32) ^ XOR_OUT,
+                sample.1
+            );
+            assert_eq!(
+                crc8_update_lut_256::<REFLECT>(INIT, sample.0.as_bytes(), &lut256) ^ XOR_OUT,
+                sample.1
+            );
+            assert_eq!(
+                crc8_update::<REFLECT>(INIT, sample.0.as_bytes(), &lut256x_n) ^ XOR_OUT,
+                sample.1
+            );
+        }
+    }
+}

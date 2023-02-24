@@ -211,3 +211,50 @@ fn update_slice_by_32<'a, const REFLECT: bool>(
 
     (crc, bytes)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn with_reflect() {
+        // CRC-64/ECMA
+        const POLY: u64 = 0x42F0E1EBA9EA3693;
+        const INIT: u64 = 0xFFFFFFFFFFFFFFFF;
+        const REFLECT: bool = true;
+        const XOR_OUT: u64 = 0xFFFFFFFFFFFFFFFF;
+
+        const SAMPLES: [(&str, u64); 8] = [
+            ("", 0x0000000000000000),
+            ("0", 0x9901423B97329582),
+            ("012", 0x413D0F0670A0E4D2),
+            ("0123456", 0x8C880A3669E295FF),
+            ("123456789", 0x995DC9BBDF1939FA),
+            ("0123456789ABCDE", 0x346E97EBC42A4A0B),
+            ("0123456789ABCDEFGHIJKLMNOPQRSTU", 0xD5A91BD8F8425127),
+            (
+                "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+                0xDCFCA5E374A1D0EE,
+            ),
+        ];
+
+        let lut32 = crc64_make_lut_32(POLY, REFLECT);
+        let lut256 = crc64_make_lut_256(POLY, REFLECT);
+        let lut256x_n = crc64_make_sliced_lut(POLY, REFLECT);
+
+        for sample in SAMPLES {
+            assert_eq!(
+                crc64_update_lut_32::<REFLECT>(INIT, sample.0.as_bytes(), &lut32) ^ XOR_OUT,
+                sample.1
+            );
+            assert_eq!(
+                crc64_update_lut_256::<REFLECT>(INIT, sample.0.as_bytes(), &lut256) ^ XOR_OUT,
+                sample.1
+            );
+            assert_eq!(
+                crc64_update::<REFLECT>(INIT, sample.0.as_bytes(), &lut256x_n) ^ XOR_OUT,
+                sample.1
+            );
+        }
+    }
+}
