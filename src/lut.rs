@@ -11,21 +11,21 @@ macro_rules! imp_make_lut_32 {
                 poly << (BITS - width as usize)
             };
 
-            let mut table = [0 as $ty; 32];
+            let mut lut = [0 as $ty; 32];
 
             let mut index = 0;
             while index < 16 {
-                table[index] = $crc(poly, reflect, index as $ty);
+                lut[index] = $crc(poly, reflect, index as $ty);
                 index += 1;
             }
 
             let mut index = 0;
             while index < 16 {
-                table[index + 16] = $crc(poly, reflect, (index << 4) as $ty);
+                lut[index + 16] = $crc(poly, reflect, (index << 4) as $ty);
                 index += 1;
             }
 
-            table
+            lut
         }
     };
 }
@@ -43,15 +43,15 @@ macro_rules! imp_make_lut_256 {
                 poly << (BITS - width as usize)
             };
 
-            let mut table = [0 as $ty; 256];
+            let mut lut = [0 as $ty; 256];
 
             let mut i = 0;
-            while i < table.len() {
-                table[i] = $crc(poly, reflect, i as $ty);
+            while i < lut.len() {
+                lut[i] = $crc(poly, reflect, i as $ty);
                 i += 1;
             }
 
-            table
+            lut
         }
     };
 }
