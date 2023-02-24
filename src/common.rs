@@ -110,7 +110,8 @@ macro_rules! imp_make_sliced_lut {
 
                     for k in 1..SLICES {
                         if BITS > 8 {
-                            crc = sliced_lut[0][((crc >> (BITS - 8)) & 0xff) as usize] ^ (crc << SHIFT);
+                            crc = sliced_lut[0][((crc >> (BITS - 8)) & 0xff) as usize]
+                                ^ (crc << SHIFT);
                         } else {
                             crc = sliced_lut[0][((crc >> (BITS - 8)) & 0xff) as usize];
                         }
