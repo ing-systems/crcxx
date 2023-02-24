@@ -5,7 +5,7 @@
 extern crate std;
 
 #[macro_use]
-mod common;
+mod update;
 
 pub mod crc16;
 pub mod crc32;
