@@ -1,9 +1,14 @@
-use crate::common::*;
+use crate::{common::*, imp_make_lut_32, imp_make_lut_256, imp_make_sliced_lut, imp_reflect_value, imp_reflect_byte};
+
+imp_make_lut_32!(crc64_make_lut_32, u64, reflect_byte_64, reflect_value_64);
+imp_make_lut_256!(crc64_make_lut_256, u64, reflect_byte_64, reflect_value_64);
+imp_make_sliced_lut!(crc64_make_sliced_lut, u64, crc64_make_lut_256);
 
 imp_crc_update_lut_32!(crc64_update_lut_32, u64);
 imp_crc_update_lut_256!(crc64_update_lut_256, u64);
 
-imp_make_sliced_lut!(crc64_make_sliced_lut, u64, crate::lut::crc64_make_lut_256);
+imp_reflect_value!(reflect_value_64, u64);
+imp_reflect_byte!(reflect_byte_64, u64);
 
 pub fn crc64_update(mut crc: u64, mut bytes: &[u8], lut: &[[u64; 256]]) -> u64 {
     const REFLECT: bool = false;

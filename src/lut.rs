@@ -1,3 +1,4 @@
+#[macro_export]
 macro_rules! imp_make_lut_32 {
     ($name: ident, $ty: ty, $reflect_byte: path, $reflect_value: path) => {
         pub fn $name(poly: $ty, reflect: bool) -> [$ty; 32] {
@@ -38,11 +39,7 @@ macro_rules! imp_make_lut_32 {
     };
 }
 
-imp_make_lut_32!(crc8_make_lut_32, u8, reflect_byte_8, reflect_value_8);
-imp_make_lut_32!(crc16_make_lut_32, u16, reflect_byte_16, reflect_value_16);
-imp_make_lut_32!(crc32_make_lut_32, u32, reflect_byte_32, reflect_value_32);
-imp_make_lut_32!(crc64_make_lut_32, u64, reflect_byte_64, reflect_value_64);
-
+#[macro_export]
 macro_rules! imp_make_lut_256 {
     ($name: ident, $ty: ty, $reflect_byte: path, $reflect_value: path) => {
         pub fn $name(poly: $ty, reflect: bool) -> [$ty; 256] {
@@ -69,11 +66,53 @@ macro_rules! imp_make_lut_256 {
     };
 }
 
-imp_make_lut_256!(crc8_make_lut_256, u8, reflect_byte_8, reflect_value_8);
-imp_make_lut_256!(crc16_make_lut_256, u16, reflect_byte_16, reflect_value_16);
-imp_make_lut_256!(crc32_make_lut_256, u32, reflect_byte_32, reflect_value_32);
-imp_make_lut_256!(crc64_make_lut_256, u64, reflect_byte_64, reflect_value_64);
+#[macro_export]
+macro_rules! imp_make_sliced_lut {
+    ($name: ident, $ty: ty, $make_base_lut_256: path) => {
+        pub fn $name(poly: $ty, reflect: bool) -> [[$ty; 256]; SLICES] {
+            const BITS: usize = ::core::mem::size_of::<$ty>() * 8;
+            const SHIFT: usize = if BITS > 8 { 8 } else { 0 };
 
+            let base_lut = $make_base_lut_256(poly, reflect);
+            let mut sliced_lut = [[0 as $ty; 256]; SLICES];
+
+            sliced_lut[0].copy_from_slice(&base_lut);
+
+            if reflect {
+                for n in 0..256 {
+                    let mut crc = sliced_lut[0][n];
+
+                    for k in 1..SLICES {
+                        if BITS > 8 {
+                            crc = sliced_lut[0][(crc & 0xff) as usize] ^ (crc >> SHIFT);
+                        } else {
+                            crc = sliced_lut[0][(crc & 0xff) as usize];
+                        }
+                        sliced_lut[k][n] = crc;
+                    }
+                }
+            } else {
+                for n in 0..256 {
+                    let mut crc = sliced_lut[0][n];
+
+                    for k in 1..SLICES {
+                        if BITS > 8 {
+                            crc = sliced_lut[0][((crc >> (BITS - 8)) & 0xff) as usize]
+                                ^ (crc << SHIFT);
+                        } else {
+                            crc = sliced_lut[0][((crc >> (BITS - 8)) & 0xff) as usize];
+                        }
+                        sliced_lut[k][n] = crc;
+                    }
+                }
+            }
+
+            sliced_lut
+        }
+    };
+}
+
+#[macro_export]
 macro_rules! imp_reflect_value {
     ($name: ident, $ty:ty) => {
         #[inline]
@@ -94,11 +133,7 @@ macro_rules! imp_reflect_value {
     };
 }
 
-imp_reflect_value!(reflect_value_8, u8);
-imp_reflect_value!(reflect_value_16, u16);
-imp_reflect_value!(reflect_value_32, u32);
-imp_reflect_value!(reflect_value_64, u64);
-
+#[macro_export]
 macro_rules! imp_reflect_byte {
     ($name: ident, $ty:ty) => {
         #[inline]
@@ -119,8 +154,3 @@ macro_rules! imp_reflect_byte {
         }
     };
 }
-
-imp_reflect_byte!(reflect_byte_8, u8);
-imp_reflect_byte!(reflect_byte_16, u16);
-imp_reflect_byte!(reflect_byte_32, u32);
-imp_reflect_byte!(reflect_byte_64, u64);
