@@ -2,17 +2,17 @@ use crate::{
     imp_make_lut_256, imp_make_lut_32, imp_make_sliced_lut, imp_reflect_byte, imp_reflect_value,
 };
 
-imp_make_lut_32!(crc8_make_lut_32, u8, reflect_byte_8, reflect_value_8);
-imp_make_lut_256!(crc8_make_lut_256, u8, reflect_byte_8, reflect_value_8);
-imp_make_sliced_lut!(crc8_make_sliced_lut, u8, crc8_make_lut_256);
+imp_make_lut_32!(make_lut_32, u8, reflect_byte_8, reflect_value_8);
+imp_make_lut_256!(make_lut_256, u8, reflect_byte_8, reflect_value_8);
+imp_make_sliced_lut!(make_sliced_lut, u8, make_lut_256);
 
-imp_crc_update_lut_32!(crc8_update_lut_32, u8);
-imp_crc_update_lut_256!(crc8_update_lut_256, u8);
+imp_crc_update_lut_32!(update_lut_32, u8);
+imp_crc_update_lut_256!(update_lut_256, u8);
 
 imp_reflect_value!(reflect_value_8, u8);
 imp_reflect_byte!(reflect_byte_8, u8);
 
-pub fn crc8_update_slice_by<const SLICES: usize, const REFLECT: bool>(
+pub fn update_slice_by<const SLICES: usize, const REFLECT: bool>(
     mut crc: u8, mut bytes: &[u8], lut: &[[u8; 256]; SLICES],
 ) -> u8 {
     const REFLECT: bool = false;
@@ -33,7 +33,7 @@ pub fn crc8_update_slice_by<const SLICES: usize, const REFLECT: bool>(
         (crc, bytes) = update_slice_by_4::<REFLECT>(crc, bytes, lut);
     }
 
-    crc8_update_lut_256::<REFLECT>(crc, bytes, &lut[0])
+    update_lut_256::<REFLECT>(crc, bytes, &lut[0])
 }
 
 #[inline]
@@ -273,22 +273,21 @@ mod tests {
             ("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ", 0x78),
         ];
 
-        let lut32 = crc8_make_lut_32(POLY, REFLECT);
-        let lut256 = crc8_make_lut_256(POLY, REFLECT);
-        let lut256x_n = crc8_make_sliced_lut::<SLICES>(POLY, REFLECT);
+        let lut32 = make_lut_32(POLY, REFLECT);
+        let lut256 = make_lut_256(POLY, REFLECT);
+        let lut256x_n = make_sliced_lut::<SLICES>(POLY, REFLECT);
 
         for sample in SAMPLES {
             assert_eq!(
-                crc8_update_lut_32::<REFLECT>(INIT, sample.0.as_bytes(), &lut32) ^ XOR_OUT,
+                update_lut_32::<REFLECT>(INIT, sample.0.as_bytes(), &lut32) ^ XOR_OUT,
                 sample.1
             );
             assert_eq!(
-                crc8_update_lut_256::<REFLECT>(INIT, sample.0.as_bytes(), &lut256) ^ XOR_OUT,
+                update_lut_256::<REFLECT>(INIT, sample.0.as_bytes(), &lut256) ^ XOR_OUT,
                 sample.1
             );
             assert_eq!(
-                crc8_update_slice_by::<SLICES, REFLECT>(INIT, sample.0.as_bytes(), &lut256x_n)
-                    ^ XOR_OUT,
+                update_slice_by::<SLICES, REFLECT>(INIT, sample.0.as_bytes(), &lut256x_n) ^ XOR_OUT,
                 sample.1
             );
         }
@@ -313,22 +312,21 @@ mod tests {
             ("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ", 0xF6),
         ];
 
-        let lut32 = crc8_make_lut_32(POLY, REFLECT);
-        let lut256 = crc8_make_lut_256(POLY, REFLECT);
-        let lut256x_n = crc8_make_sliced_lut(POLY, REFLECT);
+        let lut32 = make_lut_32(POLY, REFLECT);
+        let lut256 = make_lut_256(POLY, REFLECT);
+        let lut256x_n = make_sliced_lut(POLY, REFLECT);
 
         for sample in SAMPLES {
             assert_eq!(
-                crc8_update_lut_32::<REFLECT>(INIT, sample.0.as_bytes(), &lut32) ^ XOR_OUT,
+                update_lut_32::<REFLECT>(INIT, sample.0.as_bytes(), &lut32) ^ XOR_OUT,
                 sample.1
             );
             assert_eq!(
-                crc8_update_lut_256::<REFLECT>(INIT, sample.0.as_bytes(), &lut256) ^ XOR_OUT,
+                update_lut_256::<REFLECT>(INIT, sample.0.as_bytes(), &lut256) ^ XOR_OUT,
                 sample.1
             );
             assert_eq!(
-                crc8_update_slice_by::<SLICES, REFLECT>(INIT, sample.0.as_bytes(), &lut256x_n)
-                    ^ XOR_OUT,
+                update_slice_by::<SLICES, REFLECT>(INIT, sample.0.as_bytes(), &lut256x_n) ^ XOR_OUT,
                 sample.1
             );
         }

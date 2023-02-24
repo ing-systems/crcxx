@@ -2,17 +2,17 @@ use crate::{
     imp_make_lut_256, imp_make_lut_32, imp_make_sliced_lut, imp_reflect_byte, imp_reflect_value,
 };
 
-imp_make_lut_32!(crc64_make_lut_32, u64, reflect_byte_64, reflect_value_64);
-imp_make_lut_256!(crc64_make_lut_256, u64, reflect_byte_64, reflect_value_64);
-imp_make_sliced_lut!(crc64_make_sliced_lut, u64, crc64_make_lut_256);
+imp_make_lut_32!(make_lut_32, u64, reflect_byte_64, reflect_value_64);
+imp_make_lut_256!(make_lut_256, u64, reflect_byte_64, reflect_value_64);
+imp_make_sliced_lut!(make_sliced_lut, u64, make_lut_256);
 
-imp_crc_update_lut_32!(crc64_update_lut_32, u64);
-imp_crc_update_lut_256!(crc64_update_lut_256, u64);
+imp_crc_update_lut_32!(update_lut_32, u64);
+imp_crc_update_lut_256!(update_lut_256, u64);
 
 imp_reflect_value!(reflect_value_64, u64);
 imp_reflect_byte!(reflect_byte_64, u64);
 
-pub fn crc64_update_slice_by<const SLICES: usize, const REFLECT: bool>(
+pub fn update_slice_by<const SLICES: usize, const REFLECT: bool>(
     mut crc: u64, mut bytes: &[u8], lut: &[[u64; 256]],
 ) -> u64 {
     if SLICES >= 32 {
@@ -27,7 +27,7 @@ pub fn crc64_update_slice_by<const SLICES: usize, const REFLECT: bool>(
         (crc, bytes) = update_slice_by_8::<REFLECT>(crc, bytes, lut);
     }
 
-    crc64_update_lut_256::<REFLECT>(crc, bytes, &lut[0])
+    update_lut_256::<REFLECT>(crc, bytes, &lut[0])
 }
 
 #[inline]
@@ -239,22 +239,21 @@ mod tests {
             ),
         ];
 
-        let lut32 = crc64_make_lut_32(POLY, REFLECT);
-        let lut256 = crc64_make_lut_256(POLY, REFLECT);
-        let lut256x_n = crc64_make_sliced_lut::<SLICES>(POLY, REFLECT);
+        let lut32 = make_lut_32(POLY, REFLECT);
+        let lut256 = make_lut_256(POLY, REFLECT);
+        let lut256x_n = make_sliced_lut::<SLICES>(POLY, REFLECT);
 
         for sample in SAMPLES {
             assert_eq!(
-                crc64_update_lut_32::<REFLECT>(INIT, sample.0.as_bytes(), &lut32) ^ XOR_OUT,
+                update_lut_32::<REFLECT>(INIT, sample.0.as_bytes(), &lut32) ^ XOR_OUT,
                 sample.1
             );
             assert_eq!(
-                crc64_update_lut_256::<REFLECT>(INIT, sample.0.as_bytes(), &lut256) ^ XOR_OUT,
+                update_lut_256::<REFLECT>(INIT, sample.0.as_bytes(), &lut256) ^ XOR_OUT,
                 sample.1
             );
             assert_eq!(
-                crc64_update_slice_by::<SLICES, REFLECT>(INIT, sample.0.as_bytes(), &lut256x_n)
-                    ^ XOR_OUT,
+                update_slice_by::<SLICES, REFLECT>(INIT, sample.0.as_bytes(), &lut256x_n) ^ XOR_OUT,
                 sample.1
             );
         }

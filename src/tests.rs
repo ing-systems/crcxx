@@ -20,13 +20,13 @@ fn gen_rand_data(min_data_size: usize, max_data_size: usize) -> Box<[u8]> {
 
 #[test]
 fn test_rand_crc8() {
-    let lut = crc8::crc8_make_sliced_lut(0x07, false);
+    let lut = crc8::make_sliced_lut(0x07, false);
 
     for _ in 0..ITERATIONS {
         let data = gen_rand_data(MIN_DATA_SIZE, MAX_DATA_SIZE);
 
-        let crc_trusted = crc8::crc8_update_lut_256::<false>(0, &data, &lut[0]);
-        let crc_fast = crc8::crc8_update_slice_by::<SLICES, false>(0, &data, &lut);
+        let crc_trusted = crc8::update_lut_256::<false>(0, &data, &lut[0]);
+        let crc_fast = crc8::update_slice_by::<SLICES, false>(0, &data, &lut);
 
         assert_eq!(crc_trusted, crc_fast);
     }
@@ -34,13 +34,13 @@ fn test_rand_crc8() {
 
 #[test]
 fn test_rand_crc8_reflected() {
-    let lut = crc8::crc8_make_sliced_lut(0x07, true);
+    let lut = crc8::make_sliced_lut(0x07, true);
 
     for _ in 0..ITERATIONS {
         let data = gen_rand_data(MIN_DATA_SIZE, MAX_DATA_SIZE);
 
-        let crc_trusted = crc8::crc8_update_lut_256::<true>(0, &data, &lut[0]);
-        let crc_fast = crc8::crc8_update_slice_by::<SLICES, true>(0, &data, &lut);
+        let crc_trusted = crc8::update_lut_256::<true>(0, &data, &lut[0]);
+        let crc_fast = crc8::update_slice_by::<SLICES, true>(0, &data, &lut);
 
         assert_eq!(crc_trusted, crc_fast);
     }
@@ -48,13 +48,13 @@ fn test_rand_crc8_reflected() {
 
 #[test]
 fn test_rand_crc16() {
-    let lut = crc16::crc16_make_sliced_lut::<SLICES>(0x1021, false);
+    let lut = crc16::make_sliced_lut::<SLICES>(0x1021, false);
 
     for _ in 0..ITERATIONS {
         let data = gen_rand_data(MIN_DATA_SIZE, MAX_DATA_SIZE);
 
-        let crc_trusted = crc16::crc16_update_lut_256::<false>(0, &data, &lut[0]);
-        let crc_fast = crc16::crc16_update_slice_by::<SLICES, false>(0, &data, &lut);
+        let crc_trusted = crc16::update_lut_256::<false>(0, &data, &lut[0]);
+        let crc_fast = crc16::update_slice_by::<SLICES, false>(0, &data, &lut);
 
         assert_eq!(crc_trusted, crc_fast);
     }
@@ -62,13 +62,13 @@ fn test_rand_crc16() {
 
 #[test]
 fn test_rand_crc16_reflected() {
-    let lut = crc16::crc16_make_sliced_lut::<SLICES>(0x8005, true);
+    let lut = crc16::make_sliced_lut::<SLICES>(0x8005, true);
 
     for _ in 0..ITERATIONS {
         let data = gen_rand_data(MIN_DATA_SIZE, MAX_DATA_SIZE);
 
-        let crc_trusted = crc16::crc16_update_lut_256::<true>(0, &data, &lut[0]);
-        let crc_fast = crc16::crc16_update_slice_by::<SLICES, true>(0, &data, &lut);
+        let crc_trusted = crc16::update_lut_256::<true>(0, &data, &lut[0]);
+        let crc_fast = crc16::update_slice_by::<SLICES, true>(0, &data, &lut);
 
         assert_eq!(crc_trusted, crc_fast);
     }
@@ -76,13 +76,13 @@ fn test_rand_crc16_reflected() {
 
 #[test]
 fn test_rand_crc32() {
-    let lut = crc32::crc32_make_sliced_lut::<SLICES>(0x814141ab, false);
+    let lut = crc32::make_sliced_lut::<SLICES>(0x814141ab, false);
 
     for _ in 0..ITERATIONS {
         let data = gen_rand_data(MIN_DATA_SIZE, MAX_DATA_SIZE);
 
-        let crc_trusted = crc32::crc32_update_lut_256::<false>(0, &data, &lut[0]) ^ 0xFFFFFFFF;
-        let crc_fast = crc32::crc32_update_slice_by::<SLICES, false>(0, &data, &lut) ^ 0xFFFFFFFF;
+        let crc_trusted = crc32::update_lut_256::<false>(0, &data, &lut[0]) ^ 0xFFFFFFFF;
+        let crc_fast = crc32::update_slice_by::<SLICES, false>(0, &data, &lut) ^ 0xFFFFFFFF;
 
         assert_eq!(crc_trusted, crc_fast);
     }
@@ -90,13 +90,13 @@ fn test_rand_crc32() {
 
 #[test]
 fn test_rand_crc32_reflected() {
-    let lut = crc32::crc32_make_sliced_lut::<SLICES>(0x04C1_1DB7, true);
+    let lut = crc32::make_sliced_lut::<SLICES>(0x04C1_1DB7, true);
 
     for _ in 0..ITERATIONS {
         let data = gen_rand_data(MIN_DATA_SIZE, MAX_DATA_SIZE);
 
-        let crc_trusted = crc32::crc32_update_lut_256::<true>(0, &data, &lut[0]) ^ 0xFFFF_FFFF;
-        let crc_fast = crc32::crc32_update_slice_by::<SLICES, true>(0, &data, &lut) ^ 0xFFFF_FFFF;
+        let crc_trusted = crc32::update_lut_256::<true>(0, &data, &lut[0]) ^ 0xFFFF_FFFF;
+        let crc_fast = crc32::update_slice_by::<SLICES, true>(0, &data, &lut) ^ 0xFFFF_FFFF;
 
         assert_eq!(crc_trusted, crc_fast);
     }
@@ -104,13 +104,13 @@ fn test_rand_crc32_reflected() {
 
 #[test]
 fn test_rand_crc64() {
-    let lut = crc64::crc64_make_sliced_lut::<SLICES>(0x42f0_e1eb_a9ea_3693, false);
+    let lut = crc64::make_sliced_lut::<SLICES>(0x42f0_e1eb_a9ea_3693, false);
 
     for _ in 0..ITERATIONS {
         let data = gen_rand_data(MIN_DATA_SIZE, MAX_DATA_SIZE);
 
-        let crc_trusted = crc64::crc64_update_lut_256::<false>(0, &data, &lut[0]);
-        let crc_fast = crc64::crc64_update_slice_by::<SLICES, false>(0, &data, &lut);
+        let crc_trusted = crc64::update_lut_256::<false>(0, &data, &lut[0]);
+        let crc_fast = crc64::update_slice_by::<SLICES, false>(0, &data, &lut);
 
         assert_eq!(crc_trusted, crc_fast);
     }
@@ -118,13 +118,13 @@ fn test_rand_crc64() {
 
 #[test]
 fn test_rand_crc64_reflected() {
-    let lut = crc64::crc64_make_sliced_lut::<SLICES>(0x42f0_e1eb_a9ea_3693, true);
+    let lut = crc64::make_sliced_lut::<SLICES>(0x42f0_e1eb_a9ea_3693, true);
 
     for _ in 0..ITERATIONS {
         let data = gen_rand_data(MIN_DATA_SIZE, MAX_DATA_SIZE);
 
-        let crc_trusted = crc64::crc64_update_lut_256::<true>(0, &data, &lut[0]);
-        let crc_fast = crc64::crc64_update_slice_by::<SLICES, true>(0, &data, &lut);
+        let crc_trusted = crc64::update_lut_256::<true>(0, &data, &lut[0]);
+        let crc_fast = crc64::update_slice_by::<SLICES, true>(0, &data, &lut);
 
         assert_eq!(crc_trusted, crc_fast);
     }
