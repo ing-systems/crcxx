@@ -52,9 +52,7 @@ macro_rules! imp_crc_update_lut_256 {
             if reflect {
                 let mut i = 0;
                 while i < bytes.len() {
-                    let b = bytes[i];
-
-                    let index = ((b as $ty) ^ crc & 0xFF) as usize;
+                    let index = ((crc ^ bytes[i] as $ty) & 0xFF) as usize;
 
                     if BITS > 8 {
                         crc = lut[index] ^ (crc >> SHIFT);
@@ -67,9 +65,7 @@ macro_rules! imp_crc_update_lut_256 {
             } else {
                 let mut i = 0;
                 while i < bytes.len() {
-                    let b = bytes[i];
-
-                    let index = ((crc >> (BITS - 8)) ^ (b as $ty) & 0xFF) as usize;
+                    let index = (((crc >> (BITS - 8)) ^ bytes[i] as $ty) & 0xFF) as usize;
 
                     if BITS > 8 {
                         crc = lut[index] ^ (crc << SHIFT);
