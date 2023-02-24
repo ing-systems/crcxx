@@ -101,7 +101,7 @@ pub fn crc16_update(mut crc: u16, mut buf: &[u8], lut: &[[u16; 256]]) -> u16 {
         }
     }
 
-    crc16_update_lut_256(crc, &buf, &lut[0])
+    crc16_update_lut_256(crc, buf, &lut[0])
 }
 
 pub fn crc16_update_ref(mut crc: u16, mut buf: &[u8], lut: &[[u16; 256]]) -> u16 {
@@ -197,5 +197,5 @@ pub fn crc16_update_ref(mut crc: u16, mut buf: &[u8], lut: &[[u16; 256]]) -> u16
         }
     }
 
-    crc16_update_ref_lut_256(crc, &buf, &lut[0])
+    crc16_update_ref_lut_256(crc, buf, &lut[0])
 }

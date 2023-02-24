@@ -89,7 +89,7 @@ pub fn crc64_update(mut crc: u64, mut buf: &[u8], lut: &[[u64; 256]]) -> u64 {
         }
     }
 
-    crc64_update_lut_256(crc, &buf, &lut[0])
+    crc64_update_lut_256(crc, buf, &lut[0])
 }
 
 pub fn crc64_update_ref(mut crc: u64, mut buf: &[u8], lut: &[[u64; 256]]) -> u64 {
@@ -173,5 +173,5 @@ pub fn crc64_update_ref(mut crc: u64, mut buf: &[u8], lut: &[[u64; 256]]) -> u64
         }
     }
 
-    crc64_update_ref_lut_256(crc, &buf, &lut[0])
+    crc64_update_ref_lut_256(crc, buf, &lut[0])
 }

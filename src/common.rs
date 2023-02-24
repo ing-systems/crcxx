@@ -23,7 +23,6 @@ macro_rules! imp_crc_update_lut_32 {
             const BITS: usize = ::core::mem::size_of::<$ty>() * 8;
 
             #[allow(arithmetic_overflow)]
-            #[allow(exceeding_bitshifts)]
             for &b in buf {
                 let index = (((crc >> (BITS - 8)) & 0xFF) ^ <$ty>::from(b)) as usize;
 
@@ -46,7 +45,6 @@ macro_rules! imp_crc_update_ref_lut_32 {
             const BITS: usize = ::core::mem::size_of::<$ty>() * 8;
 
             #[allow(arithmetic_overflow)]
-            #[allow(exceeding_bitshifts)]
             for &b in buf {
                 let index = ((crc & 0xFF) ^ <$ty>::from(b)) as usize;
 
@@ -69,7 +67,6 @@ macro_rules! imp_crc_update_lut_256 {
             const BITS: usize = ::core::mem::size_of::<$ty>() * 8;
 
             #[allow(arithmetic_overflow)]
-            #[allow(exceeding_bitshifts)]
             for &b in buf {
                 let index = ((crc >> (BITS - 8)) ^ <$ty>::from(b) & 0xFF) as usize;
 
@@ -92,7 +89,6 @@ macro_rules! imp_crc_update_ref_lut_256 {
             const BITS: usize = ::core::mem::size_of::<$ty>() * 8;
 
             #[allow(arithmetic_overflow)]
-            #[allow(exceeding_bitshifts)]
             for &b in buf {
                 let index = (<$ty>::from(b) ^ crc & 0xFF) as usize;
 
@@ -123,7 +119,6 @@ macro_rules! imp_make_sliced_lut {
                     let mut crc = sliced_lut[0][n];
 
                     #[allow(arithmetic_overflow)]
-                    #[allow(exceeding_bitshifts)]
                     for k in 1..SLICES {
                         if BITS > 8 {
                             crc = sliced_lut[0][(crc & 0xff) as usize] ^ (crc >> 8);
@@ -138,7 +133,6 @@ macro_rules! imp_make_sliced_lut {
                     let mut crc = sliced_lut[0][n];
 
                     #[allow(arithmetic_overflow)]
-                    #[allow(exceeding_bitshifts)]
                     for k in 1..SLICES {
                         if BITS > 8 {
                             crc = sliced_lut[0][((crc >> (BITS - 8)) & 0xff) as usize] ^ (crc << 8);

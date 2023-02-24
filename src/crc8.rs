@@ -101,7 +101,7 @@ pub fn crc8_update(mut crc: u8, mut buf: &[u8], lut: &[[u8; 256]]) -> u8 {
         }
     }
 
-    crc8_update_lut_256(crc, &buf, &lut[0])
+    crc8_update_lut_256(crc, buf, &lut[0])
 }
 
 pub fn crc8_update_ref(mut crc: u8, mut buf: &[u8], lut: &[[u8; 256]]) -> u8 {
@@ -197,5 +197,5 @@ pub fn crc8_update_ref(mut crc: u8, mut buf: &[u8], lut: &[[u8; 256]]) -> u8 {
         }
     }
 
-    crc8_update_ref_lut_256(crc, &buf, &lut[0])
+    crc8_update_ref_lut_256(crc, buf, &lut[0])
 }

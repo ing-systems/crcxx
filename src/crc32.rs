@@ -101,7 +101,7 @@ pub fn crc32_update(mut crc: u32, mut buf: &[u8], lut: &[[u32; 256]]) -> u32 {
         }
     }
 
-    crc32_update_lut_256(crc, &buf, &lut[0])
+    crc32_update_lut_256(crc, buf, &lut[0])
 }
 
 pub fn crc32_update_ref(mut crc: u32, mut buf: &[u8], lut: &[[u32; 256]]) -> u32 {
@@ -197,5 +197,5 @@ pub fn crc32_update_ref(mut crc: u32, mut buf: &[u8], lut: &[[u32; 256]]) -> u32
         }
     }
 
-    crc32_update_ref_lut_256(crc, &buf, &lut[0])
+    crc32_update_ref_lut_256(crc, buf, &lut[0])
 }
