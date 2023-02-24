@@ -8,31 +8,10 @@ imp_make_sliced_lut!(make_sliced_lut, u16, make_lut_256);
 
 imp_crc_update_lut_32!(update_lut_32, u16);
 imp_crc_update_lut_256!(update_lut_256, u16);
+imp_crc_update_slice_by!(update_slice_by, u16);
 
 imp_reflect_value!(reflect_value_16, u16);
 imp_reflect_byte!(reflect_byte_16, u16);
-
-pub fn update_slice_by<const SLICES: usize, const REFLECT: bool>(
-    mut crc: u16, mut bytes: &[u8], lut: &[[u16; 256]],
-) -> u16 {
-    if SLICES >= 32 {
-        (crc, bytes) = update_slice_by_32::<REFLECT>(crc, bytes, lut);
-    }
-
-    if SLICES >= 16 {
-        (crc, bytes) = update_slice_by_16::<REFLECT>(crc, bytes, lut);
-    }
-
-    if SLICES >= 8 {
-        (crc, bytes) = update_slice_by_8::<REFLECT>(crc, bytes, lut);
-    }
-
-    if SLICES >= 4 {
-        (crc, bytes) = update_slice_by_4::<REFLECT>(crc, bytes, lut);
-    }
-
-    update_lut_256::<REFLECT>(crc, bytes, &lut[0])
-}
 
 #[inline]
 fn update_slice_by_4<'a, const REFLECT: bool>(

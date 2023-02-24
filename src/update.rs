@@ -74,3 +74,29 @@ macro_rules! imp_crc_update_lut_256 {
         }
     };
 }
+
+macro_rules! imp_crc_update_slice_by {
+    ($name: ident, $ty: ty) => {
+        pub fn $name<const SLICES: usize, const REFLECT: bool>(
+            mut crc: $ty, mut bytes: &[u8], lut: &[[$ty; 256]; SLICES],
+        ) -> $ty {
+            if SLICES >= 32 {
+                (crc, bytes) = update_slice_by_32::<REFLECT>(crc, bytes, lut);
+            }
+
+            if SLICES >= 16 {
+                (crc, bytes) = update_slice_by_16::<REFLECT>(crc, bytes, lut);
+            }
+
+            if SLICES >= 8 {
+                (crc, bytes) = update_slice_by_8::<REFLECT>(crc, bytes, lut);
+            }
+
+            if SLICES >= 4 {
+                (crc, bytes) = update_slice_by_4::<REFLECT>(crc, bytes, lut);
+            }
+
+            update_lut_256::<REFLECT>(crc, bytes, &lut[0])
+        }
+    };
+}
