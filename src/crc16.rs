@@ -13,14 +13,14 @@ imp_reflect_value!(reflect_value_16, u16);
 imp_reflect_byte!(reflect_byte_16, u16);
 
 #[inline]
-fn update_slice_by_4<'a, const REFLECT: bool>(
-    mut crc: u16, mut bytes: &'a [u8], lut: &[[u16; 256]],
+fn update_slice_by_4<'a>(
+    mut crc: u16, mut bytes: &'a [u8], lut: &[[u16; 256]], reflect: bool,
 ) -> (u16, &'a [u8]) {
     const STEP: usize = 4;
 
     assert!(lut.len() >= STEP);
 
-    if REFLECT {
+    if reflect {
         while bytes.len() >= STEP {
             crc = lut[0x0][bytes[0x3] as usize]
                 ^ lut[0x1][bytes[0x2] as usize]
@@ -44,14 +44,14 @@ fn update_slice_by_4<'a, const REFLECT: bool>(
 }
 
 #[inline]
-fn update_slice_by_8<'a, const REFLECT: bool>(
-    mut crc: u16, mut bytes: &'a [u8], lut: &[[u16; 256]],
+fn update_slice_by_8<'a>(
+    mut crc: u16, mut bytes: &'a [u8], lut: &[[u16; 256]], reflect: bool,
 ) -> (u16, &'a [u8]) {
     const STEP: usize = 8;
 
     assert!(lut.len() >= STEP);
 
-    if REFLECT {
+    if reflect {
         while bytes.len() >= STEP {
             crc = lut[0x0][bytes[0x7] as usize]
                 ^ lut[0x1][bytes[0x6] as usize]
@@ -83,14 +83,14 @@ fn update_slice_by_8<'a, const REFLECT: bool>(
 }
 
 #[inline]
-fn update_slice_by_16<'a, const REFLECT: bool>(
-    mut crc: u16, mut bytes: &'a [u8], lut: &[[u16; 256]],
+fn update_slice_by_16<'a>(
+    mut crc: u16, mut bytes: &'a [u8], lut: &[[u16; 256]], reflect: bool,
 ) -> (u16, &'a [u8]) {
     const STEP: usize = 16;
 
     assert!(lut.len() >= STEP);
 
-    if REFLECT {
+    if reflect {
         while bytes.len() >= STEP {
             crc = lut[0x0][bytes[0xf] as usize]
                 ^ lut[0x1][bytes[0xe] as usize]
@@ -138,14 +138,14 @@ fn update_slice_by_16<'a, const REFLECT: bool>(
 }
 
 #[inline]
-fn update_slice_by_32<'a, const REFLECT: bool>(
-    mut crc: u16, mut bytes: &'a [u8], lut: &[[u16; 256]],
+fn update_slice_by_32<'a>(
+    mut crc: u16, mut bytes: &'a [u8], lut: &[[u16; 256]], reflect: bool,
 ) -> (u16, &'a [u8]) {
     const STEP: usize = 32;
 
     assert!(lut.len() >= STEP);
 
-    if REFLECT {
+    if reflect {
         while bytes.len() >= STEP {
             crc = lut[0x00][bytes[0x1f] as usize]
                 ^ lut[0x01][bytes[0x1e] as usize]
@@ -255,15 +255,15 @@ mod tests {
 
         for sample in SAMPLES {
             assert_eq!(
-                update_lut_32::<REFLECT>(INIT, sample.0.as_bytes(), &lut32) ^ XOR_OUT,
+                update_lut_32(INIT, sample.0.as_bytes(), &lut32, REFLECT) ^ XOR_OUT,
                 sample.1
             );
             assert_eq!(
-                update_lut_256::<REFLECT>(INIT, sample.0.as_bytes(), &lut256) ^ XOR_OUT,
+                update_lut_256(INIT, sample.0.as_bytes(), &lut256, REFLECT) ^ XOR_OUT,
                 sample.1
             );
             assert_eq!(
-                update_slice_by::<SLICES, REFLECT>(INIT, sample.0.as_bytes(), &lut256x_n) ^ XOR_OUT,
+                update_slice_by::<SLICES>(INIT, sample.0.as_bytes(), &lut256x_n, REFLECT) ^ XOR_OUT,
                 sample.1
             );
         }
@@ -294,15 +294,15 @@ mod tests {
 
         for sample in SAMPLES {
             assert_eq!(
-                update_lut_32::<REFLECT>(INIT, sample.0.as_bytes(), &lut32) ^ XOR_OUT,
+                update_lut_32(INIT, sample.0.as_bytes(), &lut32, REFLECT) ^ XOR_OUT,
                 sample.1
             );
             assert_eq!(
-                update_lut_256::<REFLECT>(INIT, sample.0.as_bytes(), &lut256) ^ XOR_OUT,
+                update_lut_256(INIT, sample.0.as_bytes(), &lut256, REFLECT) ^ XOR_OUT,
                 sample.1
             );
             assert_eq!(
-                update_slice_by::<SLICES, REFLECT>(INIT, sample.0.as_bytes(), &lut256x_n) ^ XOR_OUT,
+                update_slice_by::<SLICES>(INIT, sample.0.as_bytes(), &lut256x_n, REFLECT) ^ XOR_OUT,
                 sample.1
             );
         }

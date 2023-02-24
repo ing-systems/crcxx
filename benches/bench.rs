@@ -14,7 +14,7 @@ pub fn bench_lut_32(c: &mut Criterion) {
 
         group.throughput(Throughput::Bytes(*size as u64));
         group.bench_function(BenchmarkId::new("update_lut_32", *size), |b| {
-            b.iter(|| black_box(crc8::update_lut_32::<true>(0, black_box(&bytes), &lut)))
+            b.iter(|| black_box(crc8::update_lut_32(0, black_box(&bytes), &lut, true)))
         });
     }
 
@@ -31,7 +31,7 @@ pub fn bench_lut_256(c: &mut Criterion) {
 
         group.throughput(Throughput::Bytes(*size as u64));
         group.bench_function(BenchmarkId::new("update_lut_256", *size), |b| {
-            b.iter(|| black_box(crc8::update_lut_256::<true>(0, black_box(&bytes), &lut)))
+            b.iter(|| black_box(crc8::update_lut_256(0, black_box(&bytes), &lut, true)))
         });
     }
 
@@ -48,7 +48,7 @@ pub fn bench_slice_by(c: &mut Criterion) {
 
         group.throughput(Throughput::Bytes(*size as u64));
         group.bench_function(BenchmarkId::new(format!("update_slice_by_{}", SLICES), *size), |b| {
-            b.iter(|| black_box(crc8::update_slice_by::<SLICES, true>(0, black_box(&bytes), &lut)))
+            b.iter(|| black_box(crc8::update_slice_by::<SLICES>(0, black_box(&bytes), &lut, true)))
         });
     }
 
@@ -65,7 +65,7 @@ pub fn bench_crc16_lut_32(c: &mut Criterion) {
 
         group.throughput(Throughput::Bytes(*size as u64));
         group.bench_function(BenchmarkId::new("update_lut_32", *size), |b| {
-            b.iter(|| black_box(crc16::update_lut_32::<true>(0, black_box(&bytes), &lut)))
+            b.iter(|| black_box(crc16::update_lut_32(0, black_box(&bytes), &lut, true)))
         });
     }
 
@@ -82,7 +82,7 @@ pub fn bench_crc16_lut_256(c: &mut Criterion) {
 
         group.throughput(Throughput::Bytes(*size as u64));
         group.bench_function(BenchmarkId::new("update_lut_256", *size), |b| {
-            b.iter(|| black_box(crc16::update_lut_256::<true>(0, black_box(&bytes), &lut)))
+            b.iter(|| black_box(crc16::update_lut_256(0, black_box(&bytes), &lut, true)))
         });
     }
 
@@ -99,7 +99,7 @@ pub fn bench_crc16_slice_by(c: &mut Criterion) {
 
         group.throughput(Throughput::Bytes(*size as u64));
         group.bench_function(BenchmarkId::new(format!("update_slice_by_{}", SLICES), *size), |b| {
-            b.iter(|| black_box(crc16::update_slice_by::<SLICES, true>(0, black_box(&bytes), &lut)))
+            b.iter(|| black_box(crc16::update_slice_by::<SLICES>(0, black_box(&bytes), &lut, true)))
         });
     }
 
@@ -116,7 +116,7 @@ pub fn bench_crc32_lut_32(c: &mut Criterion) {
 
         group.throughput(Throughput::Bytes(*size as u64));
         group.bench_function(BenchmarkId::new("update_lut_32", *size), |b| {
-            b.iter(|| black_box(crc32::update_lut_32::<true>(0, black_box(&bytes), &lut)))
+            b.iter(|| black_box(crc32::update_lut_32(0, black_box(&bytes), &lut, true)))
         });
     }
 
@@ -133,7 +133,7 @@ pub fn bench_crc32_lut_256(c: &mut Criterion) {
 
         group.throughput(Throughput::Bytes(*size as u64));
         group.bench_function(BenchmarkId::new("update_lut_256", *size), |b| {
-            b.iter(|| black_box(crc32::update_lut_256::<true>(0, black_box(&bytes), &lut)))
+            b.iter(|| black_box(crc32::update_lut_256(0, black_box(&bytes), &lut, true)))
         });
     }
 
@@ -150,7 +150,7 @@ pub fn bench_crc32_slice_by(c: &mut Criterion) {
 
         group.throughput(Throughput::Bytes(*size as u64));
         group.bench_function(BenchmarkId::new(format!("update_slice_by_{}", SLICES), *size), |b| {
-            b.iter(|| black_box(crc32::update_slice_by::<SLICES, true>(0, black_box(&bytes), &lut)))
+            b.iter(|| black_box(crc32::update_slice_by::<SLICES>(0, black_box(&bytes), &lut, true)))
         });
     }
 
@@ -167,7 +167,7 @@ pub fn bench_crc64_lut_32(c: &mut Criterion) {
 
         group.throughput(Throughput::Bytes(*size as u64));
         group.bench_function(BenchmarkId::new("update_lut_32", *size), |b| {
-            b.iter(|| black_box(crc64::update_lut_32::<true>(0, black_box(&bytes), &lut)))
+            b.iter(|| black_box(crc64::update_lut_32(0, black_box(&bytes), &lut, true)))
         });
     }
 
@@ -184,7 +184,7 @@ pub fn bench_crc64_lut_256(c: &mut Criterion) {
 
         group.throughput(Throughput::Bytes(*size as u64));
         group.bench_function(BenchmarkId::new("update_lut_256", *size), |b| {
-            b.iter(|| black_box(crc64::update_lut_256::<true>(0, black_box(&bytes), &lut)))
+            b.iter(|| black_box(crc64::update_lut_256(0, black_box(&bytes), &lut, true)))
         });
     }
 
@@ -201,7 +201,7 @@ pub fn bench_crc64_slice_by(c: &mut Criterion) {
 
         group.throughput(Throughput::Bytes(*size as u64));
         group.bench_function(BenchmarkId::new(format!("update_slice_by_{}", SLICES), *size), |b| {
-            b.iter(|| black_box(crc64::update_slice_by::<SLICES, true>(0, black_box(&bytes), &lut)))
+            b.iter(|| black_box(crc64::update_slice_by::<SLICES>(0, black_box(&bytes), &lut, true)))
         });
     }
 

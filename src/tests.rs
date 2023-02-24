@@ -24,8 +24,8 @@ fn test_rand_crc8() {
     for _ in 0..ITERATIONS {
         let data = gen_rand_data(MIN_DATA_SIZE, MAX_DATA_SIZE);
 
-        let crc_trusted = crc8::update_lut_256::<false>(0, &data, &lut[0]);
-        let crc_fast = crc8::update_slice_by::<MAX_SLICES, false>(0, &data, &lut);
+        let crc_trusted = crc8::update_lut_256(0, &data, &lut[0], false);
+        let crc_fast = crc8::update_slice_by::<MAX_SLICES>(0, &data, &lut, false);
 
         assert_eq!(crc_trusted, crc_fast);
     }
@@ -38,8 +38,8 @@ fn test_rand_crc8_reflected() {
     for _ in 0..ITERATIONS {
         let data = gen_rand_data(MIN_DATA_SIZE, MAX_DATA_SIZE);
 
-        let crc_trusted = crc8::update_lut_256::<true>(0, &data, &lut[0]);
-        let crc_fast = crc8::update_slice_by::<MAX_SLICES, true>(0, &data, &lut);
+        let crc_trusted = crc8::update_lut_256(0, &data, &lut[0], true);
+        let crc_fast = crc8::update_slice_by::<MAX_SLICES>(0, &data, &lut, true);
 
         assert_eq!(crc_trusted, crc_fast);
     }
@@ -52,8 +52,8 @@ fn test_rand_crc16() {
     for _ in 0..ITERATIONS {
         let data = gen_rand_data(MIN_DATA_SIZE, MAX_DATA_SIZE);
 
-        let crc_trusted = crc16::update_lut_256::<false>(0, &data, &lut[0]);
-        let crc_fast = crc16::update_slice_by::<MAX_SLICES, false>(0, &data, &lut);
+        let crc_trusted = crc16::update_lut_256(0, &data, &lut[0], false);
+        let crc_fast = crc16::update_slice_by::<MAX_SLICES>(0, &data, &lut, false);
 
         assert_eq!(crc_trusted, crc_fast);
     }
@@ -66,8 +66,8 @@ fn test_rand_crc16_reflected() {
     for _ in 0..ITERATIONS {
         let data = gen_rand_data(MIN_DATA_SIZE, MAX_DATA_SIZE);
 
-        let crc_trusted = crc16::update_lut_256::<true>(0, &data, &lut[0]);
-        let crc_fast = crc16::update_slice_by::<MAX_SLICES, true>(0, &data, &lut);
+        let crc_trusted = crc16::update_lut_256(0, &data, &lut[0], true);
+        let crc_fast = crc16::update_slice_by::<MAX_SLICES>(0, &data, &lut, true);
 
         assert_eq!(crc_trusted, crc_fast);
     }
@@ -80,8 +80,8 @@ fn test_rand_crc32() {
     for _ in 0..ITERATIONS {
         let data = gen_rand_data(MIN_DATA_SIZE, MAX_DATA_SIZE);
 
-        let crc_trusted = crc32::update_lut_256::<false>(0, &data, &lut[0]) ^ 0xFFFF_FFFF;
-        let crc_fast = crc32::update_slice_by::<MAX_SLICES, false>(0, &data, &lut) ^ 0xFFFF_FFFF;
+        let crc_trusted = crc32::update_lut_256(0, &data, &lut[0], false) ^ 0xFFFF_FFFF;
+        let crc_fast = crc32::update_slice_by::<MAX_SLICES>(0, &data, &lut, false) ^ 0xFFFF_FFFF;
 
         assert_eq!(crc_trusted, crc_fast);
     }
@@ -94,8 +94,8 @@ fn test_rand_crc32_reflected() {
     for _ in 0..ITERATIONS {
         let data = gen_rand_data(MIN_DATA_SIZE, MAX_DATA_SIZE);
 
-        let crc_trusted = crc32::update_lut_256::<true>(0, &data, &lut[0]) ^ 0xFFFF_FFFF;
-        let crc_fast = crc32::update_slice_by::<MAX_SLICES, true>(0, &data, &lut) ^ 0xFFFF_FFFF;
+        let crc_trusted = crc32::update_lut_256(0, &data, &lut[0], true) ^ 0xFFFF_FFFF;
+        let crc_fast = crc32::update_slice_by::<MAX_SLICES>(0, &data, &lut, true) ^ 0xFFFF_FFFF;
 
         assert_eq!(crc_trusted, crc_fast);
     }
@@ -108,8 +108,8 @@ fn test_rand_crc64() {
     for _ in 0..ITERATIONS {
         let data = gen_rand_data(MIN_DATA_SIZE, MAX_DATA_SIZE);
 
-        let crc_trusted = crc64::update_lut_256::<false>(0, &data, &lut[0]);
-        let crc_fast = crc64::update_slice_by::<MAX_SLICES, false>(0, &data, &lut);
+        let crc_trusted = crc64::update_lut_256(0, &data, &lut[0], false);
+        let crc_fast = crc64::update_slice_by::<MAX_SLICES>(0, &data, &lut, false);
 
         assert_eq!(crc_trusted, crc_fast);
     }
@@ -122,8 +122,8 @@ fn test_rand_crc64_reflected() {
     for _ in 0..ITERATIONS {
         let data = gen_rand_data(MIN_DATA_SIZE, MAX_DATA_SIZE);
 
-        let crc_trusted = crc64::update_lut_256::<true>(0, &data, &lut[0]);
-        let crc_fast = crc64::update_slice_by::<MAX_SLICES, true>(0, &data, &lut);
+        let crc_trusted = crc64::update_lut_256(0, &data, &lut[0], true);
+        let crc_fast = crc64::update_slice_by::<MAX_SLICES>(0, &data, &lut, true);
 
         assert_eq!(crc_trusted, crc_fast);
     }
