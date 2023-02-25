@@ -178,7 +178,7 @@ macro_rules! imp_update_lut_256x_n {
         pub fn update_lut_256x_n<const SLICES: usize>(
             mut crc: $ty, mut bytes: &[u8], lut: &[[$ty; 256]; SLICES], reflect: bool,
         ) -> $ty {
-            $crate::internals::cg_assert::assert_lt_eq::<SLICES, { $crate::MAX_SLICES }>();
+            $crate::internals::cg_assert::assert_lt_eq::<SLICES, { $crate::internals::MAX_SLICES }>();
             $crate::internals::cg_assert::assert_power_of_two::<SLICES>();
 
             if SLICES >= 32 {

@@ -143,7 +143,5 @@
 #[macro_use]
 extern crate std;
 
-pub(crate) const MAX_SLICES: usize = 32;
-
 #[macro_use]
 pub mod internals;

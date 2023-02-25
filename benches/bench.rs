@@ -1,4 +1,4 @@
-use crcxx::*;
+use crcxx::internals::*;
 use criterion::*;
 
 const CHUNK_SIZES: [u32; 10] = [3, 5, 7, 11, 13, 17, 31, 63, 4096, 8192];
