@@ -1,4 +1,5 @@
-//! The crate compute CRC using various methods. It is applicable for small embedded systems and modern desktops and servers.
+//! The crate compute CRC-8/16/32/64 using various methods. It is applicable for small embedded systems and modern desktops and servers.
+//! No unsafe or architecture specific code.
 //!
 //! # Usage of High Level API
 //! TODO !
