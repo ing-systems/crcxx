@@ -13,7 +13,7 @@
 //! The slowest method. No additional memory required.
 //!
 //! ```
-//! use crcxx::crc32;
+//! use crcxx::internals::crc32;
 //!
 //! // CRC-32Q
 //! const INIT: u32 = 0;
@@ -35,7 +35,7 @@
 //! Depending on usage scenario usually 2-5 times faster than the previous method.
 //!
 //! ```
-//! use crcxx::crc32;
+//! use crcxx::internals::crc32;
 //!
 //! // CRC-32Q
 //! const INIT: u32 = 0;
@@ -58,7 +58,7 @@
 //! Depending on usage scenario usually no more than 2 times faster than the previous method.
 //!
 //! ```
-//! use crcxx::crc32;
+//! use crcxx::internals::crc32;
 //!
 //! // CRC-32Q
 //! const INIT: u32 = 0;
@@ -83,7 +83,7 @@
 //! The recommended number of slices is 16. There is usually less than 10% improvement when going from 16 to 32.
 //!
 //! ```
-//! use crcxx::crc32;
+//! use crcxx::internals::crc32;
 //!
 //! // CRC-32Q
 //! const INIT: u32 = 0;
@@ -145,11 +145,5 @@ extern crate std;
 
 pub(crate) const MAX_SLICES: usize = 32;
 
-mod cg_assert;
 #[macro_use]
-mod macros;
-
-pub mod crc16;
-pub mod crc32;
-pub mod crc64;
-pub mod crc8;
+pub mod internals;

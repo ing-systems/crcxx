@@ -13,7 +13,7 @@ No unsafe or architecture specific code.
 The slowest method. No additional memory required.
 
 ```rust
-use crcxx::crc32;
+use crcxx::internals::crc32;
 
 // CRC-32Q
 const INIT: u32 = 0;
@@ -36,7 +36,7 @@ Good compromise between speed and memory consumption for small embedded devices.
 Depending on usage scenario usually 2-5 times faster than the previous method.
 
 ```rust
-use crcxx::crc32;
+use crcxx::internals::crc32;
 
 // CRC-32Q
 const INIT: u32 = 0;
@@ -60,7 +60,7 @@ fn main() {
 Depending on usage scenario usually no more than 2 times faster than the previous method.
 
 ```rust
-use crcxx::crc32;
+use crcxx::internals::crc32;
 
 // CRC-32Q
 const INIT: u32 = 0;
@@ -86,7 +86,7 @@ Depending on usage scenario (prefer bigger chunks) usually 6 times faster than t
 The recommended number of slices is 16. There is usually less than 10% improvement when going from 16 to 32.
 
 ```rust
-use crcxx::crc32;
+use crcxx::internals::crc32;
 
 // CRC-32Q
 const INIT: u32 = 0;

@@ -1,4 +1,4 @@
-//! Low level CRC-64 functions.
+//! Low level CRC-16 functions.
 //!
 //! NOTE: The low level API don't handle preprocessing and postprocessing of CRC value.
 //!
@@ -7,134 +7,152 @@
 //! Use *ONLY* when you don't have any spare RAM. Very slow.
 //!
 //! ```
-//! use crcxx::crc64;
+//! use crcxx::internals::crc16;
 //!
-//! // // CRC-64/XZ
-//! const INIT: u64 = 0xFFFF_FFFF_FFFF_FFFF;
-//! const POLY: u64 = 0x42F0_E1EB_A9EA_3693;
-//! const WIDTH: u8 = 64;
+//! // CRC-16/ARC
+//! const INIT: u16 = 0;
+//! const POLY: u16 = 0x8005;
+//! const WIDTH: u8 = 16;
 //! const REFLECT: bool = true;
-//! const XOR_OUT: u64 = 0xFFFF_FFFF_FFFF_FFFF;
 //!
 //! fn main() {
 //!     let bytes = vec![0x55_u8; 7];
-//!     let crc = crc64::update_no_lut(INIT, WIDTH, POLY, REFLECT, &bytes);
+//!     let crc = crc16::update_no_lut(INIT, WIDTH, POLY, REFLECT, &bytes);
 //!
-//!     println!("CRC: {:16X}", crc ^ XOR_OUT);
+//!     println!("CRC: {:04X}", crc);
 //! }
 //! ```
-//!
 //! # Processing bytes using a lookup table with 32 entries, single byte per step
 //!
 //! ```
-//! use crcxx::crc64;
+//! use crcxx::internals::crc16;
 //!
-//! // // CRC-64/XZ
-//! const INIT: u64 = 0xFFFF_FFFF_FFFF_FFFF;
-//! const POLY: u64 = 0x42F0_E1EB_A9EA_3693;
-//! const WIDTH: u8 = 64;
+//! // CRC-16/ARC
+//! const INIT: u16 = 0;
+//! const POLY: u16 = 0x8005;
+//! const WIDTH: u8 = 16;
 //! const REFLECT: bool = true;
-//! const XOR_OUT: u64 = 0xFFFF_FFFF_FFFF_FFFF;
 //!
-//! const LUT: [u64; 32] = crc64::make_lut_32(WIDTH, POLY, REFLECT);
+//! const LUT: [u16; 32] = crc16::make_lut_32(WIDTH, POLY, REFLECT);
 //!
 //! fn main() {
 //!     let bytes = vec![0x55_u8; 31];
-//!     let crc = crc64::update_lut_32(INIT, &bytes, &LUT, REFLECT);
+//!     let crc = crc16::update_lut_32(INIT, &bytes, &LUT, REFLECT);
 //!
-//!     println!("CRC: {:08X}", crc ^ XOR_OUT);
+//!     println!("CRC: {:04X}", crc);
 //! }
 //! ```
 //!
 //! # Processing bytes using a lookup table with 256 entries, single byte per step
 //!
 //! ```
-//! use crcxx::crc64;
+//! use crcxx::internals::crc16;
 //!
-//! // // CRC-64/XZ
-//! const INIT: u64 = 0xFFFF_FFFF_FFFF_FFFF;
-//! const POLY: u64 = 0x42F0_E1EB_A9EA_3693;
-//! const WIDTH: u8 = 64;
+//! // CRC-16/ARC
+//! const INIT: u16 = 0;
+//! const POLY: u16 = 0x8005;
+//! const WIDTH: u8 = 16;
 //! const REFLECT: bool = true;
-//! const XOR_OUT: u64 = 0xFFFF_FFFF_FFFF_FFFF;
 //!
-//! const LUT: [u64; 256] = crc64::make_lut_256(WIDTH, POLY, REFLECT);
+//! const LUT: [u16; 256] = crc16::make_lut_256(WIDTH, POLY, REFLECT);
 //!
 //! fn main() {
 //!     let bytes = vec![0x55_u8; 63];
-//!     let crc = crc64::update_lut_256(INIT, &bytes, &LUT, REFLECT);
+//!     let crc = crc16::update_lut_256(INIT, &bytes, &LUT, REFLECT);
 //!
-//!     println!("CRC: {:08X}", crc ^ XOR_OUT);
+//!     println!("CRC: {:04X}", crc);
 //! }
 //! ```
 //!
 //! # Processing bytes using a lookup table with `256xSLICES` entries, multiple bytes per step
 //!
 //! ```
-//! use crcxx::crc64;
+//! use crcxx::internals::crc16;
 //!
-//! // // CRC-64/XZ
-//! const INIT: u64 = 0xFFFF_FFFF_FFFF_FFFF;
-//! const POLY: u64 = 0x42F0_E1EB_A9EA_3693;
-//! const WIDTH: u8 = 64;
+//! // CRC-16/ARC
+//! const INIT: u16 = 0;
+//! const POLY: u16 = 0x8005;
+//! const WIDTH: u8 = 16;
 //! const REFLECT: bool = true;
-//! const XOR_OUT: u64 = 0xFFFF_FFFF_FFFF_FFFF;
 //!
 //! const SLICES: usize = 16;
 //!
-//! const LUT: [[u64; 256]; SLICES] = crc64::make_lut_256x_n::<SLICES>(WIDTH, POLY, REFLECT);
+//! const LUT: [[u16; 256]; SLICES] = crc16::make_lut_256x_n::<SLICES>(WIDTH, POLY, REFLECT);
 //!
 //! fn main() {
 //!     let data = "123456789";
 //!     let bytes = data.as_bytes();
-//!     let crc = crc64::update_lut_256x_n::<SLICES>(INIT, &bytes, &LUT, REFLECT) ^ XOR_OUT;
+//!     let crc = crc16::update_lut_256x_n::<SLICES>(INIT, &bytes, &LUT, REFLECT);
 //!
-//!     assert_eq!(crc, 0x995D_C9BB_DF19_39FA);
+//!     assert_eq!(crc, 0xBB3D);
 //! }
 //! ```
 use crate::imp_crc;
 
-imp_crc!(u64);
+imp_crc!(u16);
 
 #[inline]
-#[allow(clippy::missing_const_for_fn)]
 fn update_slice_by_4<'a>(
-    crc: u64, bytes: &'a [u8], _lut: &[[u64; 256]], _reflect: bool,
-) -> (u64, &'a [u8]) {
+    mut crc: u16, mut bytes: &'a [u8], lut: &[[u16; 256]], reflect: bool,
+) -> (u16, &'a [u8]) {
+    const STEP: usize = 4;
+
+    assert!(lut.len() >= STEP);
+
+    if reflect {
+        while bytes.len() >= STEP {
+            crc = lut[0x0][bytes[0x3] as usize]
+                ^ lut[0x1][bytes[0x2] as usize]
+                ^ lut[0x2][bytes[0x1] as usize ^ ((crc >> 0x08) & 0xFF) as usize]
+                ^ lut[0x3][bytes[0x0] as usize ^ (crc & 0xFF) as usize];
+
+            bytes = &bytes[STEP..];
+        }
+    } else {
+        while bytes.len() >= STEP {
+            crc = lut[0x3][bytes[0x0] as usize ^ ((crc >> 0x08) & 0xFF) as usize]
+                ^ lut[0x2][bytes[0x1] as usize ^ (crc & 0xFF) as usize]
+                ^ lut[0x1][bytes[0x2] as usize]
+                ^ lut[0x0][bytes[0x3] as usize];
+
+            bytes = &bytes[STEP..];
+        }
+    }
+
     (crc, bytes)
 }
 
 #[inline]
 fn update_slice_by_8<'a>(
-    mut crc: u64, mut bytes: &'a [u8], lut: &[[u64; 256]], reflect: bool,
-) -> (u64, &'a [u8]) {
+    mut crc: u16, mut bytes: &'a [u8], lut: &[[u16; 256]], reflect: bool,
+) -> (u16, &'a [u8]) {
     const STEP: usize = 8;
 
     assert!(lut.len() >= STEP);
 
     if reflect {
         while bytes.len() >= STEP {
-            crc = lut[0x0][bytes[0x07] as usize ^ ((crc >> 0x38) & 0xFF) as usize]
-                ^ lut[0x1][bytes[0x06] as usize ^ ((crc >> 0x30) & 0xFF) as usize]
-                ^ lut[0x2][bytes[0x05] as usize ^ ((crc >> 0x28) & 0xFF) as usize]
-                ^ lut[0x3][bytes[0x04] as usize ^ ((crc >> 0x20) & 0xFF) as usize]
-                ^ lut[0x4][bytes[0x03] as usize ^ ((crc >> 0x18) & 0xFF) as usize]
-                ^ lut[0x5][bytes[0x02] as usize ^ ((crc >> 0x10) & 0xFF) as usize]
-                ^ lut[0x6][bytes[0x01] as usize ^ ((crc >> 0x08) & 0xFF) as usize]
-                ^ lut[0x7][bytes[0x00] as usize ^ (crc & 0xFF) as usize];
+            crc = lut[0x0][bytes[0x7] as usize]
+                ^ lut[0x1][bytes[0x6] as usize]
+                ^ lut[0x2][bytes[0x5] as usize]
+                ^ lut[0x3][bytes[0x4] as usize]
+                ^ lut[0x4][bytes[0x3] as usize]
+                ^ lut[0x5][bytes[0x2] as usize]
+                ^ lut[0x6][bytes[0x1] as usize ^ ((crc >> 0x08) & 0xFF) as usize]
+                ^ lut[0x7][bytes[0x0] as usize ^ (crc & 0xFF) as usize];
 
             bytes = &bytes[STEP..];
         }
     } else {
         while bytes.len() >= STEP {
-            crc = lut[0x7][bytes[0x0] as usize ^ ((crc >> 0x38) & 0xFF) as usize]
-                ^ lut[0x6][bytes[0x1] as usize ^ ((crc >> 0x30) & 0xFF) as usize]
-                ^ lut[0x5][bytes[0x2] as usize ^ ((crc >> 0x28) & 0xFF) as usize]
-                ^ lut[0x4][bytes[0x3] as usize ^ ((crc >> 0x20) & 0xFF) as usize]
-                ^ lut[0x3][bytes[0x4] as usize ^ ((crc >> 0x18) & 0xFF) as usize]
-                ^ lut[0x2][bytes[0x5] as usize ^ ((crc >> 0x10) & 0xFF) as usize]
-                ^ lut[0x1][bytes[0x6] as usize ^ ((crc >> 0x08) & 0xFF) as usize]
-                ^ lut[0x0][bytes[0x7] as usize ^ (crc & 0xFF) as usize];
+            crc = lut[0x7][bytes[0x0] as usize ^ ((crc >> 0x08) & 0xFF) as usize]
+                ^ lut[0x6][bytes[0x1] as usize ^ (crc & 0xFF) as usize]
+                ^ lut[0x5][bytes[0x2] as usize]
+                ^ lut[0x4][bytes[0x3] as usize]
+                ^ lut[0x3][bytes[0x4] as usize]
+                ^ lut[0x2][bytes[0x5] as usize]
+                ^ lut[0x1][bytes[0x6] as usize]
+                ^ lut[0x0][bytes[0x7] as usize];
 
             bytes = &bytes[STEP..];
         }
@@ -145,8 +163,8 @@ fn update_slice_by_8<'a>(
 
 #[inline]
 fn update_slice_by_16<'a>(
-    mut crc: u64, mut bytes: &'a [u8], lut: &[[u64; 256]], reflect: bool,
-) -> (u64, &'a [u8]) {
+    mut crc: u16, mut bytes: &'a [u8], lut: &[[u16; 256]], reflect: bool,
+) -> (u16, &'a [u8]) {
     const STEP: usize = 16;
 
     assert!(lut.len() >= STEP);
@@ -161,12 +179,12 @@ fn update_slice_by_16<'a>(
                 ^ lut[0x5][bytes[0xa] as usize]
                 ^ lut[0x6][bytes[0x9] as usize]
                 ^ lut[0x7][bytes[0x8] as usize]
-                ^ lut[0x8][bytes[0x7] as usize ^ ((crc >> 0x38) & 0xFF) as usize]
-                ^ lut[0x9][bytes[0x6] as usize ^ ((crc >> 0x30) & 0xFF) as usize]
-                ^ lut[0xa][bytes[0x5] as usize ^ ((crc >> 0x28) & 0xFF) as usize]
-                ^ lut[0xb][bytes[0x4] as usize ^ ((crc >> 0x20) & 0xFF) as usize]
-                ^ lut[0xc][bytes[0x3] as usize ^ ((crc >> 0x18) & 0xFF) as usize]
-                ^ lut[0xd][bytes[0x2] as usize ^ ((crc >> 0x10) & 0xFF) as usize]
+                ^ lut[0x8][bytes[0x7] as usize]
+                ^ lut[0x9][bytes[0x6] as usize]
+                ^ lut[0xa][bytes[0x5] as usize]
+                ^ lut[0xb][bytes[0x4] as usize]
+                ^ lut[0xc][bytes[0x3] as usize]
+                ^ lut[0xd][bytes[0x2] as usize]
                 ^ lut[0xe][bytes[0x1] as usize ^ ((crc >> 0x08) & 0xFF) as usize]
                 ^ lut[0xf][bytes[0x0] as usize ^ (crc & 0xFF) as usize];
 
@@ -174,14 +192,14 @@ fn update_slice_by_16<'a>(
         }
     } else {
         while bytes.len() >= STEP {
-            crc = lut[0xf][bytes[0x0] as usize ^ ((crc >> 0x38) & 0xFF) as usize]
-                ^ lut[0xe][bytes[0x1] as usize ^ ((crc >> 0x30) & 0xFF) as usize]
-                ^ lut[0xd][bytes[0x2] as usize ^ ((crc >> 0x28) & 0xFF) as usize]
-                ^ lut[0xc][bytes[0x3] as usize ^ ((crc >> 0x20) & 0xFF) as usize]
-                ^ lut[0xb][bytes[0x4] as usize ^ ((crc >> 0x18) & 0xFF) as usize]
-                ^ lut[0xa][bytes[0x5] as usize ^ ((crc >> 0x10) & 0xFF) as usize]
-                ^ lut[0x9][bytes[0x6] as usize ^ ((crc >> 0x08) & 0xFF) as usize]
-                ^ lut[0x8][bytes[0x7] as usize ^ (crc & 0xFF) as usize]
+            crc = lut[0xf][bytes[0x0] as usize ^ ((crc >> 0x08) & 0xFF) as usize]
+                ^ lut[0xe][bytes[0x1] as usize ^ (crc & 0xFF) as usize]
+                ^ lut[0xd][bytes[0x2] as usize]
+                ^ lut[0xc][bytes[0x3] as usize]
+                ^ lut[0xb][bytes[0x4] as usize]
+                ^ lut[0xa][bytes[0x5] as usize]
+                ^ lut[0x9][bytes[0x6] as usize]
+                ^ lut[0x8][bytes[0x7] as usize]
                 ^ lut[0x7][bytes[0x8] as usize]
                 ^ lut[0x6][bytes[0x9] as usize]
                 ^ lut[0x5][bytes[0xa] as usize]
@@ -200,8 +218,8 @@ fn update_slice_by_16<'a>(
 
 #[inline]
 fn update_slice_by_32<'a>(
-    mut crc: u64, mut bytes: &'a [u8], lut: &[[u64; 256]], reflect: bool,
-) -> (u64, &'a [u8]) {
+    mut crc: u16, mut bytes: &'a [u8], lut: &[[u16; 256]], reflect: bool,
+) -> (u16, &'a [u8]) {
     const STEP: usize = 32;
 
     assert!(lut.len() >= STEP);
@@ -232,12 +250,12 @@ fn update_slice_by_32<'a>(
                 ^ lut[0x15][bytes[0x0a] as usize]
                 ^ lut[0x16][bytes[0x09] as usize]
                 ^ lut[0x17][bytes[0x08] as usize]
-                ^ lut[0x18][bytes[0x07] as usize ^ ((crc >> 0x38) & 0xFF) as usize]
-                ^ lut[0x19][bytes[0x06] as usize ^ ((crc >> 0x30) & 0xFF) as usize]
-                ^ lut[0x1a][bytes[0x05] as usize ^ ((crc >> 0x28) & 0xFF) as usize]
-                ^ lut[0x1b][bytes[0x04] as usize ^ ((crc >> 0x20) & 0xFF) as usize]
-                ^ lut[0x1c][bytes[0x03] as usize ^ ((crc >> 0x18) & 0xFF) as usize]
-                ^ lut[0x1d][bytes[0x02] as usize ^ ((crc >> 0x10) & 0xFF) as usize]
+                ^ lut[0x18][bytes[0x07] as usize]
+                ^ lut[0x19][bytes[0x06] as usize]
+                ^ lut[0x1a][bytes[0x05] as usize]
+                ^ lut[0x1b][bytes[0x04] as usize]
+                ^ lut[0x1c][bytes[0x03] as usize]
+                ^ lut[0x1d][bytes[0x02] as usize]
                 ^ lut[0x1e][bytes[0x01] as usize ^ ((crc >> 0x08) & 0xFF) as usize]
                 ^ lut[0x1f][bytes[0x00] as usize ^ (crc & 0xFF) as usize];
 
@@ -245,14 +263,14 @@ fn update_slice_by_32<'a>(
         }
     } else {
         while bytes.len() >= STEP {
-            crc = lut[0x1f][bytes[0x00] as usize ^ ((crc >> 0x38) & 0xFF) as usize]
-                ^ lut[0x1e][bytes[0x01] as usize ^ ((crc >> 0x30) & 0xFF) as usize]
-                ^ lut[0x1d][bytes[0x02] as usize ^ ((crc >> 0x28) & 0xFF) as usize]
-                ^ lut[0x1c][bytes[0x03] as usize ^ ((crc >> 0x20) & 0xFF) as usize]
-                ^ lut[0x1b][bytes[0x04] as usize ^ ((crc >> 0x18) & 0xFF) as usize]
-                ^ lut[0x1a][bytes[0x05] as usize ^ ((crc >> 0x10) & 0xFF) as usize]
-                ^ lut[0x19][bytes[0x06] as usize ^ ((crc >> 0x08) & 0xFF) as usize]
-                ^ lut[0x18][bytes[0x07] as usize ^ (crc & 0xFF) as usize]
+            crc = lut[0x1f][bytes[0x00] as usize ^ ((crc >> 0x08) & 0xFF) as usize]
+                ^ lut[0x1e][bytes[0x01] as usize ^ (crc & 0xFF) as usize]
+                ^ lut[0x1d][bytes[0x02] as usize]
+                ^ lut[0x1c][bytes[0x03] as usize]
+                ^ lut[0x1b][bytes[0x04] as usize]
+                ^ lut[0x1a][bytes[0x05] as usize]
+                ^ lut[0x19][bytes[0x06] as usize]
+                ^ lut[0x18][bytes[0x07] as usize]
                 ^ lut[0x17][bytes[0x08] as usize]
                 ^ lut[0x16][bytes[0x09] as usize]
                 ^ lut[0x15][bytes[0x0a] as usize]
@@ -293,25 +311,22 @@ mod tests {
 
     #[test]
     fn with_reflect() {
-        // CRC-64/XZ
-        const POLY: u64 = 0x42F0_E1EB_A9EA_3693;
-        const INIT: u64 = 0xFFFF_FFFF_FFFF_FFFF;
+        // CRC-16/KERMIT
+        const POLY: u16 = 0x1021;
+        const INIT: u16 = 0x0000;
         const REFLECT: bool = true;
-        const XOR_OUT: u64 = 0xFFFF_FFFF_FFFF_FFFF;
-        const WIDTH: u8 = 64;
+        const XOR_OUT: u16 = 0x0000;
+        const WIDTH: u8 = 16;
 
-        const SAMPLES: [(&str, u64); 8] = [
-            ("", 0x0000_0000_0000_0000),
-            ("0", 0x9901_423B_9732_9582),
-            ("012", 0x413D_0F06_70A0_E4D2),
-            ("0123456", 0x8C88_0A36_69E2_95FF),
-            ("123456789", 0x995D_C9BB_DF19_39FA),
-            ("0123456789ABCDE", 0x346E_97EB_C42A_4A0B),
-            ("0123456789ABCDEFGHIJKLMNOPQRSTU", 0xD5A9_1BD8_F842_5127),
-            (
-                "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-                0xDCFC_A5E3_74A1_D0EE,
-            ),
+        const SAMPLES: [(&str, u16); 8] = [
+            ("", 0x0000),
+            ("0", 0x3183),
+            ("012", 0x3B45),
+            ("0123456", 0xC7B7),
+            ("123456789", 0x2189),
+            ("0123456789ABCDE", 0x9FFE),
+            ("0123456789ABCDEFGHIJKLMNOPQRSTU", 0x19D4),
+            ("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ", 0xDC1A),
         ];
 
         let lut32 = make_lut_32(WIDTH, POLY, REFLECT);
@@ -341,25 +356,22 @@ mod tests {
 
     #[test]
     fn without_reflect() {
-        // CRC-64/WE
-        const POLY: u64 = 0x42F0_E1EB_A9EA_3693;
-        const INIT: u64 = 0xFFFF_FFFF_FFFF_FFFF;
+        // CRC-16/CDMA2000
+        const POLY: u16 = 0xC867;
+        const INIT: u16 = 0xFFFF;
         const REFLECT: bool = false;
-        const XOR_OUT: u64 = 0xFFFF_FFFF_FFFF_FFFF;
-        const WIDTH: u8 = 64;
+        const XOR_OUT: u16 = 0x0000;
+        const WIDTH: u8 = 16;
 
-        const SAMPLES: [(&str, u64); 8] = [
-            ("", 0x0000_0000_0000_0000),
-            ("0", 0x30BB_6F26_7FA7_3BC9),
-            ("012", 0x0715_CFE7_49A8_4CAB),
-            ("0123456", 0x31C7_86D3_5D62_56F8),
-            ("123456789", 0x62EC_59E3_F1A4_F00A),
-            ("0123456789ABCDE", 0xB8E6_113E_7DD1_4D64),
-            ("0123456789ABCDEFGHIJKLMNOPQRSTU", 0xDE67_FFFA_1EB9_7FED),
-            (
-                "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-                0x2FF6_ED4D_2950_A870,
-            ),
+        const SAMPLES: [(&str, u16); 8] = [
+            ("", 0xFFFF),
+            ("0", 0x0528),
+            ("012", 0x1E42),
+            ("0123456", 0x998F),
+            ("123456789", 0x4C06),
+            ("0123456789ABCDE", 0x86F3),
+            ("0123456789ABCDEFGHIJKLMNOPQRSTU", 0xCDB1),
+            ("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ", 0x53EC),
         ];
 
         let lut32 = make_lut_32(WIDTH, POLY, REFLECT);
