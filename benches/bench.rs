@@ -24,6 +24,11 @@ const CRC64_INIT: u64 = 0;
 const CRC64_POLY: u64 = 0x42F0_E1EB_A9EA_3693;
 const CRC64_REFLECT: bool = true;
 
+const CRC128_WIDTH: u8 = 82;
+const CRC128_INIT: u128 = 0;
+const CRC128_POLY: u128 = 0x0000_308C_0111_0114_0144_0411;
+const CRC128_REFLECT: bool = true;
+
 pub fn bench_crc8_no_lut(c: &mut Criterion) {
     let mut group = c.benchmark_group("CRC8");
 
@@ -348,6 +353,87 @@ pub fn bench_crc64_lut_256x_n(c: &mut Criterion) {
     group.finish();
 }
 
+pub fn bench_crc128_no_lut(c: &mut Criterion) {
+    let mut group = c.benchmark_group("CRC128");
+
+    for size in CHUNK_SIZES.iter() {
+        let bytes = vec![0x55u8; *size as usize];
+
+        group.throughput(Throughput::Bytes(*size as u64));
+        group.bench_function(BenchmarkId::new("update_no_lut", *size), |b| {
+            b.iter(|| {
+                black_box(crc128::update_no_lut(
+                    CRC128_INIT,
+                    CRC128_WIDTH,
+                    CRC128_POLY,
+                    CRC128_REFLECT,
+                    black_box(&bytes),
+                ))
+            })
+        });
+    }
+
+    group.finish();
+}
+
+pub fn bench_crc128_lut_32(c: &mut Criterion) {
+    let lut = crc128::make_lut_32(CRC128_WIDTH, CRC128_POLY, CRC128_REFLECT);
+
+    let mut group = c.benchmark_group("CRC128");
+
+    for size in CHUNK_SIZES.iter() {
+        let bytes = vec![0x55u8; *size as usize];
+
+        group.throughput(Throughput::Bytes(*size as u64));
+        group.bench_function(BenchmarkId::new("update_lut_32", *size), |b| {
+            b.iter(|| black_box(crc128::update_lut_32(0, black_box(&bytes), &lut, CRC128_REFLECT)))
+        });
+    }
+
+    group.finish();
+}
+
+pub fn bench_crc128_lut_256(c: &mut Criterion) {
+    let lut = crc128::make_lut_256(CRC128_WIDTH, CRC128_POLY, CRC128_REFLECT);
+
+    let mut group = c.benchmark_group("CRC128");
+
+    for size in CHUNK_SIZES.iter() {
+        let bytes = vec![0x55u8; *size as usize];
+
+        group.throughput(Throughput::Bytes(*size as u64));
+        group.bench_function(BenchmarkId::new("update_lut_256", *size), |b| {
+            b.iter(|| black_box(crc128::update_lut_256(0, black_box(&bytes), &lut, CRC128_REFLECT)))
+        });
+    }
+
+    group.finish();
+}
+
+pub fn bench_crc128_lut_256x_n(c: &mut Criterion) {
+    let lut = crc128::make_lut_256x_n::<SLICES>(CRC128_WIDTH, CRC128_POLY, CRC128_REFLECT);
+
+    let mut group = c.benchmark_group("CRC128");
+
+    for size in CHUNK_SIZES.iter() {
+        let bytes = vec![0x55u8; *size as usize];
+
+        group.throughput(Throughput::Bytes(*size as u64));
+        group.bench_function(BenchmarkId::new("update_lut_256x_n", *size), |b| {
+            b.iter(|| {
+                black_box(crc128::update_lut_256x_n::<SLICES>(
+                    0,
+                    black_box(&bytes),
+                    &lut,
+                    CRC128_REFLECT,
+                ))
+            })
+        });
+    }
+
+    group.finish();
+}
+
 criterion_group!(
     benches,
     bench_crc8_no_lut,
@@ -365,6 +451,10 @@ criterion_group!(
     bench_crc64_no_lut,
     bench_crc64_lut_32,
     bench_crc64_lut_256,
-    bench_crc64_lut_256x_n
+    bench_crc64_lut_256x_n,
+    bench_crc128_no_lut,
+    bench_crc128_lut_32,
+    bench_crc128_lut_256,
+    bench_crc128_lut_256x_n,
 );
 criterion_main!(benches);

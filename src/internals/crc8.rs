@@ -305,9 +305,8 @@ fn update_slice_by_32<'a>(
 
 #[cfg(test)]
 mod tests {
-    use crate::internals::MAX_SLICES;
-
     use super::*;
+    use crate::internals::MAX_SLICES;
 
     const SLICES: usize = MAX_SLICES;
 

@@ -75,7 +75,8 @@ macro_rules! imp_make_lut_256x_n {
             const BITS: usize = ::core::mem::size_of::<$ty>() * 8;
             const SHIFT: usize = if BITS > 8 { 8 } else { 0 };
 
-            $crate::internals::cg_assert::assert_lt_eq::<SLICES, { $crate::internals::MAX_SLICES }>();
+            $crate::internals::cg_assert::assert_lt_eq::<SLICES, { $crate::internals::MAX_SLICES }>(
+            );
             $crate::internals::cg_assert::assert_power_of_two::<SLICES>();
 
             assert!(width <= BITS as u8);
