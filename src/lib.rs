@@ -1,3 +1,10 @@
+//! # crcxx
+//! The crate provide various predefined CRC algorithms and low level API to add your own.
+//!
+//! ## Usage
+//!
+//! ### Computing CRC-32 using a lookup table
+//!
 #![no_std]
 #![forbid(non_ascii_idents, unsafe_code)]
 #![deny(

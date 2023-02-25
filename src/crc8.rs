@@ -1,3 +1,69 @@
+//! Low level CRC-8 functions.
+//!
+//! NOTE: The low level API don't handle preprocessing and postprocessing of CRC value.
+//!
+//! # Processing bytes without using a lookup table
+//!
+//! Use *ONLY* when you don't have any spare RAM. Very slow.
+//!
+//! ```
+//! use crcxx::crc8;
+//!
+//! // CRC-8/DARC
+//! const INIT: u8 = 0;
+//! const POLY: u8 = 0x39;
+//! const WIDTH: u8 = 8;
+//! const REFLECT: bool = true;
+//!
+//! fn main() {
+//!     let bytes = vec![0x55_u8; 7];
+//!     let crc = crc8::update_no_lut(INIT, WIDTH, POLY, REFLECT, &bytes);
+//!
+//!     println!("CRC: {:02X}", crc);
+//! }
+//!
+//! ```
+//! # Processing bytes using a lookup table with 32 entries
+//!
+//! ```
+//! use crcxx::crc8;
+//!
+//! // CRC-8/DARC
+//! const INIT: u8 = 0;
+//! const POLY: u8 = 0x39;
+//! const WIDTH: u8 = 8;
+//! const REFLECT: bool = true;
+//!
+//! const LUT: [u8; 32] = crc8::make_lut_32(WIDTH, POLY, REFLECT);
+//!
+//! fn main() {
+//!     let bytes = vec![0x55_u8; 31];
+//!     let crc = crc8::update_lut_32(INIT, &bytes, &LUT, REFLECT);
+//!
+//!     println!("CRC: {:02X}", crc);
+//! }
+//! ```
+//!
+//! # Processing bytes using a lookup table with 256 entries
+//!
+//! ```
+//! use crcxx::crc8;
+//!
+//! // CRC-8/DARC
+//! const INIT: u8 = 0;
+//! const POLY: u8 = 0x39;
+//! const WIDTH: u8 = 8;
+//! const REFLECT: bool = true;
+//!
+//! const LUT: [u8; 256] = crc8::make_lut_256(WIDTH, POLY, REFLECT);
+//!
+//! fn main() {
+//!     let bytes = vec![0x55_u8; 63];
+//!     let crc = crc8::update_lut_256(INIT, &bytes, &LUT, REFLECT);
+//!
+//!     println!("CRC: {:02X}", crc);
+//! }
+//! ```
 use crate::imp_crc;
 
 imp_crc!(u8);

@@ -3,6 +3,7 @@ mod lut_macros;
 #[macro_use]
 mod update_macros;
 
+#[doc(hidden)]
 #[macro_export]
 macro_rules! imp_crc {
     ($ty: ty) => {

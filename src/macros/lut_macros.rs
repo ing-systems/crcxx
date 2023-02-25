@@ -1,6 +1,6 @@
-#[macro_export]
 macro_rules! imp_make_lut_32 {
     ($ty: ty) => {
+        /// Create lookup table with 32 entries.
         pub const fn make_lut_32(width: u8, poly: $ty, reflect: bool) -> [$ty; 32] {
             const BITS: usize = ::core::mem::size_of::<$ty>() * 8;
 
@@ -32,9 +32,11 @@ macro_rules! imp_make_lut_32 {
     };
 }
 
-#[macro_export]
 macro_rules! imp_make_lut_256 {
     ($ty: ty) => {
+        /// Create lookup table with 256 entries.
+        ///
+        /// Compromise between speed and memory footprint.
         pub const fn make_lut_256(width: u8, poly: $ty, reflect: bool) -> [$ty; 256] {
             const BITS: usize = ::core::mem::size_of::<$ty>() * 8;
 
@@ -60,9 +62,11 @@ macro_rules! imp_make_lut_256 {
     };
 }
 
-#[macro_export]
 macro_rules! imp_make_lut_256x_n {
     ($ty: ty) => {
+        /// Create lookup table with 256 x `SLICES` entries. Number of slices must be power of two <= 32.
+        ///
+        /// Highest performance at the expense of memory consumption.
         pub const fn make_lut_256x_n<const SLICES: usize>(
             width: u8, poly: $ty, reflect: bool,
         ) -> [[$ty; 256]; SLICES] {

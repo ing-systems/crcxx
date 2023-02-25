@@ -1,3 +1,72 @@
+//! Low level CRC-64 functions.
+//!
+//! NOTE: The low level API don't handle preprocessing and postprocessing of CRC value.
+//!
+//! # Processing bytes without using a lookup table
+//!
+//! Use *ONLY* when you don't have any spare RAM. Very slow.
+//!
+//! ```
+//! use crcxx::crc64;
+//!
+//! // // CRC-64/XZ
+//! const INIT: u64 = 0xFFFF_FFFF_FFFF_FFFF;
+//! const POLY: u64 = 0x42F0_E1EB_A9EA_3693;
+//! const WIDTH: u8 = 64;
+//! const REFLECT: bool = true;
+//! const XOR_OUT: u64 = 0xFFFF_FFFF_FFFF_FFFF;
+//!
+//! fn main() {
+//!     let bytes = vec![0x55_u8; 7];
+//!     let crc = crc64::update_no_lut(INIT, WIDTH, POLY, REFLECT, &bytes);
+//!
+//!     println!("CRC: {:16X}", crc ^ XOR_OUT);
+//! }
+//! ```
+//!
+//! # Processing bytes using a lookup table with 32 entries
+//!
+//! ```
+//! use crcxx::crc64;
+//!
+//! // // CRC-64/XZ
+//! const INIT: u64 = 0xFFFF_FFFF_FFFF_FFFF;
+//! const POLY: u64 = 0x42F0_E1EB_A9EA_3693;
+//! const WIDTH: u8 = 64;
+//! const REFLECT: bool = true;
+//! const XOR_OUT: u64 = 0xFFFF_FFFF_FFFF_FFFF;
+//!
+//! const LUT: [u64; 32] = crc64::make_lut_32(WIDTH, POLY, REFLECT);
+//!
+//! fn main() {
+//!     let bytes = vec![0x55_u8; 31];
+//!     let crc = crc64::update_lut_32(INIT, &bytes, &LUT, REFLECT);
+//!
+//!     println!("CRC: {:08X}", crc ^ XOR_OUT);
+//! }
+//! ```
+//!
+//! # Processing bytes using a lookup table with 256 entries
+//!
+//! ```
+//! use crcxx::crc64;
+//!
+//! // // CRC-64/XZ
+//! const INIT: u64 = 0xFFFF_FFFF_FFFF_FFFF;
+//! const POLY: u64 = 0x42F0_E1EB_A9EA_3693;
+//! const WIDTH: u8 = 64;
+//! const REFLECT: bool = true;
+//! const XOR_OUT: u64 = 0xFFFF_FFFF_FFFF_FFFF;
+//!
+//! const LUT: [u64; 256] = crc64::make_lut_256(WIDTH, POLY, REFLECT);
+//!
+//! fn main() {
+//!     let bytes = vec![0x55_u8; 63];
+//!     let crc = crc64::update_lut_256(INIT, &bytes, &LUT, REFLECT);
+//!
+//!     println!("CRC: {:08X}", crc ^ XOR_OUT);
+//! }
+//! ```
 use crate::imp_crc;
 
 imp_crc!(u64);

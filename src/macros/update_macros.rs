@@ -27,6 +27,10 @@ macro_rules! imp_update {
 
 macro_rules! imp_update_no_lut {
     ($ty: ty) => {
+        /// Process `bytes` without using a lookup table.
+        /// It not require any additional memory but it is very slow.
+        ///
+        /// The function process the single byte at time.
         #[inline]
         pub const fn update_no_lut(
             mut crc: $ty, width: u8, poly: $ty, reflect: bool, bytes: &[u8],
@@ -75,6 +79,9 @@ macro_rules! imp_update_no_lut {
 
 macro_rules! imp_update_lut_32 {
     ($ty: ty) => {
+        /// Process `bytes` using a lookup table with 32 entries.
+        ///
+        /// The function process the single byte at time.
         #[inline]
         pub const fn update_lut_32(
             mut crc: $ty, bytes: &[u8], lut: &[$ty; 32], reflect: bool,
@@ -118,6 +125,9 @@ macro_rules! imp_update_lut_32 {
 
 macro_rules! imp_update_lut_256 {
     ($ty: ty) => {
+        /// Process `bytes` using a lookup table with 256 entries.
+        ///
+        /// The function process the single byte at time.
         #[inline]
         pub const fn update_lut_256(
             mut crc: $ty, bytes: &[u8], lut: &[$ty; 256], reflect: bool,
@@ -160,6 +170,9 @@ macro_rules! imp_update_lut_256 {
 
 macro_rules! imp_update_lut_256x_n {
     ($ty: ty) => {
+        /// Process `bytes` using a lookup table with 256 x SLICES entries.
+        ///
+        /// The function use a slicing technique to process multiple bytes in single step.
         pub fn update_lut_256x_n<const SLICES: usize>(
             mut crc: $ty, mut bytes: &[u8], lut: &[[$ty; 256]; SLICES], reflect: bool,
         ) -> $ty {
