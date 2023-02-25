@@ -1,14 +1,6 @@
-use crate::{imp_make_lut_256, imp_make_lut_256x_n, imp_make_lut_32};
+use crate::imp_crc;
 
-imp_make_lut_32!(u32);
-imp_make_lut_256!(u32);
-imp_make_lut_256x_n!(u32);
-
-imp_update!(u32);
-imp_update_no_lut!(u32);
-imp_update_lut_32!(u32);
-imp_update_lut_256!(u32);
-imp_update_lut_256x_n!(u32);
+imp_crc!(u32);
 
 #[inline]
 fn update_slice_by_4<'a>(

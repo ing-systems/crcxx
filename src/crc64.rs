@@ -1,14 +1,6 @@
-use crate::{imp_make_lut_256, imp_make_lut_256x_n, imp_make_lut_32};
+use crate::imp_crc;
 
-imp_make_lut_32!(u64);
-imp_make_lut_256!(u64);
-imp_make_lut_256x_n!(u64);
-
-imp_update!(u64);
-imp_update_no_lut!(u64);
-imp_update_lut_32!(u64);
-imp_update_lut_256!(u64);
-imp_update_lut_256x_n!(u64);
+imp_crc!(u64);
 
 #[inline]
 #[allow(clippy::missing_const_for_fn)]
