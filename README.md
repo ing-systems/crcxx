@@ -3,10 +3,9 @@
 [![Crate](https://img.shields.io/crates/v/crcxx.svg)](https://crates.io/crates/crcxx)
 [![API](https://docs.rs/crcxx/badge.svg)](https://docs.rs/crcxx)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
-[![Build Status](https://travis-ci.org/ing-systems/crcxx.svg?branch=master)](https://travis-ci.org/ing-systems/crcxx)
 [![Windows Build Status](https://ci.appveyor.com/api/projects/status/loj512o2qo6q0rwg?svg=true)](https://ci.appveyor.com/project/khrs/crcxx)
 
-universal slice-by-4/8/16/32 implementation of CRC-8/16/32/64 algorithms.
+The crate compute CRC using various methods. Can handle small embedded systems and modern desktops and servers.
 
 [Documentation](https://docs.rs/crcxx)
 
@@ -16,28 +15,30 @@ To use `crcxx`, add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-crcxx = "0.2"
-```
-
-default slice-by-16 algorithm is used. You can change to slice-by-4/8/16/32:
-
-```toml
-crcxx = { version = "0.2", default-features = false, features = ["slice-by-8"] }
+crcxx = "0.3"
 ```
 
 ## Example
 
 ```rust
-use crcxx::crc16;
+use crcxx::crc32;
+
+// CRC-32Q
+const INIT: u32 = 0;
+const POLY: u32 = 0x8141_41AB;
+const WIDTH: u8 = 32;
+const REFLECT: bool = false;
+
+const SLICES: usize = 16;
+
+const LUT: [[u32; 256]; SLICES] = crc32::make_lut_256x_n::<SLICES>(WIDTH, POLY, REFLECT);
 
 fn main() {
-    // CRC-16/ARC
-    let lut = crc16::crc16_make_sliced_lut(0x8005, true);
+    let data = "123456789";
+    let bytes = data.as_bytes();
+    let crc = crc32::update_lut_256x_n::<SLICES>(INIT, &bytes, &LUT, REFLECT);
 
-    let data = b"123456789";
-    let crc = crc16::crc16_update_ref(0, data, &lut);
-
-    println!("CRC: {:02X}", crc);
+    assert_eq!(crc, 0x3010_BF7F);
 }
 ```
 

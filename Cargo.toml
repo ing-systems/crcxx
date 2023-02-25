@@ -1,6 +1,6 @@
 [package]
 name = "crcxx"
-version = "0.2.1"
+version = "0.3.0"
 license = "Apache-2.0"
 authors = ["ING Systems <contact@ing-systems.com>"]
 description = "universal slice-by-4/8/16/32 implementation of CRC-8/16/32/64 algorithms"
