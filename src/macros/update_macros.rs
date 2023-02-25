@@ -170,9 +170,11 @@ macro_rules! imp_update_lut_256 {
 
 macro_rules! imp_update_lut_256x_n {
     ($ty: ty) => {
-        /// Process `bytes` using a lookup table with 256 x SLICES entries.
+        /// Process `bytes` using a lookup table with `256xSLICES` entries.
         ///
         /// The function use a slicing technique to process multiple bytes in single step.
+        ///
+        /// NOTE: The `SLICES` must be multiple of two less or equal to 32. The constraint is validated at compile time.
         pub fn update_lut_256x_n<const SLICES: usize>(
             mut crc: $ty, mut bytes: &[u8], lut: &[[$ty; 256]; SLICES], reflect: bool,
         ) -> $ty {

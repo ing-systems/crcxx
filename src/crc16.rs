@@ -2,7 +2,7 @@
 //!
 //! NOTE: The low level API don't handle preprocessing and postprocessing of CRC value.
 //!
-//! # Processing bytes without using a lookup table
+//! # Processing bytes without using a lookup table, single byte per step
 //!
 //! Use *ONLY* when you don't have any spare RAM. Very slow.
 //!
@@ -21,9 +21,8 @@
 //!
 //!     println!("CRC: {:04X}", crc);
 //! }
-//!
 //! ```
-//! # Processing bytes using a lookup table with 32 entries
+//! # Processing bytes using a lookup table with 32 entries, single byte per step
 //!
 //! ```
 //! use crcxx::crc16;
@@ -44,7 +43,7 @@
 //! }
 //! ```
 //!
-//! # Processing bytes using a lookup table with 256 entries
+//! # Processing bytes using a lookup table with 256 entries, single byte per step
 //!
 //! ```
 //! use crcxx::crc16;
@@ -62,6 +61,30 @@
 //!     let crc = crc16::update_lut_256(INIT, &bytes, &LUT, REFLECT);
 //!
 //!     println!("CRC: {:04X}", crc);
+//! }
+//! ```
+//!
+//! # Processing bytes using a lookup table with `256xSLICES` entries, multiple bytes per step
+//!
+//! ```
+//! use crcxx::crc16;
+//!
+//! // CRC-16/ARC
+//! const INIT: u16 = 0;
+//! const POLY: u16 = 0x8005;
+//! const WIDTH: u8 = 16;
+//! const REFLECT: bool = true;
+//!
+//! const SLICES: usize = 16;
+//!
+//! const LUT: [[u16; 256]; SLICES] = crc16::make_lut_256x_n::<SLICES>(WIDTH, POLY, REFLECT);
+//!
+//! fn main() {
+//!     let data = "123456789";
+//!     let bytes = data.as_bytes();
+//!     let crc = crc16::update_lut_256x_n::<SLICES>(INIT, &bytes, &LUT, REFLECT);
+//!
+//!     assert_eq!(crc, 0xBB3D);
 //! }
 //! ```
 use crate::imp_crc;

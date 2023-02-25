@@ -64,9 +64,11 @@ macro_rules! imp_make_lut_256 {
 
 macro_rules! imp_make_lut_256x_n {
     ($ty: ty) => {
-        /// Create lookup table with 256 x `SLICES` entries. Number of slices must be power of two <= 32.
+        /// Create lookup table with `256xSLICES` entries.
         ///
         /// Highest performance at the expense of memory consumption.
+        ///
+        /// NOTE: The `SLICES` must be multiple of two less or equal to 32. The constraint is validated at compile time.
         pub const fn make_lut_256x_n<const SLICES: usize>(
             width: u8, poly: $ty, reflect: bool,
         ) -> [[$ty; 256]; SLICES] {

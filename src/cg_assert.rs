@@ -1,3 +1,6 @@
+// Extracted from `heapless` crate.
+// https://github.com/japaric/heapless/blob/main/src/sealed.rs
+
 #![allow(clippy::no_effect)]
 #![allow(clippy::erasing_op)]
 
