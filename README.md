@@ -21,6 +21,7 @@ crcxx = "0.3"
 ## Example
 
 ```rust
+// Low Level API
 use crcxx::crc32;
 
 // CRC-32Q
