@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 [![Windows Build Status](https://ci.appveyor.com/api/projects/status/loj512o2qo6q0rwg?svg=true)](https://ci.appveyor.com/project/khrs/crcxx)
 
-The crate compute CRC using various methods. Can handle small embedded systems and modern desktops and servers.
+The crate compute CRC using various methods. It is applicable for small embedded systems and modern desktops and servers.
 
 [Documentation](https://docs.rs/crcxx)
 

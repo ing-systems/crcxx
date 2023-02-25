@@ -1,4 +1,4 @@
-//! The crate compute CRC using various methods. Can handle small embedded systems and modern desktops and servers.
+//! The crate compute CRC using various methods. It is applicable for small embedded systems and modern desktops and servers.
 //!
 //! # Usage of High Level API
 //! TODO !
