@@ -8,7 +8,7 @@ imp_make_lut_256x_n!(make_lut_256x_n, u32, make_lut_256);
 imp_crc_update_no_lut!(update_no_lut, u32, crc32);
 imp_crc_update_lut_32!(update_lut_32, u32);
 imp_crc_update_lut_256!(update_lut_256, u32);
-imp_crc_update_slice_by!(update_lut_256x_n, u32);
+imp_crc_update_lut_256x_n!(update_lut_256x_n, u32);
 
 #[inline]
 fn update_slice_by_4<'a>(

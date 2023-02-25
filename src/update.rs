@@ -1,7 +1,7 @@
 macro_rules! imp_crc {
     ($name: ident, $ty: ty) => {
         #[inline]
-        pub(crate) const fn $name(poly: $ty, reflect: bool, mut value: $ty) -> $ty {
+        const fn $name(poly: $ty, reflect: bool, mut value: $ty) -> $ty {
             const BITS: usize = ::core::mem::size_of::<$ty>() * 8;
 
             if reflect {
@@ -152,7 +152,7 @@ macro_rules! imp_crc_update_lut_256 {
     };
 }
 
-macro_rules! imp_crc_update_slice_by {
+macro_rules! imp_crc_update_lut_256x_n {
     ($name: ident, $ty: ty) => {
         pub fn $name<const SLICES: usize>(
             mut crc: $ty, mut bytes: &[u8], lut: &[[$ty; 256]; SLICES], reflect: bool,
