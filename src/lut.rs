@@ -4,6 +4,8 @@ macro_rules! imp_make_lut_32 {
         pub const fn $name(width: u8, poly: $ty, reflect: bool) -> [$ty; 32] {
             const BITS: usize = ::core::mem::size_of::<$ty>() * 8;
 
+            assert!(width <= BITS as u8);
+
             let poly = if reflect {
                 let poly = poly.reverse_bits();
                 poly >> (BITS - width as usize)
@@ -36,6 +38,8 @@ macro_rules! imp_make_lut_256 {
         pub const fn $name(width: u8, poly: $ty, reflect: bool) -> [$ty; 256] {
             const BITS: usize = ::core::mem::size_of::<$ty>() * 8;
 
+            assert!(width <= BITS as u8);
+
             let poly = if reflect {
                 let poly = poly.reverse_bits();
                 poly >> (BITS - width as usize)
@@ -67,6 +71,8 @@ macro_rules! imp_make_lut_256x_n {
 
             $crate::cg_assert::assert_lt_eq::<SLICES, { $crate::MAX_SLICES }>();
             $crate::cg_assert::assert_power_of_two::<SLICES>();
+
+            assert!(width <= BITS as u8);
 
             let mut lut = [[0 as $ty; 256]; SLICES];
             lut[0] = $make_base_lut_256(width, poly, reflect);

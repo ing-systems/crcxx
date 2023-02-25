@@ -5,6 +5,7 @@ imp_make_lut_32!(make_lut_32, u16, crc16);
 imp_make_lut_256!(make_lut_256, u16, crc16);
 imp_make_lut_256x_n!(make_lut_256x_n, u16, make_lut_256);
 
+imp_crc_update_no_lut!(update_no_lut, u16, crc16);
 imp_crc_update_lut_32!(update_lut_32, u16);
 imp_crc_update_lut_256!(update_lut_256, u16);
 imp_crc_update_slice_by!(update_lut_256x_n, u16);
@@ -253,6 +254,10 @@ mod tests {
 
         for sample in SAMPLES {
             assert_eq!(
+                update_no_lut(INIT, WIDTH, POLY, REFLECT, sample.0.as_bytes()) ^ XOR_OUT,
+                sample.1
+            );
+            assert_eq!(
                 update_lut_32(INIT, sample.0.as_bytes(), &lut32, REFLECT) ^ XOR_OUT,
                 sample.1
             );
@@ -293,6 +298,10 @@ mod tests {
         let lut256x_n = make_lut_256x_n::<SLICES>(WIDTH, POLY, REFLECT);
 
         for sample in SAMPLES {
+            assert_eq!(
+                update_no_lut(INIT, WIDTH, POLY, REFLECT, sample.0.as_bytes()) ^ XOR_OUT,
+                sample.1
+            );
             assert_eq!(
                 update_lut_32(INIT, sample.0.as_bytes(), &lut32, REFLECT) ^ XOR_OUT,
                 sample.1

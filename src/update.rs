@@ -25,6 +25,52 @@ macro_rules! imp_crc {
     };
 }
 
+macro_rules! imp_crc_update_no_lut {
+    ($name: ident, $ty: ty, $crc: path) => {
+        #[inline]
+        pub const fn $name(mut crc: $ty, width: u8, poly: $ty, reflect: bool, bytes: &[u8]) -> $ty {
+            const BITS: usize = ::core::mem::size_of::<$ty>() * 8;
+            const SHIFT: usize = if BITS > 8 { 8 } else { 0 };
+
+            let poly = if reflect {
+                let poly = poly.reverse_bits();
+                poly >> (BITS - width as usize)
+            } else {
+                poly << (BITS - width as usize)
+            };
+
+            if BITS > 8 {
+                if reflect {
+                    let mut i = 0;
+                    while i < bytes.len() {
+                        let value = (crc ^ bytes[i] as $ty) & 0xFF;
+                        crc = $crc(poly, reflect, value) ^ (crc >> SHIFT);
+
+                        i += 1;
+                    }
+                } else {
+                    let mut i = 0;
+                    while i < bytes.len() {
+                        let value = ((crc >> (BITS - 8)) ^ bytes[i] as $ty) & 0xFF;
+                        crc = $crc(poly, reflect, value) ^ (crc << SHIFT);
+
+                        i += 1;
+                    }
+                }
+            } else {
+                let mut i = 0;
+                while i < bytes.len() {
+                    crc = $crc(poly, reflect, crc ^ bytes[i] as $ty);
+
+                    i += 1;
+                }
+            }
+
+            crc
+        }
+    };
+}
+
 macro_rules! imp_crc_update_lut_32 {
     ($name: ident, $ty: ty) => {
         #[inline]
@@ -32,29 +78,30 @@ macro_rules! imp_crc_update_lut_32 {
             const BITS: usize = ::core::mem::size_of::<$ty>() * 8;
             const SHIFT: usize = if BITS > 8 { 8 } else { 0 };
 
-            if reflect {
-                let mut i = 0;
-                while i < bytes.len() {
-                    let index = ((crc & 0xFF) ^ (bytes[i] as $ty)) as usize;
-
-                    if BITS > 8 {
+            if BITS > 8 {
+                if reflect {
+                    let mut i = 0;
+                    while i < bytes.len() {
+                        let index = ((crc & 0xFF) ^ (bytes[i] as $ty)) as usize;
                         crc = lut[index & 0xF] ^ lut[16 + ((index >> 4) & 0xF)] ^ (crc >> SHIFT);
-                    } else {
-                        crc = lut[index & 0xF] ^ lut[16 + ((index >> 4) & 0xF)];
-                    }
 
-                    i += 1;
+                        i += 1;
+                    }
+                } else {
+                    let mut i = 0;
+                    while i < bytes.len() {
+                        let index = (((crc >> (BITS - 8)) & 0xFF) ^ (bytes[i] as $ty)) as usize;
+                        crc = lut[index & 0xF] ^ lut[16 + ((index >> 4) & 0xF)] ^ (crc << SHIFT);
+
+                        i += 1;
+                    }
                 }
             } else {
                 let mut i = 0;
                 while i < bytes.len() {
-                    let index = (((crc >> (BITS - 8)) & 0xFF) ^ (bytes[i] as $ty)) as usize;
+                    let index = ((crc & 0xFF) ^ (bytes[i] as $ty)) as usize;
 
-                    if BITS > 8 {
-                        crc = lut[index & 0xF] ^ lut[16 + ((index >> 4) & 0xF)] ^ (crc << SHIFT);
-                    } else {
-                        crc = lut[index & 0xF] ^ lut[16 + ((index >> 4) & 0xF)];
-                    }
+                    crc = lut[index & 0xF] ^ lut[16 + ((index >> 4) & 0xF)];
 
                     i += 1;
                 }
@@ -72,29 +119,29 @@ macro_rules! imp_crc_update_lut_256 {
             const BITS: usize = ::core::mem::size_of::<$ty>() * 8;
             const SHIFT: usize = if BITS > 8 { 8 } else { 0 };
 
-            if reflect {
-                let mut i = 0;
-                while i < bytes.len() {
-                    let index = ((crc ^ bytes[i] as $ty) & 0xFF) as usize;
-
-                    if BITS > 8 {
+            if BITS > 8 {
+                if reflect {
+                    let mut i = 0;
+                    while i < bytes.len() {
+                        let index = ((crc ^ bytes[i] as $ty) & 0xFF) as usize;
                         crc = lut[index] ^ (crc >> SHIFT);
-                    } else {
-                        crc = lut[index];
-                    }
 
-                    i += 1;
+                        i += 1;
+                    }
+                } else {
+                    let mut i = 0;
+                    while i < bytes.len() {
+                        let index = (((crc >> (BITS - 8)) ^ bytes[i] as $ty) & 0xFF) as usize;
+                        crc = lut[index] ^ (crc << SHIFT);
+
+                        i += 1;
+                    }
                 }
             } else {
                 let mut i = 0;
                 while i < bytes.len() {
-                    let index = (((crc >> (BITS - 8)) ^ bytes[i] as $ty) & 0xFF) as usize;
-
-                    if BITS > 8 {
-                        crc = lut[index] ^ (crc << SHIFT);
-                    } else {
-                        crc = lut[index];
-                    }
+                    let index = ((crc ^ bytes[i] as $ty) & 0xFF) as usize;
+                    crc = lut[index];
 
                     i += 1;
                 }
