@@ -25,10 +25,12 @@ macro_rules! imp_crc {
     };
 }
 
-macro_rules! imp_crc_update_no_lut {
-    ($name: ident, $ty: ty, $crc: path) => {
+macro_rules! imp_update_no_lut {
+    ($ty: ty, $crc: path) => {
         #[inline]
-        pub const fn $name(mut crc: $ty, width: u8, poly: $ty, reflect: bool, bytes: &[u8]) -> $ty {
+        pub const fn update_no_lut(
+            mut crc: $ty, width: u8, poly: $ty, reflect: bool, bytes: &[u8],
+        ) -> $ty {
             const BITS: usize = ::core::mem::size_of::<$ty>() * 8;
             const SHIFT: usize = if BITS > 8 { 8 } else { 0 };
 
@@ -71,10 +73,12 @@ macro_rules! imp_crc_update_no_lut {
     };
 }
 
-macro_rules! imp_crc_update_lut_32 {
-    ($name: ident, $ty: ty) => {
+macro_rules! imp_update_lut_32 {
+    ($ty: ty) => {
         #[inline]
-        pub const fn $name(mut crc: $ty, bytes: &[u8], lut: &[$ty; 32], reflect: bool) -> $ty {
+        pub const fn update_lut_32(
+            mut crc: $ty, bytes: &[u8], lut: &[$ty; 32], reflect: bool,
+        ) -> $ty {
             const BITS: usize = ::core::mem::size_of::<$ty>() * 8;
             const SHIFT: usize = if BITS > 8 { 8 } else { 0 };
 
@@ -112,10 +116,12 @@ macro_rules! imp_crc_update_lut_32 {
     };
 }
 
-macro_rules! imp_crc_update_lut_256 {
-    ($name: ident, $ty: ty) => {
+macro_rules! imp_update_lut_256 {
+    ($ty: ty) => {
         #[inline]
-        pub const fn $name(mut crc: $ty, bytes: &[u8], lut: &[$ty; 256], reflect: bool) -> $ty {
+        pub const fn update_lut_256(
+            mut crc: $ty, bytes: &[u8], lut: &[$ty; 256], reflect: bool,
+        ) -> $ty {
             const BITS: usize = ::core::mem::size_of::<$ty>() * 8;
             const SHIFT: usize = if BITS > 8 { 8 } else { 0 };
 
@@ -152,9 +158,9 @@ macro_rules! imp_crc_update_lut_256 {
     };
 }
 
-macro_rules! imp_crc_update_lut_256x_n {
-    ($name: ident, $ty: ty) => {
-        pub fn $name<const SLICES: usize>(
+macro_rules! imp_update_lut_256x_n {
+    ($ty: ty) => {
+        pub fn update_lut_256x_n<const SLICES: usize>(
             mut crc: $ty, mut bytes: &[u8], lut: &[[$ty; 256]; SLICES], reflect: bool,
         ) -> $ty {
             $crate::cg_assert::assert_lt_eq::<SLICES, { $crate::MAX_SLICES }>();

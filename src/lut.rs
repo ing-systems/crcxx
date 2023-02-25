@@ -1,7 +1,7 @@
 #[macro_export]
 macro_rules! imp_make_lut_32 {
-    ($name: ident, $ty: ty, $crc: path) => {
-        pub const fn $name(width: u8, poly: $ty, reflect: bool) -> [$ty; 32] {
+    ($ty: ty, $crc: path) => {
+        pub const fn make_lut_32(width: u8, poly: $ty, reflect: bool) -> [$ty; 32] {
             const BITS: usize = ::core::mem::size_of::<$ty>() * 8;
 
             assert!(width <= BITS as u8);
@@ -34,8 +34,8 @@ macro_rules! imp_make_lut_32 {
 
 #[macro_export]
 macro_rules! imp_make_lut_256 {
-    ($name: ident, $ty: ty, $crc: path) => {
-        pub const fn $name(width: u8, poly: $ty, reflect: bool) -> [$ty; 256] {
+    ($ty: ty, $crc: path) => {
+        pub const fn make_lut_256(width: u8, poly: $ty, reflect: bool) -> [$ty; 256] {
             const BITS: usize = ::core::mem::size_of::<$ty>() * 8;
 
             assert!(width <= BITS as u8);
@@ -62,8 +62,8 @@ macro_rules! imp_make_lut_256 {
 
 #[macro_export]
 macro_rules! imp_make_lut_256x_n {
-    ($name: ident, $ty: ty, $make_base_lut_256: path) => {
-        pub const fn $name<const SLICES: usize>(
+    ($ty: ty, $make_base_lut_256: path) => {
+        pub const fn make_lut_256x_n<const SLICES: usize>(
             width: u8, poly: $ty, reflect: bool,
         ) -> [[$ty; 256]; SLICES] {
             const BITS: usize = ::core::mem::size_of::<$ty>() * 8;
