@@ -43,9 +43,9 @@ pub(crate) const MAX_SLICES: usize = 32;
 #[macro_use]
 mod cg_assert;
 #[macro_use]
-pub mod lut;
+pub mod lut_macros;
 #[macro_use]
-mod update;
+mod update_macros;
 
 pub mod crc16;
 pub mod crc32;
