@@ -8,13 +8,6 @@
 The crate compute CRC-8/16/32/64 using various methods. It is applicable for small embedded systems and modern desktops and servers.
 No unsafe or architecture specific code.
 
-# Usage of High Level API
-TODO !
-
-# Usage of Low Level API
-
-The low level API don't handle preprocessing and postprocessing of CRC value.
-
 ### Processing using no lookup table, single byte per step
 
 The slowest method. No additional memory required.
@@ -113,6 +106,10 @@ fn main() {
     assert_eq!(crc, 0x3010_BF7F);
 }
 ```
+
+## MSRV
+
+Current MSRV is 1.59. Keep in mind the official crate policy is latest stable.
 
 ## License
 

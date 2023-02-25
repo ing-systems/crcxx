@@ -11,6 +11,7 @@ repository = "https://github.com/ing-systems/crcxx"
 readme = "README.md"
 keywords = ["crc", "crc8", "crc16", "crc32", "crc64"]
 categories = ["algorithms"]
+rust-version = "1.59"
 
 [dependencies]
 
