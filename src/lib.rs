@@ -48,6 +48,3 @@ pub mod crc16;
 pub mod crc32;
 pub mod crc64;
 pub mod crc8;
-
-#[cfg(test)]
-mod tests;
