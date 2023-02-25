@@ -1,5 +1,6 @@
 macro_rules! imp_crc {
     ($name: ident, $ty: ty) => {
+        #[inline]
         pub(crate) const fn $name(poly: $ty, reflect: bool, mut value: $ty) -> $ty {
             const BITS: usize = ::core::mem::size_of::<$ty>() * 8;
 
@@ -34,9 +35,7 @@ macro_rules! imp_crc_update_lut_32 {
             if reflect {
                 let mut i = 0;
                 while i < bytes.len() {
-                    let b = bytes[i];
-
-                    let index = ((crc & 0xFF) ^ (b as $ty)) as usize;
+                    let index = ((crc & 0xFF) ^ (bytes[i] as $ty)) as usize;
 
                     if BITS > 8 {
                         crc = lut[index & 0xF] ^ lut[16 + ((index >> 4) & 0xF)] ^ (crc >> SHIFT);
@@ -49,9 +48,7 @@ macro_rules! imp_crc_update_lut_32 {
             } else {
                 let mut i = 0;
                 while i < bytes.len() {
-                    let b = bytes[i];
-
-                    let index = (((crc >> (BITS - 8)) & 0xFF) ^ (b as $ty)) as usize;
+                    let index = (((crc >> (BITS - 8)) & 0xFF) ^ (bytes[i] as $ty)) as usize;
 
                     if BITS > 8 {
                         crc = lut[index & 0xF] ^ lut[16 + ((index >> 4) & 0xF)] ^ (crc << SHIFT);

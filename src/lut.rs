@@ -57,7 +57,7 @@ macro_rules! imp_make_lut_256 {
 }
 
 #[macro_export]
-macro_rules! imp_make_lut_slice_by {
+macro_rules! imp_make_lut_256x_n {
     ($name: ident, $ty: ty, $make_base_lut_256: path) => {
         pub const fn $name<const SLICES: usize>(
             width: u8, poly: $ty, reflect: bool,

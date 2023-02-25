@@ -1,13 +1,13 @@
-use crate::{imp_make_lut_256, imp_make_lut_32, imp_make_lut_slice_by};
+use crate::{imp_make_lut_256, imp_make_lut_256x_n, imp_make_lut_32};
 
 imp_crc!(crc32, u32);
 imp_make_lut_32!(make_lut_32, u32, crc32);
 imp_make_lut_256!(make_lut_256, u32, crc32);
-imp_make_lut_slice_by!(make_sliced_lut, u32, make_lut_256);
+imp_make_lut_256x_n!(make_lut_256x_n, u32, make_lut_256);
 
 imp_crc_update_lut_32!(update_lut_32, u32);
 imp_crc_update_lut_256!(update_lut_256, u32);
-imp_crc_update_slice_by!(update_slice_by, u32);
+imp_crc_update_slice_by!(update_lut_256x_n, u32);
 
 #[inline]
 fn update_slice_by_4<'a>(
@@ -252,7 +252,7 @@ mod tests {
 
         let lut32 = make_lut_32(WIDTH, POLY, REFLECT);
         let lut256 = make_lut_256(WIDTH, POLY, REFLECT);
-        let lut256x_n = make_sliced_lut::<SLICES>(WIDTH, POLY, REFLECT);
+        let lut256x_n = make_lut_256x_n::<SLICES>(WIDTH, POLY, REFLECT);
 
         for sample in SAMPLES {
             assert_eq!(
@@ -264,7 +264,8 @@ mod tests {
                 sample.1
             );
             assert_eq!(
-                update_slice_by::<SLICES>(INIT, sample.0.as_bytes(), &lut256x_n, REFLECT) ^ XOR_OUT,
+                update_lut_256x_n::<SLICES>(INIT, sample.0.as_bytes(), &lut256x_n, REFLECT)
+                    ^ XOR_OUT,
                 sample.1
             );
         }
@@ -295,7 +296,7 @@ mod tests {
 
         let lut32 = make_lut_32(WIDTH, POLY, REFLECT);
         let lut256 = make_lut_256(WIDTH, POLY, REFLECT);
-        let lut256x_n = make_sliced_lut::<SLICES>(WIDTH, POLY, REFLECT);
+        let lut256x_n = make_lut_256x_n::<SLICES>(WIDTH, POLY, REFLECT);
 
         for sample in SAMPLES {
             assert_eq!(
@@ -307,7 +308,8 @@ mod tests {
                 sample.1
             );
             assert_eq!(
-                update_slice_by::<SLICES>(INIT, sample.0.as_bytes(), &lut256x_n, REFLECT) ^ XOR_OUT,
+                update_lut_256x_n::<SLICES>(INIT, sample.0.as_bytes(), &lut256x_n, REFLECT)
+                    ^ XOR_OUT,
                 sample.1
             );
         }
