@@ -1,11 +1,11 @@
 use crate::{imp_make_lut_256, imp_make_lut_256x_n, imp_make_lut_32};
 
-imp_crc!(crc8, u8);
-imp_make_lut_32!(u8, crc8);
-imp_make_lut_256!(u8, crc8);
+imp_make_lut_32!(u8);
+imp_make_lut_256!(u8);
 imp_make_lut_256x_n!(u8);
 
-imp_update_no_lut!(u8, crc8);
+imp_update!(u8);
+imp_update_no_lut!(u8);
 imp_update_lut_32!(u8);
 imp_update_lut_256!(u8);
 imp_update_lut_256x_n!(u8);

@@ -1,7 +1,7 @@
-macro_rules! imp_crc {
-    ($name: ident, $ty: ty) => {
+macro_rules! imp_update {
+    ($ty: ty) => {
         #[inline]
-        const fn $name(poly: $ty, reflect: bool, mut value: $ty) -> $ty {
+        const fn update(poly: $ty, reflect: bool, mut value: $ty) -> $ty {
             const BITS: usize = ::core::mem::size_of::<$ty>() * 8;
 
             if reflect {
@@ -26,7 +26,7 @@ macro_rules! imp_crc {
 }
 
 macro_rules! imp_update_no_lut {
-    ($ty: ty, $crc: path) => {
+    ($ty: ty) => {
         #[inline]
         pub const fn update_no_lut(
             mut crc: $ty, width: u8, poly: $ty, reflect: bool, bytes: &[u8],
@@ -46,7 +46,7 @@ macro_rules! imp_update_no_lut {
                     let mut i = 0;
                     while i < bytes.len() {
                         let value = (crc ^ bytes[i] as $ty) & 0xFF;
-                        crc = $crc(poly, reflect, value) ^ (crc >> SHIFT);
+                        crc = update(poly, reflect, value) ^ (crc >> SHIFT);
 
                         i += 1;
                     }
@@ -54,7 +54,7 @@ macro_rules! imp_update_no_lut {
                     let mut i = 0;
                     while i < bytes.len() {
                         let value = ((crc >> (BITS - 8)) ^ bytes[i] as $ty) & 0xFF;
-                        crc = $crc(poly, reflect, value) ^ (crc << SHIFT);
+                        crc = update(poly, reflect, value) ^ (crc << SHIFT);
 
                         i += 1;
                     }
@@ -62,7 +62,7 @@ macro_rules! imp_update_no_lut {
             } else {
                 let mut i = 0;
                 while i < bytes.len() {
-                    crc = $crc(poly, reflect, crc ^ bytes[i] as $ty);
+                    crc = update(poly, reflect, crc ^ bytes[i] as $ty);
 
                     i += 1;
                 }

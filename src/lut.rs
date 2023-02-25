@@ -1,6 +1,6 @@
 #[macro_export]
 macro_rules! imp_make_lut_32 {
-    ($ty: ty, $crc: path) => {
+    ($ty: ty) => {
         pub const fn make_lut_32(width: u8, poly: $ty, reflect: bool) -> [$ty; 32] {
             const BITS: usize = ::core::mem::size_of::<$ty>() * 8;
 
@@ -17,13 +17,13 @@ macro_rules! imp_make_lut_32 {
 
             let mut index = 0;
             while index < 16 {
-                lut[index] = $crc(poly, reflect, index as $ty);
+                lut[index] = update(poly, reflect, index as $ty);
                 index += 1;
             }
 
             let mut index = 0;
             while index < 16 {
-                lut[index + 16] = $crc(poly, reflect, (index << 4) as $ty);
+                lut[index + 16] = update(poly, reflect, (index << 4) as $ty);
                 index += 1;
             }
 
@@ -34,7 +34,7 @@ macro_rules! imp_make_lut_32 {
 
 #[macro_export]
 macro_rules! imp_make_lut_256 {
-    ($ty: ty, $crc: path) => {
+    ($ty: ty) => {
         pub const fn make_lut_256(width: u8, poly: $ty, reflect: bool) -> [$ty; 256] {
             const BITS: usize = ::core::mem::size_of::<$ty>() * 8;
 
@@ -51,7 +51,7 @@ macro_rules! imp_make_lut_256 {
 
             let mut i = 0;
             while i < lut.len() {
-                lut[i] = $crc(poly, reflect, i as $ty);
+                lut[i] = update(poly, reflect, i as $ty);
                 i += 1;
             }
 
