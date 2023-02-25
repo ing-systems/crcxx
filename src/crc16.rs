@@ -3,7 +3,7 @@ use crate::{imp_make_lut_256, imp_make_lut_256x_n, imp_make_lut_32};
 imp_crc!(crc16, u16);
 imp_make_lut_32!(u16, crc16);
 imp_make_lut_256!(u16, crc16);
-imp_make_lut_256x_n!(u16, make_lut_256);
+imp_make_lut_256x_n!(u16);
 
 imp_update_no_lut!(u16, crc16);
 imp_update_lut_32!(u16);

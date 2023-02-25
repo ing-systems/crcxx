@@ -62,7 +62,7 @@ macro_rules! imp_make_lut_256 {
 
 #[macro_export]
 macro_rules! imp_make_lut_256x_n {
-    ($ty: ty, $make_base_lut_256: path) => {
+    ($ty: ty) => {
         pub const fn make_lut_256x_n<const SLICES: usize>(
             width: u8, poly: $ty, reflect: bool,
         ) -> [[$ty; 256]; SLICES] {
@@ -75,7 +75,7 @@ macro_rules! imp_make_lut_256x_n {
             assert!(width <= BITS as u8);
 
             let mut lut = [[0 as $ty; 256]; SLICES];
-            lut[0] = $make_base_lut_256(width, poly, reflect);
+            lut[0] = make_lut_256(width, poly, reflect);
 
             if reflect {
                 let mut n = 0;
