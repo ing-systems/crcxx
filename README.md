@@ -18,10 +18,17 @@ use crcxx::crc32::{*, catalog::CRC_32_BZIP2};
 const CRC: Crc<NoLookupTable> = Crc::<NoLookupTable>::new(&CRC_32_BZIP2);
 
 fn main() {
-    let data = "123456789";
-    let bytes = data.as_bytes();
-    let crc = CRC.compute(&bytes);
+    // singlepart data.
+    let crc = CRC.compute(b"123456789");
+    assert_eq!(crc, 0xFC89_1918);
 
+    // Multipart data.
+    let mut multipart = CRC.compute_multipart();
+    multipart.update(b"1234");
+    multipart.update(b"5678");
+    multipart.update(b"9");
+
+    let crc = multipart.value();
     assert_eq!(crc, 0xFC89_1918);
 }
 ```
@@ -38,10 +45,17 @@ const CRC: Crc<LookupTable32> =
     Crc::<LookupTable32>::new(&CRC_32_BZIP2);
 
 fn main() {
-    let data = "123456789";
-    let bytes = data.as_bytes();
-    let crc = CRC.compute(&bytes);
+    // singlepart data.
+    let crc = CRC.compute(b"123456789");
+    assert_eq!(crc, 0xFC89_1918);
 
+    // Multipart data.
+    let mut multipart = CRC.compute_multipart();
+    multipart.update(b"1234");
+    multipart.update(b"5678");
+    multipart.update(b"9");
+
+    let crc = multipart.value();
     assert_eq!(crc, 0xFC89_1918);
 }
 ```
@@ -57,10 +71,17 @@ const CRC: Crc<LookupTable256> =
     Crc::<LookupTable256>::new(&CRC_32_BZIP2);
 
 fn main() {
-    let data = "123456789";
-    let bytes = data.as_bytes();
-    let crc = CRC.compute(&bytes);
+    // singlepart data.
+    let crc = CRC.compute(b"123456789");
+    assert_eq!(crc, 0xFC89_1918);
 
+    // Multipart data.
+    let mut multipart = CRC.compute_multipart();
+    multipart.update(b"1234");
+    multipart.update(b"5678");
+    multipart.update(b"9");
+
+    let crc = multipart.value();
     assert_eq!(crc, 0xFC89_1918);
 }
 ```
@@ -79,10 +100,17 @@ const CRC: Crc<LookupTable256xN<SLICES>> =
     Crc::<LookupTable256xN<SLICES>>::new(&CRC_32_BZIP2);
 
 fn main() {
-    let data = "123456789";
-    let bytes = data.as_bytes();
-    let crc = CRC.compute(&bytes);
+    // singlepart data.
+    let crc = CRC.compute(b"123456789");
+    assert_eq!(crc, 0xFC89_1918);
 
+    // Multipart data.
+    let mut multipart = CRC.compute_multipart();
+    multipart.update(b"1234");
+    multipart.update(b"5678");
+    multipart.update(b"9");
+
+    let crc = multipart.value();
     assert_eq!(crc, 0xFC89_1918);
 }
 ```

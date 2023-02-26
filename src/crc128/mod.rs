@@ -1,4 +1,103 @@
-//! CRC-128
+//! # CRC-128
+//!
+//! ## Processing using no lookup table, single byte per step
+//!
+//! The slowest method. No additional memory required.
+//!
+//! ```
+//! use crcxx::crc128::{*, catalog::CRC_82_DARC};
+//!
+//! const CRC: Crc<NoLookupTable> = Crc::<NoLookupTable>::new(&CRC_82_DARC);
+//!
+//! fn main() {
+//!     // singlepart data.
+//!     let crc = CRC.compute(b"123456789");
+//!     assert_eq!(crc, 0x9EA8_3F62_5023_801F_D612);
+//!
+//!     // Multipart data.
+//!     let mut multipart = CRC.compute_multipart();
+//!     multipart.update(b"1234");
+//!     multipart.update(b"5678");
+//!     multipart.update(b"9");
+//!
+//!     let crc = multipart.value();
+//!     assert_eq!(crc, 0x9EA8_3F62_5023_801F_D612);
+//! }
+//! ```
+//! ## Processing using a lookup table with 32 entries, single byte per step
+//!
+//! Good compromise between speed and memory consumption for small embedded devices.
+//! Depending on usage scenario usually 2-5 times faster than the previous method.
+//! ```
+//! use crcxx::crc128::{*, catalog::CRC_82_DARC};
+//!
+//! const CRC: Crc<LookupTable32> = Crc::<LookupTable32>::new(&CRC_82_DARC);
+//!
+//! fn main() {
+//!     // singlepart data.
+//!     let crc = CRC.compute(b"123456789");
+//!     assert_eq!(crc, 0x9EA8_3F62_5023_801F_D612);
+//!
+//!     // Multipart data.
+//!     let mut multipart = CRC.compute_multipart();
+//!     multipart.update(b"1234");
+//!     multipart.update(b"5678");
+//!     multipart.update(b"9");
+//!
+//!     let crc = multipart.value();
+//!     assert_eq!(crc, 0x9EA8_3F62_5023_801F_D612);
+//! }
+//! ```
+//! ## Processing using a lookup table with 256 entries, single byte per step
+//!
+//! Depending on usage scenario usually no more than 2 times faster than the previous method.
+//! ```
+//! use crcxx::crc128::{*, catalog::CRC_82_DARC};
+//!
+//! const CRC: Crc<LookupTable256> = Crc::<LookupTable256>::new(&CRC_82_DARC);
+//!
+//! fn main() {
+//!     // singlepart data.
+//!     let crc = CRC.compute(b"123456789");
+//!     assert_eq!(crc, 0x9EA8_3F62_5023_801F_D612);
+//!
+//!     // Multipart data.
+//!     let mut multipart = CRC.compute_multipart();
+//!     multipart.update(b"1234");
+//!     multipart.update(b"5678");
+//!     multipart.update(b"9");
+//!
+//!     let crc = multipart.value();
+//!     assert_eq!(crc, 0x9EA8_3F62_5023_801F_D612);
+//! }
+//! ```
+//! ## Processing using a lookup table with 256 x SLICES entries, multiple bytes per step
+//!
+//! Ultimate method for processing big amounts of data on modern desktops and servers.
+//! Depending on usage scenario (prefer bigger chunks) usually 6 times faster than the previous method.
+//! The recommended number of slices is 16. There is usually less than 10% improvement when going from 16 to 32.
+//! ```
+//! use crcxx::crc128::{*, catalog::CRC_82_DARC};
+//!
+//! const SLICES: usize = 16;
+//! const CRC: Crc<LookupTable256xN<SLICES>> =
+//!     Crc::<LookupTable256xN<SLICES>>::new(&CRC_82_DARC);
+//!
+//! fn main() {
+//!     // singlepart data.
+//!     let crc = CRC.compute(b"123456789");
+//!     assert_eq!(crc, 0x9EA8_3F62_5023_801F_D612);
+//!
+//!     // Multipart data.
+//!     let mut multipart = CRC.compute_multipart();
+//!     multipart.update(b"1234");
+//!     multipart.update(b"5678");
+//!     multipart.update(b"9");
+//!
+//!     let crc = multipart.value();
+//!     assert_eq!(crc, 0x9EA8_3F62_5023_801F_D612);
+//! }
+//! ```
 #[allow(clippy::wildcard_imports)]
 use crate::internals::crc128::*;
 use crate::{
