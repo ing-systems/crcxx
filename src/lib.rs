@@ -160,7 +160,7 @@ impl Register for u64 {}
 impl Register for u128 {}
 
 // !!! Copy-paste from crc-catalog crate. !!!
-/// CRC calculation paremeters
+/// CRC computation parameters
 ///
 /// The struct describes a CRC algorithm using the fields specified by the [Catalogue of
 /// parametrised CRC algorithms](https://reveng.sourceforge.io/crc-catalogue/all.htm).
