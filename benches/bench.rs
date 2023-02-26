@@ -1,51 +1,31 @@
-use crcxx::internals::*;
+use crcxx::Params;
 use criterion::*;
 
 const CHUNK_SIZES: [u32; 10] = [3, 5, 7, 11, 13, 17, 31, 63, 4096, 8192];
 const SLICES: usize = 16;
 
-const CRC8_WIDTH: u8 = 8;
-const CRC8_INIT: u8 = 0;
-const CRC8_POLY: u8 = 0x9B;
-const CRC8_REFLECT: bool = true;
+const CRC8_PARAMS: Params<u8> = crcxx::crc8::catalog::CRC_8_DARC;
+const CRC16_PARAMS: Params<u16> = crcxx::crc16::catalog::CRC_16_KERMIT;
+const CRC32_PARAMS: Params<u32> = crcxx::crc32::catalog::CRC_32_CKSUM;
+const CRC64_PARAMS: Params<u64> = crcxx::crc64::catalog::CRC_64_XZ;
+const CRC128_PARAMS: Params<u128> = crcxx::crc128::catalog::CRC_82_DARC;
 
-const CRC16_WIDTH: u8 = 16;
-const CRC16_INIT: u16 = 0;
-const CRC16_POLY: u16 = 0x8005;
-const CRC16_REFLECT: bool = true;
-
-const CRC32_WIDTH: u8 = 32;
-const CRC32_INIT: u32 = 0;
-const CRC32_POLY: u32 = 0x04C1_1DB7;
-const CRC32_REFLECT: bool = true;
-
-const CRC64_WIDTH: u8 = 64;
-const CRC64_INIT: u64 = 0;
-const CRC64_POLY: u64 = 0x42F0_E1EB_A9EA_3693;
-const CRC64_REFLECT: bool = true;
-
-const CRC128_WIDTH: u8 = 82;
-const CRC128_INIT: u128 = 0;
-const CRC128_POLY: u128 = 0x0000_308C_0111_0114_0144_0411;
-const CRC128_REFLECT: bool = true;
+const SANITY_CHECK_DATA: &[u8] = b"123456789";
 
 pub fn bench_crc8_no_lut(c: &mut Criterion) {
-    let mut group = c.benchmark_group("CRC8");
+    use crcxx::crc8::*;
+
+    const CRC: Calculator<NoLookupTable> = Calculator::<NoLookupTable>::new(&CRC8_PARAMS);
+    assert_eq!(CRC.calculate(SANITY_CHECK_DATA), CRC8_PARAMS.check);
+
+    let mut group = c.benchmark_group("CRC-8");
 
     for size in CHUNK_SIZES.iter() {
         let bytes = vec![0x55u8; *size as usize];
 
         group.throughput(Throughput::Bytes(*size as u64));
-        group.bench_function(BenchmarkId::new("update_no_lut", *size), |b| {
-            b.iter(|| {
-                black_box(crc8::update_no_lut(
-                    CRC8_INIT,
-                    CRC8_WIDTH,
-                    CRC8_POLY,
-                    CRC8_REFLECT,
-                    black_box(&bytes),
-                ))
-            })
+        group.bench_function(BenchmarkId::new("NoLookupTable", *size), |b| {
+            b.iter(|| black_box(CRC.calculate(&bytes)))
         });
     }
 
@@ -53,16 +33,19 @@ pub fn bench_crc8_no_lut(c: &mut Criterion) {
 }
 
 pub fn bench_crc8_lut_32(c: &mut Criterion) {
-    let lut = crc8::make_lut_32(CRC8_WIDTH, CRC8_POLY, CRC8_REFLECT);
+    use crcxx::crc8::*;
 
-    let mut group = c.benchmark_group("CRC8");
+    const CRC: Calculator<LookupTable32> = Calculator::<LookupTable32>::new(&CRC8_PARAMS);
+
+    let mut group = c.benchmark_group("CRC-8");
+    assert_eq!(CRC.calculate(SANITY_CHECK_DATA), CRC8_PARAMS.check);
 
     for size in CHUNK_SIZES.iter() {
         let bytes = vec![0x55u8; *size as usize];
 
         group.throughput(Throughput::Bytes(*size as u64));
-        group.bench_function(BenchmarkId::new("update_lut_32", *size), |b| {
-            b.iter(|| black_box(crc8::update_lut_32(0, black_box(&bytes), &lut, CRC8_REFLECT)))
+        group.bench_function(BenchmarkId::new("LookupTable32", *size), |b| {
+            b.iter(|| black_box(CRC.calculate(&bytes)))
         });
     }
 
@@ -70,16 +53,19 @@ pub fn bench_crc8_lut_32(c: &mut Criterion) {
 }
 
 pub fn bench_crc8_lut_256(c: &mut Criterion) {
-    let lut = crc8::make_lut_256(CRC8_WIDTH, CRC8_POLY, CRC8_REFLECT);
+    use crcxx::crc8::*;
 
-    let mut group = c.benchmark_group("CRC8");
+    const CRC: Calculator<LookupTable256> = Calculator::<LookupTable256>::new(&CRC8_PARAMS);
+    assert_eq!(CRC.calculate(SANITY_CHECK_DATA), CRC8_PARAMS.check);
+
+    let mut group = c.benchmark_group("CRC-8");
 
     for size in CHUNK_SIZES.iter() {
         let bytes = vec![0x55u8; *size as usize];
 
         group.throughput(Throughput::Bytes(*size as u64));
-        group.bench_function(BenchmarkId::new("update_lut_256", *size), |b| {
-            b.iter(|| black_box(crc8::update_lut_256(0, black_box(&bytes), &lut, CRC8_REFLECT)))
+        group.bench_function(BenchmarkId::new("LookupTable256", *size), |b| {
+            b.iter(|| black_box(CRC.calculate(&bytes)))
         });
     }
 
@@ -87,23 +73,20 @@ pub fn bench_crc8_lut_256(c: &mut Criterion) {
 }
 
 pub fn bench_crc8_lut_256x_n(c: &mut Criterion) {
-    let lut = crc8::make_lut_256x_n::<SLICES>(CRC8_WIDTH, CRC8_POLY, CRC8_REFLECT);
+    use crcxx::crc8::*;
 
-    let mut group = c.benchmark_group("CRC8");
+    const CRC: Calculator<LookupTable256xN<SLICES>> =
+        Calculator::<LookupTable256xN<SLICES>>::new(&CRC8_PARAMS);
+    assert_eq!(CRC.calculate(SANITY_CHECK_DATA), CRC8_PARAMS.check);
+
+    let mut group = c.benchmark_group("CRC-8");
 
     for size in CHUNK_SIZES.iter() {
         let bytes = vec![0x55u8; *size as usize];
 
         group.throughput(Throughput::Bytes(*size as u64));
-        group.bench_function(BenchmarkId::new("update_lut_256x_n", *size), |b| {
-            b.iter(|| {
-                black_box(crc8::update_lut_256x_n::<SLICES>(
-                    0,
-                    black_box(&bytes),
-                    &lut,
-                    CRC8_REFLECT,
-                ))
-            })
+        group.bench_function(BenchmarkId::new("LookupTable256xN", *size), |b| {
+            b.iter(|| black_box(CRC.calculate(&bytes)))
         });
     }
 
@@ -111,22 +94,19 @@ pub fn bench_crc8_lut_256x_n(c: &mut Criterion) {
 }
 
 pub fn bench_crc16_no_lut(c: &mut Criterion) {
-    let mut group = c.benchmark_group("CRC16");
+    use crcxx::crc16::*;
+
+    const CRC: Calculator<NoLookupTable> = Calculator::<NoLookupTable>::new(&CRC16_PARAMS);
+    assert_eq!(CRC.calculate(SANITY_CHECK_DATA), CRC16_PARAMS.check);
+
+    let mut group = c.benchmark_group("CRC-16");
 
     for size in CHUNK_SIZES.iter() {
         let bytes = vec![0x55u8; *size as usize];
 
         group.throughput(Throughput::Bytes(*size as u64));
-        group.bench_function(BenchmarkId::new("update_no_lut", *size), |b| {
-            b.iter(|| {
-                black_box(crc16::update_no_lut(
-                    CRC16_INIT,
-                    CRC16_WIDTH,
-                    CRC16_POLY,
-                    CRC16_REFLECT,
-                    black_box(&bytes),
-                ))
-            })
+        group.bench_function(BenchmarkId::new("NoLookupTable", *size), |b| {
+            b.iter(|| black_box(CRC.calculate(&bytes)))
         });
     }
 
@@ -134,16 +114,19 @@ pub fn bench_crc16_no_lut(c: &mut Criterion) {
 }
 
 pub fn bench_crc16_lut_32(c: &mut Criterion) {
-    let lut = crc16::make_lut_32(CRC16_WIDTH, CRC16_POLY, CRC16_REFLECT);
+    use crcxx::crc16::*;
 
-    let mut group = c.benchmark_group("CRC16");
+    const CRC: Calculator<LookupTable32> = Calculator::<LookupTable32>::new(&CRC16_PARAMS);
+    assert_eq!(CRC.calculate(SANITY_CHECK_DATA), CRC16_PARAMS.check);
+
+    let mut group = c.benchmark_group("CRC-16");
 
     for size in CHUNK_SIZES.iter() {
         let bytes = vec![0x55u8; *size as usize];
 
         group.throughput(Throughput::Bytes(*size as u64));
-        group.bench_function(BenchmarkId::new("update_lut_32", *size), |b| {
-            b.iter(|| black_box(crc16::update_lut_32(0, black_box(&bytes), &lut, CRC16_REFLECT)))
+        group.bench_function(BenchmarkId::new("LookupTable32", *size), |b| {
+            b.iter(|| black_box(CRC.calculate(&bytes)))
         });
     }
 
@@ -151,16 +134,19 @@ pub fn bench_crc16_lut_32(c: &mut Criterion) {
 }
 
 pub fn bench_crc16_lut_256(c: &mut Criterion) {
-    let lut = crc16::make_lut_256(CRC16_WIDTH, CRC16_POLY, CRC16_REFLECT);
+    use crcxx::crc16::*;
 
-    let mut group = c.benchmark_group("CRC16");
+    const CRC: Calculator<LookupTable256> = Calculator::<LookupTable256>::new(&CRC16_PARAMS);
+    assert_eq!(CRC.calculate(SANITY_CHECK_DATA), CRC16_PARAMS.check);
+
+    let mut group = c.benchmark_group("CRC-16");
 
     for size in CHUNK_SIZES.iter() {
         let bytes = vec![0x55u8; *size as usize];
 
         group.throughput(Throughput::Bytes(*size as u64));
-        group.bench_function(BenchmarkId::new("update_lut_256", *size), |b| {
-            b.iter(|| black_box(crc16::update_lut_256(0, black_box(&bytes), &lut, CRC16_REFLECT)))
+        group.bench_function(BenchmarkId::new("LookupTable256", *size), |b| {
+            b.iter(|| black_box(CRC.calculate(&bytes)))
         });
     }
 
@@ -168,23 +154,20 @@ pub fn bench_crc16_lut_256(c: &mut Criterion) {
 }
 
 pub fn bench_crc16_lut_256x_n(c: &mut Criterion) {
-    let lut = crc16::make_lut_256x_n::<SLICES>(CRC16_WIDTH, CRC16_POLY, CRC16_REFLECT);
+    use crcxx::crc16::*;
 
-    let mut group = c.benchmark_group("CRC16");
+    const CRC: Calculator<LookupTable256xN<SLICES>> =
+        Calculator::<LookupTable256xN<SLICES>>::new(&CRC16_PARAMS);
+    assert_eq!(CRC.calculate(SANITY_CHECK_DATA), CRC16_PARAMS.check);
+
+    let mut group = c.benchmark_group("CRC-16");
 
     for size in CHUNK_SIZES.iter() {
         let bytes = vec![0x55u8; *size as usize];
 
         group.throughput(Throughput::Bytes(*size as u64));
-        group.bench_function(BenchmarkId::new("update_lut_256x_n", *size), |b| {
-            b.iter(|| {
-                black_box(crc16::update_lut_256x_n::<SLICES>(
-                    0,
-                    black_box(&bytes),
-                    &lut,
-                    CRC16_REFLECT,
-                ))
-            })
+        group.bench_function(BenchmarkId::new("LookupTable256xN", *size), |b| {
+            b.iter(|| black_box(CRC.calculate(&bytes)))
         });
     }
 
@@ -192,22 +175,19 @@ pub fn bench_crc16_lut_256x_n(c: &mut Criterion) {
 }
 
 pub fn bench_crc32_no_lut(c: &mut Criterion) {
-    let mut group = c.benchmark_group("CRC32");
+    use crcxx::crc32::*;
+
+    const CRC: Calculator<NoLookupTable> = Calculator::<NoLookupTable>::new(&CRC32_PARAMS);
+    assert_eq!(CRC.calculate(SANITY_CHECK_DATA), CRC32_PARAMS.check);
+
+    let mut group = c.benchmark_group("CRC-32");
 
     for size in CHUNK_SIZES.iter() {
         let bytes = vec![0x55u8; *size as usize];
 
         group.throughput(Throughput::Bytes(*size as u64));
-        group.bench_function(BenchmarkId::new("update_no_lut", *size), |b| {
-            b.iter(|| {
-                black_box(crc32::update_no_lut(
-                    CRC32_INIT,
-                    CRC32_WIDTH,
-                    CRC32_POLY,
-                    CRC32_REFLECT,
-                    black_box(&bytes),
-                ))
-            })
+        group.bench_function(BenchmarkId::new("NoLookupTable", *size), |b| {
+            b.iter(|| black_box(CRC.calculate(&bytes)))
         });
     }
 
@@ -215,16 +195,19 @@ pub fn bench_crc32_no_lut(c: &mut Criterion) {
 }
 
 pub fn bench_crc32_lut_32(c: &mut Criterion) {
-    let lut = crc32::make_lut_32(CRC32_WIDTH, CRC32_POLY, CRC32_REFLECT);
+    use crcxx::crc32::*;
 
-    let mut group = c.benchmark_group("CRC32");
+    const CRC: Calculator<LookupTable32> = Calculator::<LookupTable32>::new(&CRC32_PARAMS);
+    assert_eq!(CRC.calculate(SANITY_CHECK_DATA), CRC32_PARAMS.check);
+
+    let mut group = c.benchmark_group("CRC-32");
 
     for size in CHUNK_SIZES.iter() {
         let bytes = vec![0x55u8; *size as usize];
 
         group.throughput(Throughput::Bytes(*size as u64));
-        group.bench_function(BenchmarkId::new("update_lut_32", *size), |b| {
-            b.iter(|| black_box(crc32::update_lut_32(0, black_box(&bytes), &lut, CRC32_REFLECT)))
+        group.bench_function(BenchmarkId::new("LookupTable32", *size), |b| {
+            b.iter(|| black_box(CRC.calculate(&bytes)))
         });
     }
 
@@ -232,16 +215,19 @@ pub fn bench_crc32_lut_32(c: &mut Criterion) {
 }
 
 pub fn bench_crc32_lut_256(c: &mut Criterion) {
-    let lut = crc32::make_lut_256(CRC32_WIDTH, CRC32_POLY, true);
+    use crcxx::crc32::*;
 
-    let mut group = c.benchmark_group("CRC32");
+    const CRC: Calculator<LookupTable256> = Calculator::<LookupTable256>::new(&CRC32_PARAMS);
+    assert_eq!(CRC.calculate(SANITY_CHECK_DATA), CRC32_PARAMS.check);
+
+    let mut group = c.benchmark_group("CRC-32");
 
     for size in CHUNK_SIZES.iter() {
         let bytes = vec![0x55u8; *size as usize];
 
         group.throughput(Throughput::Bytes(*size as u64));
-        group.bench_function(BenchmarkId::new("update_lut_256", *size), |b| {
-            b.iter(|| black_box(crc32::update_lut_256(0, black_box(&bytes), &lut, CRC32_REFLECT)))
+        group.bench_function(BenchmarkId::new("LookupTable256", *size), |b| {
+            b.iter(|| black_box(CRC.calculate(&bytes)))
         });
     }
 
@@ -249,23 +235,20 @@ pub fn bench_crc32_lut_256(c: &mut Criterion) {
 }
 
 pub fn bench_crc32_lut_256x_n(c: &mut Criterion) {
-    let lut = crc32::make_lut_256x_n::<SLICES>(CRC32_WIDTH, CRC32_POLY, CRC32_REFLECT);
+    use crcxx::crc32::*;
 
-    let mut group = c.benchmark_group("CRC32");
+    const CRC: Calculator<LookupTable256xN<SLICES>> =
+        Calculator::<LookupTable256xN<SLICES>>::new(&CRC32_PARAMS);
+    assert_eq!(CRC.calculate(SANITY_CHECK_DATA), CRC32_PARAMS.check);
+
+    let mut group = c.benchmark_group("CRC-32");
 
     for size in CHUNK_SIZES.iter() {
         let bytes = vec![0x55u8; *size as usize];
 
         group.throughput(Throughput::Bytes(*size as u64));
-        group.bench_function(BenchmarkId::new("update_lut_256x_n", *size), |b| {
-            b.iter(|| {
-                black_box(crc32::update_lut_256x_n::<SLICES>(
-                    0,
-                    black_box(&bytes),
-                    &lut,
-                    CRC32_REFLECT,
-                ))
-            })
+        group.bench_function(BenchmarkId::new("LookupTable256xN", *size), |b| {
+            b.iter(|| black_box(CRC.calculate(&bytes)))
         });
     }
 
@@ -273,22 +256,19 @@ pub fn bench_crc32_lut_256x_n(c: &mut Criterion) {
 }
 
 pub fn bench_crc64_no_lut(c: &mut Criterion) {
-    let mut group = c.benchmark_group("CRC64");
+    use crcxx::crc64::*;
+
+    const CRC: Calculator<NoLookupTable> = Calculator::<NoLookupTable>::new(&CRC64_PARAMS);
+    assert_eq!(CRC.calculate(SANITY_CHECK_DATA), CRC64_PARAMS.check);
+
+    let mut group = c.benchmark_group("CRC-64");
 
     for size in CHUNK_SIZES.iter() {
         let bytes = vec![0x55u8; *size as usize];
 
         group.throughput(Throughput::Bytes(*size as u64));
-        group.bench_function(BenchmarkId::new("update_no_lut", *size), |b| {
-            b.iter(|| {
-                black_box(crc64::update_no_lut(
-                    CRC64_INIT,
-                    CRC64_WIDTH,
-                    CRC64_POLY,
-                    CRC64_REFLECT,
-                    black_box(&bytes),
-                ))
-            })
+        group.bench_function(BenchmarkId::new("NoLookupTable", *size), |b| {
+            b.iter(|| black_box(CRC.calculate(&bytes)))
         });
     }
 
@@ -296,16 +276,19 @@ pub fn bench_crc64_no_lut(c: &mut Criterion) {
 }
 
 pub fn bench_crc64_lut_32(c: &mut Criterion) {
-    let lut = crc64::make_lut_32(CRC64_WIDTH, CRC64_POLY, CRC64_REFLECT);
+    use crcxx::crc64::*;
 
-    let mut group = c.benchmark_group("CRC64");
+    const CRC: Calculator<LookupTable32> = Calculator::<LookupTable32>::new(&CRC64_PARAMS);
+    assert_eq!(CRC.calculate(SANITY_CHECK_DATA), CRC64_PARAMS.check);
+
+    let mut group = c.benchmark_group("CRC-64");
 
     for size in CHUNK_SIZES.iter() {
         let bytes = vec![0x55u8; *size as usize];
 
         group.throughput(Throughput::Bytes(*size as u64));
-        group.bench_function(BenchmarkId::new("update_lut_32", *size), |b| {
-            b.iter(|| black_box(crc64::update_lut_32(0, black_box(&bytes), &lut, CRC64_REFLECT)))
+        group.bench_function(BenchmarkId::new("LookupTable32", *size), |b| {
+            b.iter(|| black_box(CRC.calculate(&bytes)))
         });
     }
 
@@ -313,16 +296,19 @@ pub fn bench_crc64_lut_32(c: &mut Criterion) {
 }
 
 pub fn bench_crc64_lut_256(c: &mut Criterion) {
-    let lut = crc64::make_lut_256(CRC64_WIDTH, CRC64_POLY, CRC64_REFLECT);
+    use crcxx::crc64::*;
 
-    let mut group = c.benchmark_group("CRC64");
+    const CRC: Calculator<LookupTable256> = Calculator::<LookupTable256>::new(&CRC64_PARAMS);
+    assert_eq!(CRC.calculate(SANITY_CHECK_DATA), CRC64_PARAMS.check);
+
+    let mut group = c.benchmark_group("CRC-64");
 
     for size in CHUNK_SIZES.iter() {
         let bytes = vec![0x55u8; *size as usize];
 
         group.throughput(Throughput::Bytes(*size as u64));
-        group.bench_function(BenchmarkId::new("update_lut_256", *size), |b| {
-            b.iter(|| black_box(crc64::update_lut_256(0, black_box(&bytes), &lut, CRC64_REFLECT)))
+        group.bench_function(BenchmarkId::new("LookupTable256", *size), |b| {
+            b.iter(|| black_box(CRC.calculate(&bytes)))
         });
     }
 
@@ -330,23 +316,20 @@ pub fn bench_crc64_lut_256(c: &mut Criterion) {
 }
 
 pub fn bench_crc64_lut_256x_n(c: &mut Criterion) {
-    let lut = crc64::make_lut_256x_n::<SLICES>(CRC64_WIDTH, CRC64_POLY, CRC64_REFLECT);
+    use crcxx::crc64::*;
 
-    let mut group = c.benchmark_group("CRC64");
+    const CRC: Calculator<LookupTable256xN<SLICES>> =
+        Calculator::<LookupTable256xN<SLICES>>::new(&CRC64_PARAMS);
+    assert_eq!(CRC.calculate(SANITY_CHECK_DATA), CRC64_PARAMS.check);
+
+    let mut group = c.benchmark_group("CRC-64");
 
     for size in CHUNK_SIZES.iter() {
         let bytes = vec![0x55u8; *size as usize];
 
         group.throughput(Throughput::Bytes(*size as u64));
-        group.bench_function(BenchmarkId::new("update_lut_256x_n", *size), |b| {
-            b.iter(|| {
-                black_box(crc64::update_lut_256x_n::<SLICES>(
-                    0,
-                    black_box(&bytes),
-                    &lut,
-                    CRC64_REFLECT,
-                ))
-            })
+        group.bench_function(BenchmarkId::new("LookupTable256xN", *size), |b| {
+            b.iter(|| black_box(CRC.calculate(&bytes)))
         });
     }
 
@@ -354,22 +337,19 @@ pub fn bench_crc64_lut_256x_n(c: &mut Criterion) {
 }
 
 pub fn bench_crc128_no_lut(c: &mut Criterion) {
-    let mut group = c.benchmark_group("CRC128");
+    use crcxx::crc128::*;
+
+    const CRC: Calculator<NoLookupTable> = Calculator::<NoLookupTable>::new(&CRC128_PARAMS);
+    assert_eq!(CRC.calculate(SANITY_CHECK_DATA), CRC128_PARAMS.check);
+
+    let mut group = c.benchmark_group("CRC-128");
 
     for size in CHUNK_SIZES.iter() {
         let bytes = vec![0x55u8; *size as usize];
 
         group.throughput(Throughput::Bytes(*size as u64));
-        group.bench_function(BenchmarkId::new("update_no_lut", *size), |b| {
-            b.iter(|| {
-                black_box(crc128::update_no_lut(
-                    CRC128_INIT,
-                    CRC128_WIDTH,
-                    CRC128_POLY,
-                    CRC128_REFLECT,
-                    black_box(&bytes),
-                ))
-            })
+        group.bench_function(BenchmarkId::new("NoLookupTable", *size), |b| {
+            b.iter(|| black_box(CRC.calculate(&bytes)))
         });
     }
 
@@ -377,16 +357,19 @@ pub fn bench_crc128_no_lut(c: &mut Criterion) {
 }
 
 pub fn bench_crc128_lut_32(c: &mut Criterion) {
-    let lut = crc128::make_lut_32(CRC128_WIDTH, CRC128_POLY, CRC128_REFLECT);
+    use crcxx::crc128::*;
 
-    let mut group = c.benchmark_group("CRC128");
+    const CRC: Calculator<LookupTable32> = Calculator::<LookupTable32>::new(&CRC128_PARAMS);
+    assert_eq!(CRC.calculate(SANITY_CHECK_DATA), CRC128_PARAMS.check);
+
+    let mut group = c.benchmark_group("CRC-128");
 
     for size in CHUNK_SIZES.iter() {
         let bytes = vec![0x55u8; *size as usize];
 
         group.throughput(Throughput::Bytes(*size as u64));
-        group.bench_function(BenchmarkId::new("update_lut_32", *size), |b| {
-            b.iter(|| black_box(crc128::update_lut_32(0, black_box(&bytes), &lut, CRC128_REFLECT)))
+        group.bench_function(BenchmarkId::new("LookupTable32", *size), |b| {
+            b.iter(|| black_box(CRC.calculate(&bytes)))
         });
     }
 
@@ -394,16 +377,19 @@ pub fn bench_crc128_lut_32(c: &mut Criterion) {
 }
 
 pub fn bench_crc128_lut_256(c: &mut Criterion) {
-    let lut = crc128::make_lut_256(CRC128_WIDTH, CRC128_POLY, CRC128_REFLECT);
+    use crcxx::crc128::*;
 
-    let mut group = c.benchmark_group("CRC128");
+    const CRC: Calculator<LookupTable256> = Calculator::<LookupTable256>::new(&CRC128_PARAMS);
+    assert_eq!(CRC.calculate(SANITY_CHECK_DATA), CRC128_PARAMS.check);
+
+    let mut group = c.benchmark_group("CRC-128");
 
     for size in CHUNK_SIZES.iter() {
         let bytes = vec![0x55u8; *size as usize];
 
         group.throughput(Throughput::Bytes(*size as u64));
-        group.bench_function(BenchmarkId::new("update_lut_256", *size), |b| {
-            b.iter(|| black_box(crc128::update_lut_256(0, black_box(&bytes), &lut, CRC128_REFLECT)))
+        group.bench_function(BenchmarkId::new("LookupTable256", *size), |b| {
+            b.iter(|| black_box(CRC.calculate(&bytes)))
         });
     }
 
@@ -411,23 +397,20 @@ pub fn bench_crc128_lut_256(c: &mut Criterion) {
 }
 
 pub fn bench_crc128_lut_256x_n(c: &mut Criterion) {
-    let lut = crc128::make_lut_256x_n::<SLICES>(CRC128_WIDTH, CRC128_POLY, CRC128_REFLECT);
+    use crcxx::crc128::*;
 
-    let mut group = c.benchmark_group("CRC128");
+    const CRC: Calculator<LookupTable256xN<SLICES>> =
+        Calculator::<LookupTable256xN<SLICES>>::new(&CRC128_PARAMS);
+    assert_eq!(CRC.calculate(SANITY_CHECK_DATA), CRC128_PARAMS.check);
+
+    let mut group = c.benchmark_group("CRC-128");
 
     for size in CHUNK_SIZES.iter() {
         let bytes = vec![0x55u8; *size as usize];
 
         group.throughput(Throughput::Bytes(*size as u64));
-        group.bench_function(BenchmarkId::new("update_lut_256x_n", *size), |b| {
-            b.iter(|| {
-                black_box(crc128::update_lut_256x_n::<SLICES>(
-                    0,
-                    black_box(&bytes),
-                    &lut,
-                    CRC128_REFLECT,
-                ))
-            })
+        group.bench_function(BenchmarkId::new("LookupTable256xN", *size), |b| {
+            b.iter(|| black_box(CRC.calculate(&bytes)))
         });
     }
 

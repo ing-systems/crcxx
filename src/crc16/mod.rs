@@ -9,10 +9,10 @@ pub mod catalog;
 
 type State = u16;
 
-type NoLookupTable = GenericNoLookupTable<State>;
-type LookupTable32 = GenericLookupTable32<State>;
-type LookupTable256 = GenericLookupTable256<State>;
-type LookupTable256xN<const S: usize> = GenericLookupTable256xN<State, S>;
+pub type NoLookupTable = GenericNoLookupTable<State>;
+pub type LookupTable32 = GenericLookupTable32<State>;
+pub type LookupTable256 = GenericLookupTable256<State>;
+pub type LookupTable256xN<const S: usize> = GenericLookupTable256xN<State, S>;
 
 pub struct Calculator<'a, M: CalculateMethod> {
     pub params: &'a Params<State>,
