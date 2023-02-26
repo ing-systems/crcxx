@@ -214,7 +214,7 @@ mod private {
     impl<R: super::Register> Sealed for R {}
 }
 
-/// Abstraction over CRC calculation method.
+/// Abstraction over CRC computation method.
 pub trait ComputeMethod: private::Sealed {
     type State;
 }
