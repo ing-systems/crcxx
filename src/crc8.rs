@@ -1,8 +1,21 @@
 #[allow(clippy::wildcard_imports)]
 use crate::internals::crc8::*;
-use crate::{Crc, LookupTable256, LookupTable256xN, LookupTable32, NoLookupTable, Params};
+use crate::{
+    CalculateMethod, GenericLookupTable256, GenericLookupTable256xN, GenericLookupTable32,
+    GenericNoLookupTable, Params,
+};
 
 type State = u8;
+
+type NoLookupTable = GenericNoLookupTable<State>;
+type LookupTable32 = GenericLookupTable32<State>;
+type LookupTable256 = GenericLookupTable256<State>;
+type LookupTable256xN<const S: usize> = GenericLookupTable256xN<State, S>;
+
+pub struct Calculator<'a, M: CalculateMethod> {
+    pub params: &'a Params<State>,
+    lut: M::State,
+}
 
 imp_crc_initialize!(State);
 imp_crc_finalize!(State);

@@ -196,11 +196,11 @@ pub struct Params<W: Width> {
     /// 8-bit characters), optionally reflecting, and applying the final XOR.
     pub check: W,
     /// The contents of the register after initialising, reading an error-free codeword and
-    /// optionally reflecting the register (if [`refout`](Algorithm::refout)=`true`), but not
+    /// optionally reflecting the register (if [`refout`](Params::refout)=`true`), but not
     /// applying the final XOR. This is mathematically equivalent to initialising the register with
-    /// the xorout parameter, reflecting it as described (if [`refout`](Algorithm::refout)=`true`),
+    /// the xorout parameter, reflecting it as described (if [`refout`](Params::refout)=`true`),
     /// reading as many zero bits as there are cells in the register, and reflecting the result (if
-    /// [`refin`](Algorithm::refin)=`true`). The residue of a crossed-endian model is calculated
+    /// [`refin`](Params::refin)=`true`). The residue of a crossed-endian model is calculated
     /// assuming that the characters of the received CRC are specially reflected before submitting
     /// the codeword.
     pub residue: W,
@@ -213,63 +213,45 @@ mod private {
 }
 
 pub trait CalculateMethod: private::Sealed {
-    type Width: Width;
-    type Table;
+    type State;
 }
 
-pub struct NoLookupTable<W: Width>(core::marker::PhantomData<W>);
+pub struct GenericNoLookupTable<W: Width>(core::marker::PhantomData<W>);
 /// Lookup table with 32 entries.
-pub struct LookupTable32<W: Width>(core::marker::PhantomData<W>);
+pub struct GenericLookupTable32<W: Width>(core::marker::PhantomData<W>);
 /// Lookup table with 256 entries.
-pub struct LookupTable256<W: Width>(core::marker::PhantomData<W>);
-pub struct LookupTable256xN<W: Width, const S: usize>(core::marker::PhantomData<W>);
+pub struct GenericLookupTable256<W: Width>(core::marker::PhantomData<W>);
+pub struct GenericLookupTable256xN<W: Width, const S: usize>(core::marker::PhantomData<W>);
 
-impl<W: Width> private::Sealed for NoLookupTable<W> {}
-impl<W: Width> private::Sealed for LookupTable32<W> {}
-impl<W: Width> private::Sealed for LookupTable256<W> {}
-impl<W: Width, const S: usize> private::Sealed for LookupTable256xN<W, S> {}
+impl<W: Width> private::Sealed for GenericNoLookupTable<W> {}
+impl<W: Width> private::Sealed for GenericLookupTable32<W> {}
+impl<W: Width> private::Sealed for GenericLookupTable256<W> {}
+impl<W: Width, const S: usize> private::Sealed for GenericLookupTable256xN<W, S> {}
 
-impl<W: Width> CalculateMethod for NoLookupTable<W> {
-    type Table = ();
-    type Width = W;
+impl<W: Width> CalculateMethod for GenericNoLookupTable<W> {
+    type State = ();
 }
 
-impl<W: Width> CalculateMethod for LookupTable32<W> {
-    type Table = [W; 32];
-    type Width = W;
+impl<W: Width> CalculateMethod for GenericLookupTable32<W> {
+    type State = [W; 32];
 }
 
-impl<W: Width> CalculateMethod for LookupTable256<W> {
-    type Table = [W; 256];
-    type Width = W;
+impl<W: Width> CalculateMethod for GenericLookupTable256<W> {
+    type State = [W; 256];
 }
 
-impl<W: Width> CalculateMethod for LookupTable256xN<W, 4> {
-    type Table = [[W; 256]; 4];
-    type Width = W;
+impl<W: Width> CalculateMethod for GenericLookupTable256xN<W, 4> {
+    type State = [[W; 256]; 4];
 }
 
-impl<W: Width> CalculateMethod for LookupTable256xN<W, 8> {
-    type Table = [[W; 256]; 8];
-    type Width = W;
+impl<W: Width> CalculateMethod for GenericLookupTable256xN<W, 8> {
+    type State = [[W; 256]; 8];
 }
 
-impl<W: Width> CalculateMethod for LookupTable256xN<W, 16> {
-    type Table = [[W; 256]; 16];
-    type Width = W;
+impl<W: Width> CalculateMethod for GenericLookupTable256xN<W, 16> {
+    type State = [[W; 256]; 16];
 }
 
-impl<W: Width> CalculateMethod for LookupTable256xN<W, 32> {
-    type Table = [[W; 256]; 32];
-    type Width = W;
-}
-
-pub trait Calculator<W: Width> {
-    fn calculate(&self, bytes: &[u8]) -> W;
-}
-impl<W: Width> private::Sealed for dyn Calculator<W> {}
-
-pub struct Crc<'a, M: CalculateMethod> {
-    pub params: &'a Params<M::Width>,
-    lut: M::Table,
+impl<W: Width> CalculateMethod for GenericLookupTable256xN<W, 32> {
+    type State = [[W; 256]; 32];
 }

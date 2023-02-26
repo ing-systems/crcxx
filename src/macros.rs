@@ -30,7 +30,7 @@ macro_rules! imp_crc_finalize {
 
 macro_rules! imp_crc_no_lut {
     ($ty: ty) => {
-        impl<'a> Crc<'a, NoLookupTable<$ty>> {
+        impl<'a> Calculator<'a, NoLookupTable> {
             pub const fn new(params: &'a Params<$ty>) -> Self {
                 Self { params, lut: () }
             }
@@ -51,7 +51,7 @@ macro_rules! imp_crc_no_lut {
 
 macro_rules! imp_crc_lut_32 {
     ($ty: ty) => {
-        impl<'a> Crc<'a, LookupTable32<$ty>> {
+        impl<'a> Calculator<'a, LookupTable32> {
             pub const fn new(params: &'a Params<$ty>) -> Self {
                 Self { params, lut: make_lut_32(params.width, params.poly, params.refin) }
             }
@@ -72,7 +72,7 @@ macro_rules! imp_crc_lut_32 {
 
 macro_rules! imp_crc_lut_256 {
     ($ty: ty) => {
-        impl<'a> Crc<'a, LookupTable256<$ty>> {
+        impl<'a> Calculator<'a, LookupTable256> {
             pub const fn new(params: &'a Params<$ty>) -> Self {
                 Self { params, lut: make_lut_256(params.width, params.poly, params.refin) }
             }
@@ -93,7 +93,7 @@ macro_rules! imp_crc_lut_256 {
 
 macro_rules! imp_crc_lut_256x_n {
     ($ty: ty, $slices: literal) => {
-        impl<'a> Crc<'a, LookupTable256xN<$ty, $slices>> {
+        impl<'a> Calculator<'a, LookupTable256xN<$slices>> {
             pub const fn new(params: &'a Params<$ty>) -> Self {
                 Self {
                     params,
