@@ -2,7 +2,6 @@
 //!
 //! ## Processing using no lookup table, single byte per step
 //!
-//! The slowest method. No additional memory required.
 //!
 //! ```
 //! use crcxx::crc32::{*, catalog::CRC_32_BZIP2};
@@ -26,8 +25,6 @@
 //! ```
 //! ## Processing using a lookup table with 32 entries, single byte per step
 //!
-//! Good compromise between speed and memory consumption for small embedded devices.
-//! Depending on usage scenario usually 2-5 times faster than the previous method.
 //! ```
 //! use crcxx::crc32::{*, catalog::CRC_32_BZIP2};
 //!
@@ -50,7 +47,6 @@
 //! ```
 //! ## Processing using a lookup table with 256 entries, single byte per step
 //!
-//! Depending on usage scenario usually no more than 2 times faster than the previous method.
 //! ```
 //! use crcxx::crc32::{*, catalog::CRC_32_BZIP2};
 //!
@@ -73,9 +69,6 @@
 //! ```
 //! ## Processing using a lookup table with 256 x SLICES entries, multiple bytes per step
 //!
-//! Ultimate method for processing big amounts of data on modern desktops and servers.
-//! Depending on usage scenario (prefer bigger chunks) usually 6 times faster than the previous method.
-//! The recommended number of slices is 16. There is usually less than 10% improvement when going from 16 to 32.
 //! ```
 //! use crcxx::crc32::{*, catalog::CRC_32_BZIP2};
 //!
