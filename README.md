@@ -21,7 +21,7 @@ fn main() {
     let data = "123456789";
     let bytes = data.as_bytes();
     let crc = CRC.calculate(&bytes);
-//!
+
     assert_eq!(crc, 0xFC89_1918);
 }
 ```
@@ -40,7 +40,7 @@ fn main() {
     let data = "123456789";
     let bytes = data.as_bytes();
     let crc = CRC.calculate(&bytes);
-//!
+
     assert_eq!(crc, 0xFC89_1918);
 }
 ```
@@ -58,7 +58,7 @@ fn main() {
     let data = "123456789";
     let bytes = data.as_bytes();
     let crc = CRC.calculate(&bytes);
-//!
+
     assert_eq!(crc, 0xFC89_1918);
 }
 ```
