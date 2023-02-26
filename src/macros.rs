@@ -37,19 +37,13 @@ macro_rules! imp_crc_no_lut {
 
             #[inline]
             pub const fn calculate(&self, bytes: &[u8]) -> $ty {
-                self.calculate_with(self.params.init, bytes)
-            }
-
-            pub const fn calculate_with(&self, initial: $ty, bytes: &[u8]) -> $ty {
-                let crc = update_no_lut(
-                    initialize(self.params, initial),
-                    self.params.width,
-                    self.params.poly,
-                    self.params.refin,
-                    bytes,
-                );
+                let crc = self.update(initialize(self.params, self.params.init), bytes);
 
                 finalize(self.params, crc)
+            }
+
+            pub const fn update(&self, crc: $ty, bytes: &[u8]) -> $ty {
+                update_no_lut(crc, self.params.width, self.params.poly, self.params.refin, bytes)
             }
         }
     };
@@ -64,18 +58,13 @@ macro_rules! imp_crc_lut_32 {
 
             #[inline]
             pub const fn calculate(&self, bytes: &[u8]) -> $ty {
-                self.calculate_with(self.params.init, bytes)
-            }
-
-            pub const fn calculate_with(&self, initial: $ty, bytes: &[u8]) -> $ty {
-                let crc = update_lut_32(
-                    initialize(self.params, initial),
-                    bytes,
-                    &self.lut,
-                    self.params.refin,
-                );
+                let crc = self.update(initialize(self.params, self.params.init), bytes);
 
                 finalize(self.params, crc)
+            }
+
+            pub const fn update(&self, crc: $ty, bytes: &[u8]) -> $ty {
+                update_lut_32(crc, bytes, &self.lut, self.params.refin)
             }
         }
     };
@@ -90,18 +79,13 @@ macro_rules! imp_crc_lut_256 {
 
             #[inline]
             pub const fn calculate(&self, bytes: &[u8]) -> $ty {
-                self.calculate_with(self.params.init, bytes)
-            }
-
-            pub const fn calculate_with(&self, initial: $ty, bytes: &[u8]) -> $ty {
-                let crc = update_lut_256(
-                    initialize(self.params, initial),
-                    bytes,
-                    &self.lut,
-                    self.params.refin,
-                );
+                let crc = self.update(initialize(self.params, self.params.init), bytes);
 
                 finalize(self.params, crc)
+            }
+
+            pub const fn update(&self, crc: $ty, bytes: &[u8]) -> $ty {
+                update_lut_256(crc, bytes, &self.lut, self.params.refin)
             }
         }
     };
@@ -119,18 +103,13 @@ macro_rules! imp_crc_lut_256x_n {
 
             #[inline]
             pub fn calculate(&self, bytes: &[u8]) -> $ty {
-                self.calculate_with(self.params.init, bytes)
-            }
-
-            pub fn calculate_with(&self, initial: $ty, bytes: &[u8]) -> $ty {
-                let crc = update_lut_256x_n(
-                    initialize(self.params, initial),
-                    bytes,
-                    &self.lut,
-                    self.params.refin,
-                );
+                let crc = self.update(initialize(self.params, self.params.init), bytes);
 
                 finalize(self.params, crc)
+            }
+
+            pub fn update(&self, crc: $ty, bytes: &[u8]) -> $ty {
+                update_lut_256x_n(crc, bytes, &self.lut, self.params.refin)
             }
         }
     };
