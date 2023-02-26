@@ -9,7 +9,7 @@ edition = "2021"
 homepage = "https://github.com/ing-systems/crcxx"
 repository = "https://github.com/ing-systems/crcxx"
 readme = "README.md"
-keywords = ["crc", "crc8", "crc16", "crc32", "crc64"]
+keywords = ["crc", "crc8", "crc16", "crc32", "crc64", "crc82", "crc128"]
 categories = ["algorithms"]
 rust-version = "1.59"
 
