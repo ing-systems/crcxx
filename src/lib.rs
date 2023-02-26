@@ -1,5 +1,5 @@
-//! The crate compute CRC-8/16/32/64/128 using various methods. It is applicable from small embedded
-//! systems to modern desktops and servers. No unsafe or architecture specific code.
+//! The crate compute CRC-8/16/32/64/128 using various methods. Included catalog of CRC parameters simplify usage.
+//! It is applicable from small embedded systems to modern desktops and servers. No unsafe or architecture specific code.
 //!
 //! ### Processing using no lookup table, single byte per step
 //!
@@ -185,15 +185,18 @@ mod private {
     impl<W: super::Width> Sealed for W {}
 }
 
+/// Abstraction over CRC calculation method.
 pub trait CalculateMethod: private::Sealed {
     type State;
 }
 
+/// Calculate using no lookup table
 pub struct GenericNoLookupTable<W: Width>(core::marker::PhantomData<W>);
-/// Lookup table with 32 entries.
+/// Calculate using a lookup table with 32 entries
 pub struct GenericLookupTable32<W: Width>(core::marker::PhantomData<W>);
-/// Lookup table with 256 entries.
+/// Calculate using a lookup table with 256 entries
 pub struct GenericLookupTable256<W: Width>(core::marker::PhantomData<W>);
+/// Calculate using a lookup table with 256xN entries
 pub struct GenericLookupTable256xN<W: Width, const S: usize>(core::marker::PhantomData<W>);
 
 impl<W: Width> private::Sealed for GenericNoLookupTable<W> {}

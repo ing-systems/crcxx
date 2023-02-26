@@ -1,3 +1,4 @@
+//! CRC-32
 #[allow(clippy::wildcard_imports)]
 use crate::internals::crc32::*;
 use crate::{

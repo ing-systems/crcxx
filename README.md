@@ -5,8 +5,8 @@
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 [![Windows Build Status](https://ci.appveyor.com/api/projects/status/loj512o2qo6q0rwg?svg=true)](https://ci.appveyor.com/project/khrs/crcxx)
 
-The crate compute CRC-8/16/32/64/128 using various methods. It is applicable from small embedded systems to modern desktops and servers.
-No unsafe or architecture specific code.
+The crate compute CRC-8/16/32/64/128 using various methods. Included catalog of CRC parameters simplify usage.
+It is applicable from small embedded systems to modern desktops and servers. No unsafe or architecture specific code.
 
 ### Processing using no lookup table, single byte per step
 

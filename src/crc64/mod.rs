@@ -1,3 +1,4 @@
+//! CRC-64
 #[allow(clippy::wildcard_imports)]
 use crate::internals::crc64::*;
 use crate::{

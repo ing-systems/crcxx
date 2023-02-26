@@ -1,3 +1,4 @@
+//! CRC-8
 #[allow(clippy::wildcard_imports)]
 use crate::internals::crc8::*;
 use crate::{
