@@ -1,6 +1,6 @@
 [package]
 name = "crcxx"
-version = "0.3.0"
+version = "0.3.1"
 license = "Apache-2.0"
 authors = ["ING Systems <contact@ing-systems.com>"]
 description = "The crate computes CRC-8/16/32/64/128 using various methods. Included catalog of CRC parameters simplify usage."
