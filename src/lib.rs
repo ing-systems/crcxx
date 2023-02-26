@@ -6,20 +6,50 @@
 //! The slowest method. No additional memory required.
 //!
 //! ```
-
+//! use crcxx::crc32::{*, catalog::CRC_32_BZIP2};
+//!
+//! const CRC: Calculator<NoLookupTable> = Calculator::<NoLookupTable>::new(&CRC_32_BZIP2);
+//!
+//! fn main() {
+//!     let data = "123456789";
+//!     let bytes = data.as_bytes();
+//!     let crc = CRC.calculate(&bytes);
+//!
+//!     assert_eq!(crc, 0xFC89_1918);
+//! }
 //! ```
 //! ### Processing using a lookup table with 32 entries, single byte per step
 //!
 //! Good compromise between speed and memory consumption for small embedded devices.
 //! Depending on usage scenario usually 2-5 times faster than the previous method.
 //! ```
-
+//! use crcxx::crc32::{*, catalog::CRC_32_BZIP2};
+//!
+//! const CRC: Calculator<LookupTable32> = Calculator::<LookupTable32>::new(&CRC_32_BZIP2);
+//!
+//! fn main() {
+//!     let data = "123456789";
+//!     let bytes = data.as_bytes();
+//!     let crc = CRC.calculate(&bytes);
+//!
+//!     assert_eq!(crc, 0xFC89_1918);
+//! }
 //! ```
 //! ### Processing using a lookup table with 256 entries, single byte per step
 //!
 //! Depending on usage scenario usually no more than 2 times faster than the previous method.
 //! ```
-
+//! use crcxx::crc32::{*, catalog::CRC_32_BZIP2};
+//!
+//! const CRC: Calculator<LookupTable256> = Calculator::<LookupTable256>::new(&CRC_32_BZIP2);
+//!
+//! fn main() {
+//!     let data = "123456789";
+//!     let bytes = data.as_bytes();
+//!     let crc = CRC.calculate(&bytes);
+//!
+//!     assert_eq!(crc, 0xFC89_1918);
+//! }
 //! ```
 //! ### Processing using a lookup table with 256 x SLICES entries, multiple bytes per step
 //!
@@ -27,7 +57,18 @@
 //! Depending on usage scenario (prefer bigger chunks) usually 6 times faster than the previous method.
 //! The recommended number of slices is 16. There is usually less than 10% improvement when going from 16 to 32.
 //! ```
-
+//! use crcxx::crc32::{*, catalog::CRC_32_BZIP2};
+//!
+//! const SLICES: usize = 16;
+//! const CRC: Calculator<LookupTable256xN<SLICES>> = Calculator::<LookupTable256xN<SLICES>>::new(&CRC_32_BZIP2);
+//!
+//! fn main() {
+//!     let data = "123456789";
+//!     let bytes = data.as_bytes();
+//!     let crc = CRC.calculate(&bytes);
+//!
+//!     assert_eq!(crc, 0xFC89_1918);
+//! }
 //! ```
 #![no_std]
 #![forbid(non_ascii_idents, unsafe_code)]

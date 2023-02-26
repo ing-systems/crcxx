@@ -13,20 +13,16 @@ No unsafe or architecture specific code.
 The slowest method. No additional memory required.
 
 ```rust
-use crcxx::internals::crc32;
+use crcxx::crc32::{*, catalog::CRC_32_BZIP2};
 
-// CRC-32Q
-const INIT: u32 = 0;
-const POLY: u32 = 0x8141_41AB;
-const WIDTH: u8 = 32;
-const REFLECT: bool = false;
+const CRC: Calculator<NoLookupTable> = Calculator::<NoLookupTable>::new(&CRC_32_BZIP2);
 
 fn main() {
     let data = "123456789";
     let bytes = data.as_bytes();
-    let crc = crc32::update_no_lut(INIT, WIDTH, POLY, REFLECT, &bytes);
-
-    assert_eq!(crc, 0x3010_BF7F);
+    let crc = CRC.calculate(&bytes);
+//!
+    assert_eq!(crc, 0xFC89_1918);
 }
 ```
 
@@ -36,22 +32,16 @@ Good compromise between speed and memory consumption for small embedded devices.
 Depending on usage scenario usually 2-5 times faster than the previous method.
 
 ```rust
-use crcxx::internals::crc32;
+use crcxx::crc32::{*, catalog::CRC_32_BZIP2};
 
-// CRC-32Q
-const INIT: u32 = 0;
-const POLY: u32 = 0x8141_41AB;
-const WIDTH: u8 = 32;
-const REFLECT: bool = false;
-
-const LUT: [u32; 32] = crc32::make_lut_32(WIDTH, POLY, REFLECT);
+const CRC: Calculator<LookupTable32> = Calculator::<LookupTable32>::new(&CRC_32_BZIP2);
 
 fn main() {
     let data = "123456789";
     let bytes = data.as_bytes();
-    let crc = crc32::update_lut_32(INIT, &bytes, &LUT, REFLECT);
-
-    assert_eq!(crc, 0x3010_BF7F);
+    let crc = CRC.calculate(&bytes);
+//!
+    assert_eq!(crc, 0xFC89_1918);
 }
 ```
 
@@ -60,22 +50,16 @@ fn main() {
 Depending on usage scenario usually no more than 2 times faster than the previous method.
 
 ```rust
-use crcxx::internals::crc32;
+use crcxx::crc32::{*, catalog::CRC_32_BZIP2};
 
-// CRC-32Q
-const INIT: u32 = 0;
-const POLY: u32 = 0x8141_41AB;
-const WIDTH: u8 = 32;
-const REFLECT: bool = false;
-
-const LUT: [u32; 256] = crc32::make_lut_256(WIDTH, POLY, REFLECT);
+const CRC: Calculator<LookupTable256> = Calculator::<LookupTable256>::new(&CRC_32_BZIP2);
 
 fn main() {
     let data = "123456789";
     let bytes = data.as_bytes();
-    let crc = crc32::update_lut_256(INIT, &bytes, &LUT, REFLECT);
-
-    assert_eq!(crc, 0x3010_BF7F);
+    let crc = CRC.calculate(&bytes);
+//!
+    assert_eq!(crc, 0xFC89_1918);
 }
 ```
 
@@ -86,24 +70,17 @@ Depending on usage scenario (prefer bigger chunks) usually 6 times faster than t
 The recommended number of slices is 16. There is usually less than 10% improvement when going from 16 to 32.
 
 ```rust
-use crcxx::internals::crc32;
-
-// CRC-32Q
-const INIT: u32 = 0;
-const POLY: u32 = 0x8141_41AB;
-const WIDTH: u8 = 32;
-const REFLECT: bool = false;
+use crcxx::crc32::{*, catalog::CRC_32_BZIP2};
 
 const SLICES: usize = 16;
-
-const LUT: [[u32; 256]; SLICES] = crc32::make_lut_256x_n::<SLICES>(WIDTH, POLY, REFLECT);
+const CRC: Calculator<LookupTable256xN<SLICES>> = Calculator::<LookupTable256xN<SLICES>>::new(&CRC_32_BZIP2);
 
 fn main() {
     let data = "123456789";
     let bytes = data.as_bytes();
-    let crc = crc32::update_lut_256x_n::<SLICES>(INIT, &bytes, &LUT, REFLECT);
+    let crc = CRC.calculate(&bytes);
 
-    assert_eq!(crc, 0x3010_BF7F);
+    assert_eq!(crc, 0xFC89_1918);
 }
 ```
 
