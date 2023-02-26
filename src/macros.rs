@@ -30,13 +30,14 @@ macro_rules! imp_crc_finalize {
 
 macro_rules! imp_crc_no_lut {
     ($ty: ty) => {
-        impl<'a> Calculator<'a, NoLookupTable> {
+        impl<'a> Crc<'a, NoLookupTable> {
             pub const fn new(params: &'a Params<$ty>) -> Self {
                 Self { params, lut: () }
             }
 
+            /// Compute final CRC value for `bytes` using default initial value.
             #[inline]
-            pub const fn calculate(&self, bytes: &[u8]) -> $ty {
+            pub const fn compute(&self, bytes: &[u8]) -> $ty {
                 let crc = self.update(initialize(self.params, self.params.init), bytes);
 
                 finalize(self.params, crc)
@@ -51,13 +52,14 @@ macro_rules! imp_crc_no_lut {
 
 macro_rules! imp_crc_lut_32 {
     ($ty: ty) => {
-        impl<'a> Calculator<'a, LookupTable32> {
+        impl<'a> Crc<'a, LookupTable32> {
             pub const fn new(params: &'a Params<$ty>) -> Self {
                 Self { params, lut: make_lut_32(params.width, params.poly, params.refin) }
             }
 
+            /// Compute final CRC value for `bytes` using default initial value.
             #[inline]
-            pub const fn calculate(&self, bytes: &[u8]) -> $ty {
+            pub const fn compute(&self, bytes: &[u8]) -> $ty {
                 let crc = self.update(initialize(self.params, self.params.init), bytes);
 
                 finalize(self.params, crc)
@@ -72,13 +74,14 @@ macro_rules! imp_crc_lut_32 {
 
 macro_rules! imp_crc_lut_256 {
     ($ty: ty) => {
-        impl<'a> Calculator<'a, LookupTable256> {
+        impl<'a> Crc<'a, LookupTable256> {
             pub const fn new(params: &'a Params<$ty>) -> Self {
                 Self { params, lut: make_lut_256(params.width, params.poly, params.refin) }
             }
 
+            /// Compute final CRC value for `bytes` using default initial value.
             #[inline]
-            pub const fn calculate(&self, bytes: &[u8]) -> $ty {
+            pub const fn compute(&self, bytes: &[u8]) -> $ty {
                 let crc = self.update(initialize(self.params, self.params.init), bytes);
 
                 finalize(self.params, crc)
@@ -93,7 +96,7 @@ macro_rules! imp_crc_lut_256 {
 
 macro_rules! imp_crc_lut_256x_n {
     ($ty: ty, $slices: literal) => {
-        impl<'a> Calculator<'a, LookupTable256xN<$slices>> {
+        impl<'a> Crc<'a, LookupTable256xN<$slices>> {
             pub const fn new(params: &'a Params<$ty>) -> Self {
                 Self {
                     params,
@@ -101,8 +104,9 @@ macro_rules! imp_crc_lut_256x_n {
                 }
             }
 
+            /// Compute final CRC value of `bytes` using default initial value.
             #[inline]
-            pub fn calculate(&self, bytes: &[u8]) -> $ty {
+            pub fn compute(&self, bytes: &[u8]) -> $ty {
                 let crc = self.update(initialize(self.params, self.params.init), bytes);
 
                 finalize(self.params, crc)

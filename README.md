@@ -34,7 +34,8 @@ Depending on usage scenario usually 2-5 times faster than the previous method.
 ```rust
 use crcxx::crc32::{*, catalog::CRC_32_BZIP2};
 
-const CRC: Calculator<LookupTable32> = Calculator::<LookupTable32>::new(&CRC_32_BZIP2);
+const CRC: Calculator<LookupTable32> =
+    Calculator::<LookupTable32>::new(&CRC_32_BZIP2);
 
 fn main() {
     let data = "123456789";
@@ -52,7 +53,8 @@ Depending on usage scenario usually no more than 2 times faster than the previou
 ```rust
 use crcxx::crc32::{*, catalog::CRC_32_BZIP2};
 
-const CRC: Calculator<LookupTable256> = Calculator::<LookupTable256>::new(&CRC_32_BZIP2);
+const CRC: Calculator<LookupTable256> =
+    Calculator::<LookupTable256>::new(&CRC_32_BZIP2);
 
 fn main() {
     let data = "123456789";
@@ -73,7 +75,8 @@ The recommended number of slices is 16. There is usually less than 10% improveme
 use crcxx::crc32::{*, catalog::CRC_32_BZIP2};
 
 const SLICES: usize = 16;
-const CRC: Calculator<LookupTable256xN<SLICES>> = Calculator::<LookupTable256xN<SLICES>>::new(&CRC_32_BZIP2);
+const CRC: Calculator<LookupTable256xN<SLICES>> =
+    Calculator::<LookupTable256xN<SLICES>>::new(&CRC_32_BZIP2);
 
 fn main() {
     let data = "123456789";

@@ -8,25 +8,25 @@ use crate::{
 
 pub mod catalog;
 
-type State = u128;
+type Register = u128;
 
-pub type NoLookupTable = GenericNoLookupTable<State>;
-pub type LookupTable32 = GenericLookupTable32<State>;
-pub type LookupTable256 = GenericLookupTable256<State>;
-pub type LookupTable256xN<const S: usize> = GenericLookupTable256xN<State, S>;
+pub type NoLookupTable = GenericNoLookupTable<Register>;
+pub type LookupTable32 = GenericLookupTable32<Register>;
+pub type LookupTable256 = GenericLookupTable256<Register>;
+pub type LookupTable256xN<const S: usize> = GenericLookupTable256xN<Register, S>;
 
-pub struct Calculator<'a, M: CalculateMethod> {
-    pub params: &'a Params<State>,
+pub struct Crc<'a, M: CalculateMethod> {
+    pub params: &'a Params<Register>,
     lut: M::State,
 }
 
-imp_crc_initialize!(State);
-imp_crc_finalize!(State);
-imp_crc_no_lut!(State);
-imp_crc_lut_32!(State);
-imp_crc_lut_256!(State);
-imp_crc_lut_256x_n!(State, 16);
-imp_crc_lut_256x_n!(State, 32);
+imp_crc_initialize!(Register);
+imp_crc_finalize!(Register);
+imp_crc_no_lut!(Register);
+imp_crc_lut_32!(Register);
+imp_crc_lut_256!(Register);
+imp_crc_lut_256x_n!(Register, 16);
+imp_crc_lut_256x_n!(Register, 32);
 
 #[cfg(test)]
 mod tests {
@@ -35,8 +35,8 @@ mod tests {
 
     #[test]
     fn test() {
-        let crc = Calculator::<LookupTable256xN<16>>::new(&CRC_82_DARC);
+        let crc = Crc::<LookupTable256xN<16>>::new(&CRC_82_DARC);
 
-        assert_eq!(crc.calculate(b"123456789"), CRC_82_DARC.check);
+        assert_eq!(crc.compute(b"123456789"), CRC_82_DARC.check);
     }
 }

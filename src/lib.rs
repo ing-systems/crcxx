@@ -8,12 +8,12 @@
 //! ```
 //! use crcxx::crc32::{*, catalog::CRC_32_BZIP2};
 //!
-//! const CRC: Calculator<NoLookupTable> = Calculator::<NoLookupTable>::new(&CRC_32_BZIP2);
+//! const CRC: Crc<NoLookupTable> = Crc::<NoLookupTable>::new(&CRC_32_BZIP2);
 //!
 //! fn main() {
 //!     let data = "123456789";
 //!     let bytes = data.as_bytes();
-//!     let crc = CRC.calculate(&bytes);
+//!     let crc = CRC.compute(&bytes);
 //!
 //!     assert_eq!(crc, 0xFC89_1918);
 //! }
@@ -25,12 +25,12 @@
 //! ```
 //! use crcxx::crc32::{*, catalog::CRC_32_BZIP2};
 //!
-//! const CRC: Calculator<LookupTable32> = Calculator::<LookupTable32>::new(&CRC_32_BZIP2);
+//! const CRC: Crc<LookupTable32> = Crc::<LookupTable32>::new(&CRC_32_BZIP2);
 //!
 //! fn main() {
 //!     let data = "123456789";
 //!     let bytes = data.as_bytes();
-//!     let crc = CRC.calculate(&bytes);
+//!     let crc = CRC.compute(&bytes);
 //!
 //!     assert_eq!(crc, 0xFC89_1918);
 //! }
@@ -41,12 +41,12 @@
 //! ```
 //! use crcxx::crc32::{*, catalog::CRC_32_BZIP2};
 //!
-//! const CRC: Calculator<LookupTable256> = Calculator::<LookupTable256>::new(&CRC_32_BZIP2);
+//! const CRC: Crc<LookupTable256> = Crc::<LookupTable256>::new(&CRC_32_BZIP2);
 //!
 //! fn main() {
 //!     let data = "123456789";
 //!     let bytes = data.as_bytes();
-//!     let crc = CRC.calculate(&bytes);
+//!     let crc = CRC.compute(&bytes);
 //!
 //!     assert_eq!(crc, 0xFC89_1918);
 //! }
@@ -60,12 +60,12 @@
 //! use crcxx::crc32::{*, catalog::CRC_32_BZIP2};
 //!
 //! const SLICES: usize = 16;
-//! const CRC: Calculator<LookupTable256xN<SLICES>> = Calculator::<LookupTable256xN<SLICES>>::new(&CRC_32_BZIP2);
+//! const CRC: Crc<LookupTable256xN<SLICES>> = Crc::<LookupTable256xN<SLICES>>::new(&CRC_32_BZIP2);
 //!
 //! fn main() {
 //!     let data = "123456789";
 //!     let bytes = data.as_bytes();
-//!     let crc = CRC.calculate(&bytes);
+//!     let crc = CRC.compute(&bytes);
 //!
 //!     assert_eq!(crc, 0xFC89_1918);
 //! }
