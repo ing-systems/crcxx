@@ -1,6 +1,6 @@
 #[allow(clippy::wildcard_imports)]
 use crate::internals::crc128::*;
-use crate::{Crc, NoLookupTable, NormalLookupTable, Params, SlicedLookupTable, SmallLookupTable};
+use crate::{Crc, LookupTable256, LookupTable256xN, LookupTable32, NoLookupTable, Params};
 
 type State = u128;
 

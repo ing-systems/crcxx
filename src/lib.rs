@@ -1,13 +1,6 @@
 //! The crate compute CRC-8/16/32/64/128 using various methods. It is applicable from small embedded
 //! systems to modern desktops and servers. No unsafe or architecture specific code.
 //!
-//! # Usage of High Level API
-//! TODO !
-//!
-//! # Usage of Low Level API
-//!
-//! The low level API don't handle preprocessing and postprocessing of CRC value.
-//!
 //! ### Processing using no lookup table, single byte per step
 //!
 //! The slowest method. No additional memory required.
@@ -165,7 +158,9 @@ impl Width for u64 {}
 impl Width for u128 {}
 
 // !!! Copy-paste from crc-catalog crate. !!!
-/// This struct describes a CRC algorithm using the fields specified by the [Catalogue of
+/// CRC calculation paremeters
+///
+/// The struct describes a CRC algorithm using the fields specified by the [Catalogue of
 /// parametrised CRC algorithms](https://reveng.sourceforge.io/crc-catalogue/all.htm).
 #[derive(Debug)]
 pub struct Params<W: Width> {
@@ -224,47 +219,47 @@ pub trait CalculateMethod: private::Sealed {
 
 pub struct NoLookupTable<W: Width>(core::marker::PhantomData<W>);
 /// Lookup table with 32 entries.
-pub struct SmallLookupTable<W: Width>(core::marker::PhantomData<W>);
+pub struct LookupTable32<W: Width>(core::marker::PhantomData<W>);
 /// Lookup table with 256 entries.
-pub struct NormalLookupTable<W: Width>(core::marker::PhantomData<W>);
-pub struct SlicedLookupTable<W: Width, const S: usize>(core::marker::PhantomData<W>);
+pub struct LookupTable256<W: Width>(core::marker::PhantomData<W>);
+pub struct LookupTable256xN<W: Width, const S: usize>(core::marker::PhantomData<W>);
 
 impl<W: Width> private::Sealed for NoLookupTable<W> {}
-impl<W: Width> private::Sealed for SmallLookupTable<W> {}
-impl<W: Width> private::Sealed for NormalLookupTable<W> {}
-impl<W: Width, const S: usize> private::Sealed for SlicedLookupTable<W, S> {}
+impl<W: Width> private::Sealed for LookupTable32<W> {}
+impl<W: Width> private::Sealed for LookupTable256<W> {}
+impl<W: Width, const S: usize> private::Sealed for LookupTable256xN<W, S> {}
 
 impl<W: Width> CalculateMethod for NoLookupTable<W> {
     type Table = ();
     type Width = W;
 }
 
-impl<W: Width> CalculateMethod for SmallLookupTable<W> {
+impl<W: Width> CalculateMethod for LookupTable32<W> {
     type Table = [W; 32];
     type Width = W;
 }
 
-impl<W: Width> CalculateMethod for NormalLookupTable<W> {
+impl<W: Width> CalculateMethod for LookupTable256<W> {
     type Table = [W; 256];
     type Width = W;
 }
 
-impl<W: Width> CalculateMethod for SlicedLookupTable<W, 4> {
+impl<W: Width> CalculateMethod for LookupTable256xN<W, 4> {
     type Table = [[W; 256]; 4];
     type Width = W;
 }
 
-impl<W: Width> CalculateMethod for SlicedLookupTable<W, 8> {
+impl<W: Width> CalculateMethod for LookupTable256xN<W, 8> {
     type Table = [[W; 256]; 8];
     type Width = W;
 }
 
-impl<W: Width> CalculateMethod for SlicedLookupTable<W, 16> {
+impl<W: Width> CalculateMethod for LookupTable256xN<W, 16> {
     type Table = [[W; 256]; 16];
     type Width = W;
 }
 
-impl<W: Width> CalculateMethod for SlicedLookupTable<W, 32> {
+impl<W: Width> CalculateMethod for LookupTable256xN<W, 32> {
     type Table = [[W; 256]; 32];
     type Width = W;
 }

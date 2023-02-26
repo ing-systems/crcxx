@@ -57,7 +57,7 @@ macro_rules! imp_crc_no_lut {
 
 macro_rules! imp_crc_lut_32 {
     ($ty: ty) => {
-        impl<'a> Crc<'a, SmallLookupTable<$ty>> {
+        impl<'a> Crc<'a, LookupTable32<$ty>> {
             pub const fn new(params: &'a Params<$ty>) -> Self {
                 Self { params, lut: make_lut_32(params.width, params.poly, params.refin) }
             }
@@ -83,7 +83,7 @@ macro_rules! imp_crc_lut_32 {
 
 macro_rules! imp_crc_lut_256 {
     ($ty: ty) => {
-        impl<'a> Crc<'a, NormalLookupTable<$ty>> {
+        impl<'a> Crc<'a, LookupTable256<$ty>> {
             pub const fn new(params: &'a Params<$ty>) -> Self {
                 Self { params, lut: make_lut_256(params.width, params.poly, params.refin) }
             }
@@ -109,7 +109,7 @@ macro_rules! imp_crc_lut_256 {
 
 macro_rules! imp_crc_lut_256x_n {
     ($ty: ty, $slices: literal) => {
-        impl<'a> Crc<'a, SlicedLookupTable<$ty, $slices>> {
+        impl<'a> Crc<'a, LookupTable256xN<$ty, $slices>> {
             pub const fn new(params: &'a Params<$ty>) -> Self {
                 Self {
                     params,
