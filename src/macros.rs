@@ -39,7 +39,13 @@ macro_rules! imp_crc_no_lut {
             /// Compute final CRC value for `bytes` using default initial value.
             #[inline]
             pub const fn compute(&self, bytes: &[u8]) -> $ty {
-                let crc = self.update(initialize(self.params, self.params.init), bytes);
+                self.compute_with_initial(self.params.init, bytes)
+            }
+
+            /// Compute final CRC value for `bytes` using `initial` value.
+            #[inline]
+            pub const fn compute_with_initial(&self, initial: $ty, bytes: &[u8]) -> $ty {
+                let crc = self.update(initialize(self.params, initial), bytes);
 
                 finalize(self.params, crc)
             }
@@ -82,7 +88,13 @@ macro_rules! imp_crc_lut_32 {
             /// Compute final CRC value for `bytes` using default initial value.
             #[inline]
             pub const fn compute(&self, bytes: &[u8]) -> $ty {
-                let crc = self.update(initialize(self.params, self.params.init), bytes);
+                self.compute_with_initial(self.params.init, bytes)
+            }
+
+            /// Compute final CRC value for `bytes` using `initial` value.
+            #[inline]
+            pub const fn compute_with_initial(&self, initial: $ty, bytes: &[u8]) -> $ty {
+                let crc = self.update(initialize(self.params, initial), bytes);
 
                 finalize(self.params, crc)
             }
@@ -125,7 +137,13 @@ macro_rules! imp_crc_lut_256 {
             /// Compute final CRC value for `bytes` using default initial value.
             #[inline]
             pub const fn compute(&self, bytes: &[u8]) -> $ty {
-                let crc = self.update(initialize(self.params, self.params.init), bytes);
+                self.compute_with_initial(self.params.init, bytes)
+            }
+
+            /// Compute final CRC value for `bytes` using `initial` value.
+            #[inline]
+            pub const fn compute_with_initial(&self, initial: $ty, bytes: &[u8]) -> $ty {
+                let crc = self.update(initialize(self.params, initial), bytes);
 
                 finalize(self.params, crc)
             }
@@ -136,7 +154,7 @@ macro_rules! imp_crc_lut_256 {
             }
 
             #[inline]
-            pub const fn update(&self, crc: $ty, bytes: &[u8]) -> $ty {
+            const fn update(&self, crc: $ty, bytes: &[u8]) -> $ty {
                 update_lut_256(crc, bytes, &self.lut, self.params.refin)
             }
         }
@@ -168,10 +186,16 @@ macro_rules! imp_crc_lut_256x_n {
                 }
             }
 
-            /// Compute final CRC value of `bytes` using default initial value.
+            /// Compute final CRC value for `bytes` using default initial value.
             #[inline]
             pub fn compute(&self, bytes: &[u8]) -> $ty {
-                let crc = self.update(initialize(self.params, self.params.init), bytes);
+                self.compute_with_initial(self.params.init, bytes)
+            }
+
+            /// Compute final CRC value for `bytes` using `initial` value.
+            #[inline]
+            pub fn compute_with_initial(&self, initial: $ty, bytes: &[u8]) -> $ty {
+                let crc = self.update(initialize(self.params, initial), bytes);
 
                 finalize(self.params, crc)
             }
@@ -184,7 +208,7 @@ macro_rules! imp_crc_lut_256x_n {
             }
 
             #[inline]
-            pub fn update(&self, crc: $ty, bytes: &[u8]) -> $ty {
+            fn update(&self, crc: $ty, bytes: &[u8]) -> $ty {
                 update_lut_256x_n(crc, bytes, &self.lut, self.params.refin)
             }
         }
