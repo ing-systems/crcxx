@@ -15,7 +15,8 @@ The slowest method. No additional memory required.
 ```rust
 use crcxx::crc32::{*, catalog::CRC_32_BZIP2};
 
-const CRC: Crc<NoLookupTable> = Crc::<NoLookupTable>::new(&CRC_32_BZIP2);
+const CRC: Crc<NoLookupTable> =
+    Crc::<NoLookupTable>::new(&CRC_32_BZIP2);
 
 fn main() {
     // singlepart data.
