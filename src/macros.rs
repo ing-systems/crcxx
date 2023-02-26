@@ -52,7 +52,14 @@ macro_rules! imp_crc_no_lut {
 
             #[inline]
             pub const fn compute_multipart(&'a self) -> ComputeMultipart<'a, NoLookupTable> {
-                ComputeMultipart { crc: self, value: initialize(self.params, self.params.init) }
+                self.compute_multipart_with_initial(self.params.init)
+            }
+
+            #[inline]
+            pub const fn compute_multipart_with_initial(
+                &'a self, initial: $ty,
+            ) -> ComputeMultipart<'a, NoLookupTable> {
+                ComputeMultipart { crc: self, value: initialize(self.params, initial) }
             }
 
             #[inline]
@@ -101,7 +108,14 @@ macro_rules! imp_crc_lut_32 {
 
             #[inline]
             pub const fn compute_multipart(&'a self) -> ComputeMultipart<'a, LookupTable32> {
-                ComputeMultipart { crc: self, value: initialize(self.params, self.params.init) }
+                self.compute_multipart_with_initial(self.params.init)
+            }
+
+            #[inline]
+            pub const fn compute_multipart_with_initial(
+                &'a self, initial: $ty,
+            ) -> ComputeMultipart<'a, LookupTable32> {
+                ComputeMultipart { crc: self, value: initialize(self.params, initial) }
             }
 
             #[inline]
@@ -150,7 +164,14 @@ macro_rules! imp_crc_lut_256 {
 
             #[inline]
             pub const fn compute_multipart(&'a self) -> ComputeMultipart<'a, LookupTable256> {
-                ComputeMultipart { crc: self, value: initialize(self.params, self.params.init) }
+                self.compute_multipart_with_initial(self.params.init)
+            }
+
+            #[inline]
+            pub const fn compute_multipart_with_initial(
+                &'a self, initial: $ty,
+            ) -> ComputeMultipart<'a, LookupTable256> {
+                ComputeMultipart { crc: self, value: initialize(self.params, initial) }
             }
 
             #[inline]
@@ -204,7 +225,14 @@ macro_rules! imp_crc_lut_256x_n {
             pub const fn compute_multipart(
                 &'a self,
             ) -> ComputeMultipart<'a, LookupTable256xN<$slices>> {
-                ComputeMultipart { crc: self, value: initialize(self.params, self.params.init) }
+                self.compute_multipart_with_initial(self.params.init)
+            }
+
+            #[inline]
+            pub const fn compute_multipart_with_initial(
+                &'a self, initial: $ty,
+            ) -> ComputeMultipart<'a, LookupTable256xN<$slices>> {
+                ComputeMultipart { crc: self, value: initialize(self.params, initial) }
             }
 
             #[inline]
