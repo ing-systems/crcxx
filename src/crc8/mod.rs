@@ -8,7 +8,7 @@
 //! const CRC: Crc<NoLookupTable> = Crc::<NoLookupTable>::new(&CRC_8_CDMA2000);
 //!
 //! fn main() {
-//!     // singlepart data.
+//!     // Singlepart data.
 //!     let crc = CRC.compute(b"123456789");
 //!     assert_eq!(crc, 0xDA);
 //!
@@ -30,7 +30,7 @@
 //! const CRC: Crc<LookupTable32> = Crc::<LookupTable32>::new(&CRC_8_CDMA2000);
 //!
 //! fn main() {
-//!     // singlepart data.
+//!     // Singlepart data.
 //!     let crc = CRC.compute(b"123456789");
 //!     assert_eq!(crc, 0xDA);
 //!
@@ -52,7 +52,7 @@
 //! const CRC: Crc<LookupTable256> = Crc::<LookupTable256>::new(&CRC_8_CDMA2000);
 //!
 //! fn main() {
-//!     // singlepart data.
+//!     // Singlepart data.
 //!     let crc = CRC.compute(b"123456789");
 //!     assert_eq!(crc, 0xDA);
 //!
@@ -76,7 +76,7 @@
 //!     Crc::<LookupTable256xN<SLICES>>::new(&CRC_8_CDMA2000);
 //!
 //! fn main() {
-//!     // singlepart data.
+//!     // Singlepart data.
 //!     let crc = CRC.compute(b"123456789");
 //!     assert_eq!(crc, 0xDA);
 //!

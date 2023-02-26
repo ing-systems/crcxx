@@ -9,7 +9,7 @@
 //! const CRC: Crc<NoLookupTable> = Crc::<NoLookupTable>::new(&CRC_16_KERMIT);
 //!
 //! fn main() {
-//!     // singlepart data.
+//!     // Singlepart data.
 //!     let crc = CRC.compute(b"123456789");
 //!     assert_eq!(crc, 0x2189);
 //!
@@ -31,7 +31,7 @@
 //! const CRC: Crc<LookupTable32> = Crc::<LookupTable32>::new(&CRC_16_KERMIT);
 //!
 //! fn main() {
-//!     // singlepart data.
+//!     // Singlepart data.
 //!     let crc = CRC.compute(b"123456789");
 //!     assert_eq!(crc, 0x2189);
 //!
@@ -53,7 +53,7 @@
 //! const CRC: Crc<LookupTable256> = Crc::<LookupTable256>::new(&CRC_16_KERMIT);
 //!
 //! fn main() {
-//!     // singlepart data.
+//!     // Singlepart data.
 //!     let crc = CRC.compute(b"123456789");
 //!     assert_eq!(crc, 0x2189);
 //!
@@ -76,7 +76,7 @@
 //! const CRC: Crc<LookupTable256xN<SLICES>> = Crc::<LookupTable256xN<SLICES>>::new(&CRC_16_KERMIT);
 //!
 //! fn main() {
-//!     // singlepart data.
+//!     // Singlepart data.
 //!     let crc = CRC.compute(b"123456789");
 //!     assert_eq!(crc, 0x2189);
 //!
