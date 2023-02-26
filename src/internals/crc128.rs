@@ -1,6 +1,4 @@
 //! Low level CRC-128 functions.
-//!
-//! NOTE: The low level API don't handle preprocessing and postprocessing of CRC value.
 use crate::imp_crc;
 
 imp_crc!(u128);

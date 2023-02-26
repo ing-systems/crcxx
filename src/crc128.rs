@@ -33,6 +33,7 @@ mod tests {
     #[test]
     fn test() {
         let crc = Calculator::<LookupTable256xN<16>>::new(&CRC_82_DARC);
+
         assert_eq!(crc.calculate(b"123456789"), CRC_82_DARC.check);
     }
 }
