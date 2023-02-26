@@ -1,4 +1,4 @@
-//! The crate compute CRC-8/16/32/64/128 using various methods. Included catalog of CRC parameters simplify usage.
+//! The crate computes CRC-8/16/32/64/128 using various methods. Included catalog of CRC parameters simplify usage.
 //! It is applicable from small embedded systems to modern desktops and servers. No unsafe or architecture specific code.
 //!
 //! # Usage
@@ -76,8 +76,8 @@
 //! ```
 //! ## Processing using a lookup table with 256 x SLICES entries, multiple bytes per step
 //!
-//! Ultimate method for processing big amounts of data on modern desktops and servers.
-//! Depending on usage scenario (prefer bigger chunks) usually 6 times faster than the previous method.
+//! Ultimate method for processing big amounts of data on modern desktops and servers without using architecture
+//! specific instructions. Depending on usage scenario (prefer bigger chunks) usually 6 times faster than the previous method.
 //! The recommended number of slices is 16. There is usually less than 10% improvement when going from 16 to 32.
 //! ```
 //! use crcxx::crc64::{*, catalog::CRC_64_XZ};
