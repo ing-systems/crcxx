@@ -5,6 +5,8 @@ use crate::{
     GenericNoLookupTable, Params,
 };
 
+pub mod catalog;
+
 type State = u128;
 
 type NoLookupTable = GenericNoLookupTable<State>;
@@ -27,8 +29,8 @@ imp_crc_lut_256x_n!(State, 32);
 
 #[cfg(test)]
 mod tests {
+    use super::catalog::CRC_82_DARC;
     use super::*;
-    use crate::catalog::CRC_82_DARC;
 
     #[test]
     fn test() {

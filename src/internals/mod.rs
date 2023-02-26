@@ -1,9 +1,9 @@
-pub(crate) mod cg_assert;
+pub mod cg_assert;
 
 #[macro_use]
 mod macros;
 
-pub(crate) const MAX_SLICES: usize = 32;
+pub const MAX_SLICES: usize = 32;
 
 pub mod crc128;
 pub mod crc16;

@@ -75,7 +75,6 @@ extern crate std;
 mod internals;
 #[macro_use]
 mod macros;
-pub mod catalog;
 
 pub mod crc128;
 pub mod crc16;

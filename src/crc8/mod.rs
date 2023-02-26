@@ -5,6 +5,8 @@ use crate::{
     GenericNoLookupTable, Params,
 };
 
+pub mod catalog;
+
 type State = u8;
 
 type NoLookupTable = GenericNoLookupTable<State>;
