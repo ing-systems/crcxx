@@ -20,6 +20,12 @@ pub struct Crc<'a, M: ComputeMethod> {
     lut: M::State,
 }
 
+#[derive(Clone)]
+pub struct ComputeMultipart<'a, M: ComputeMethod> {
+    crc: &'a Crc<'a, M>,
+    value: Register,
+}
+
 imp_crc_initialize!(Register);
 imp_crc_finalize!(Register);
 imp_crc_no_lut!(Register);
