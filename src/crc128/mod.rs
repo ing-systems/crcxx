@@ -2,7 +2,7 @@
 #[allow(clippy::wildcard_imports)]
 use crate::internals::crc128::*;
 use crate::{
-    CalculateMethod, GenericLookupTable256, GenericLookupTable256xN, GenericLookupTable32,
+    ComputeMethod, GenericLookupTable256, GenericLookupTable256xN, GenericLookupTable32,
     GenericNoLookupTable, Params,
 };
 
@@ -15,7 +15,7 @@ pub type LookupTable32 = GenericLookupTable32<Register>;
 pub type LookupTable256 = GenericLookupTable256<Register>;
 pub type LookupTable256xN<const S: usize> = GenericLookupTable256xN<Register, S>;
 
-pub struct Crc<'a, M: CalculateMethod> {
+pub struct Crc<'a, M: ComputeMethod> {
     pub params: &'a Params<Register>,
     lut: M::State,
 }

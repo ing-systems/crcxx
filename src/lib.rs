@@ -186,7 +186,7 @@ mod private {
 }
 
 /// Abstraction over CRC calculation method.
-pub trait CalculateMethod: private::Sealed {
+pub trait ComputeMethod: private::Sealed {
     type State;
 }
 
@@ -204,30 +204,30 @@ impl<W: Width> private::Sealed for GenericLookupTable32<W> {}
 impl<W: Width> private::Sealed for GenericLookupTable256<W> {}
 impl<W: Width, const S: usize> private::Sealed for GenericLookupTable256xN<W, S> {}
 
-impl<W: Width> CalculateMethod for GenericNoLookupTable<W> {
+impl<W: Width> ComputeMethod for GenericNoLookupTable<W> {
     type State = ();
 }
 
-impl<W: Width> CalculateMethod for GenericLookupTable32<W> {
+impl<W: Width> ComputeMethod for GenericLookupTable32<W> {
     type State = [W; 32];
 }
 
-impl<W: Width> CalculateMethod for GenericLookupTable256<W> {
+impl<W: Width> ComputeMethod for GenericLookupTable256<W> {
     type State = [W; 256];
 }
 
-impl<W: Width> CalculateMethod for GenericLookupTable256xN<W, 4> {
+impl<W: Width> ComputeMethod for GenericLookupTable256xN<W, 4> {
     type State = [[W; 256]; 4];
 }
 
-impl<W: Width> CalculateMethod for GenericLookupTable256xN<W, 8> {
+impl<W: Width> ComputeMethod for GenericLookupTable256xN<W, 8> {
     type State = [[W; 256]; 8];
 }
 
-impl<W: Width> CalculateMethod for GenericLookupTable256xN<W, 16> {
+impl<W: Width> ComputeMethod for GenericLookupTable256xN<W, 16> {
     type State = [[W; 256]; 16];
 }
 
-impl<W: Width> CalculateMethod for GenericLookupTable256xN<W, 32> {
+impl<W: Width> ComputeMethod for GenericLookupTable256xN<W, 32> {
     type State = [[W; 256]; 32];
 }
