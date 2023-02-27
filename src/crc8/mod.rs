@@ -126,3 +126,57 @@ imp_crc_lut_256x_n!(Register, 4);
 imp_crc_lut_256x_n!(Register, 8);
 imp_crc_lut_256x_n!(Register, 16);
 imp_crc_lut_256x_n!(Register, 32);
+
+#[cfg(test)]
+mod tests {
+    use super::catalog::{
+        CRC_3_GSM, CRC_3_ROHC, CRC_4_G_704, CRC_4_INTERLAKEN, CRC_5_EPC_C1G2, CRC_5_G_704,
+        CRC_6_CDMA2000_A, CRC_6_DARC, CRC_7_MMC, CRC_7_ROHC, CRC_8_AUTOSAR, CRC_8_BLUETOOTH,
+    };
+    use super::*;
+
+    const DATA: &[u8] = b"123456789";
+    const PARAMS_SET: [Params<u8>; 12] = [
+        CRC_3_GSM,
+        CRC_3_ROHC,
+        CRC_4_G_704,
+        CRC_4_INTERLAKEN,
+        CRC_5_EPC_C1G2,
+        CRC_5_G_704,
+        CRC_6_CDMA2000_A,
+        CRC_6_DARC,
+        CRC_7_MMC,
+        CRC_7_ROHC,
+        CRC_8_AUTOSAR,
+        CRC_8_BLUETOOTH,
+    ];
+
+    #[test]
+    fn test() {
+        for ref params in PARAMS_SET {
+            assert_eq!(Crc::<NoLookupTable>::new(params).compute(DATA), params.check);
+            assert_eq!(
+                Crc::<NoLookupTable>::new(params).compute_multipart().update(DATA).value(),
+                params.check
+            );
+
+            assert_eq!(Crc::<LookupTable32>::new(params).compute(DATA), params.check);
+            assert_eq!(
+                Crc::<LookupTable32>::new(params).compute_multipart().update(DATA).value(),
+                params.check
+            );
+
+            assert_eq!(Crc::<LookupTable256>::new(params).compute(DATA), params.check);
+            assert_eq!(
+                Crc::<LookupTable256>::new(params).compute_multipart().update(DATA).value(),
+                params.check
+            );
+
+            assert_eq!(Crc::<LookupTable256xN<32>>::new(params).compute(DATA), params.check);
+            assert_eq!(
+                Crc::<LookupTable256xN<32>>::new(params).compute_multipart().update(DATA).value(),
+                params.check
+            );
+        }
+    }
+}

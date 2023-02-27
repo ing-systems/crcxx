@@ -130,25 +130,32 @@ imp_crc_lut_256x_n!(Register, 32);
 
 #[cfg(test)]
 mod tests {
+    use super::catalog::CRC_82_DARC;
     use super::*;
 
-    const CRC_PARAMS: Params<u128> = catalog::CRC_82_DARC;
-    const CRC: Crc<'_, LookupTable256> = Crc::<LookupTable256>::new(&CRC_PARAMS);
+    const DATA: &[u8] = b"123456789";
+    const PARAMS_SET: [Params<u128>; 1] = [CRC_82_DARC];
 
     #[test]
-    fn compute() {
-        assert_eq!(CRC.compute(b"123456789"), CRC_PARAMS.check);
-    }
+    fn test() {
+        for ref params in PARAMS_SET {
+            assert_eq!(Crc::<NoLookupTable>::new(params).compute(DATA), params.check);
+            assert_eq!(
+                Crc::<NoLookupTable>::new(params).compute_multipart().update(DATA).value(),
+                params.check
+            );
 
-    #[test]
-    fn compute_multipart() {
-        let mut crc_multipart = CRC.compute_multipart();
+            assert_eq!(Crc::<LookupTable32>::new(params).compute(DATA), params.check);
+            assert_eq!(
+                Crc::<LookupTable32>::new(params).compute_multipart().update(DATA).value(),
+                params.check
+            );
 
-        crc_multipart.update(b"1234");
-        crc_multipart.update(b"5678");
-
-        let crc = crc_multipart.update(b"9").value();
-
-        assert_eq!(crc, CRC_PARAMS.check);
+            assert_eq!(Crc::<LookupTable256>::new(params).compute(DATA), params.check);
+            assert_eq!(
+                Crc::<LookupTable256>::new(params).compute_multipart().update(DATA).value(),
+                params.check
+            );
+        }
     }
 }

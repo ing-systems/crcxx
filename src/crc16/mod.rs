@@ -127,3 +127,42 @@ imp_crc_lut_256x_n!(Register, 4);
 imp_crc_lut_256x_n!(Register, 8);
 imp_crc_lut_256x_n!(Register, 16);
 imp_crc_lut_256x_n!(Register, 32);
+
+#[cfg(test)]
+mod tests {
+    use super::catalog::{CRC_10_ATM, CRC_12_UMTS, CRC_14_DARC, CRC_16_ARC, CRC_16_CDMA2000};
+    use super::*;
+
+    const DATA: &[u8] = b"123456789";
+    const PARAMS_SET: [Params<u16>; 5] =
+        [CRC_10_ATM, CRC_12_UMTS, CRC_14_DARC, CRC_16_ARC, CRC_16_CDMA2000];
+
+    #[test]
+    fn test() {
+        for ref params in PARAMS_SET {
+            assert_eq!(Crc::<NoLookupTable>::new(params).compute(DATA), params.check);
+            assert_eq!(
+                Crc::<NoLookupTable>::new(params).compute_multipart().update(DATA).value(),
+                params.check
+            );
+
+            assert_eq!(Crc::<LookupTable32>::new(params).compute(DATA), params.check);
+            assert_eq!(
+                Crc::<LookupTable32>::new(params).compute_multipart().update(DATA).value(),
+                params.check
+            );
+
+            assert_eq!(Crc::<LookupTable256>::new(params).compute(DATA), params.check);
+            assert_eq!(
+                Crc::<LookupTable256>::new(params).compute_multipart().update(DATA).value(),
+                params.check
+            );
+
+            assert_eq!(Crc::<LookupTable256xN<32>>::new(params).compute(DATA), params.check);
+            assert_eq!(
+                Crc::<LookupTable256xN<32>>::new(params).compute_multipart().update(DATA).value(),
+                params.check
+            );
+        }
+    }
+}
