@@ -73,7 +73,8 @@
 //! use crcxx::crc16::{*, catalog::CRC_16_KERMIT};
 //!
 //! const SLICES: usize = 16;
-//! const CRC: Crc<LookupTable256xN<SLICES>> = Crc::<LookupTable256xN<SLICES>>::new(&CRC_16_KERMIT);
+//! const CRC: Crc<LookupTable256xN<SLICES>> =
+//!     Crc::<LookupTable256xN<SLICES>>::new(&CRC_16_KERMIT);
 //!
 //! fn main() {
 //!     // Singlepart data.

@@ -69,6 +69,8 @@
 //! ```
 //! ## Processing using a lookup table with 256 x SLICES entries, multiple bytes per step
 //!
+//! NOTE: The minimum slice size is 16.
+//!
 //! ```
 //! use crcxx::crc128::{*, catalog::CRC_82_DARC};
 //!

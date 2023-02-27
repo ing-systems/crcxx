@@ -79,6 +79,8 @@
 //! Ultimate method for processing big amounts of data on modern desktops and servers without using architecture
 //! specific instructions. Depending on usage scenario (prefer bigger chunks) usually 6 times faster than the previous method.
 //! The recommended number of slices is 16. There is usually less than 10% improvement when going from 16 to 32.
+//!
+//! NOTE: The number of slices must be power of two  between 4 and 32.
 //! ```
 //! use crcxx::crc64::{*, catalog::CRC_64_XZ};
 //!

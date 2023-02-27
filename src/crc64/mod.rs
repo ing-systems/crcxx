@@ -69,6 +69,7 @@
 //! ```
 //! ## Processing using a lookup table with 256 x SLICES entries, multiple bytes per step
 //!
+//! NOTE: The minimum slice size is 8.
 //! ```
 //! use crcxx::crc64::{*, catalog::CRC_64_XZ};
 //!
