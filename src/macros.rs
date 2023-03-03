@@ -68,19 +68,7 @@ macro_rules! imp_crc_no_lut {
             }
         }
 
-        impl<'a> ComputeMultipart<'a, NoLookupTable> {
-            #[inline]
-            pub fn update(&mut self, bytes: &[u8]) -> &mut Self {
-                self.value = self.crc.update(self.value, bytes);
-
-                self
-            }
-
-            #[inline]
-            pub const fn value(&self) -> $ty {
-                finalize(self.crc.params, self.value)
-            }
-        }
+        imp_compute_multipart!($ty, NoLookupTable);
     };
 }
 
@@ -124,19 +112,7 @@ macro_rules! imp_crc_lut_32 {
             }
         }
 
-        impl<'a> ComputeMultipart<'a, LookupTable32> {
-            #[inline]
-            pub fn update(&mut self, bytes: &[u8]) -> &mut Self {
-                self.value = self.crc.update(self.value, bytes);
-
-                self
-            }
-
-            #[inline]
-            pub const fn value(&self) -> $ty {
-                finalize(self.crc.params, self.value)
-            }
-        }
+        imp_compute_multipart!($ty, LookupTable32);
     };
 }
 
@@ -180,19 +156,7 @@ macro_rules! imp_crc_lut_256 {
             }
         }
 
-        impl<'a> ComputeMultipart<'a, LookupTable256> {
-            #[inline]
-            pub fn update(&mut self, bytes: &[u8]) -> &mut Self {
-                self.value = self.crc.update(self.value, bytes);
-
-                self
-            }
-
-            #[inline]
-            pub const fn value(&self) -> $ty {
-                finalize(self.crc.params, self.value)
-            }
-        }
+        imp_compute_multipart!($ty, LookupTable256);
     };
 }
 
@@ -241,7 +205,13 @@ macro_rules! imp_crc_lut_256x_n {
             }
         }
 
-        impl<'a> ComputeMultipart<'a, LookupTable256xN<$slices>> {
+        imp_compute_multipart!($ty, LookupTable256xN<$slices>);
+    };
+}
+
+macro_rules! imp_compute_multipart {
+    ($ty: ty, $table: ty) => {
+        impl<'a> ComputeMultipart<'a, $table> {
             #[inline]
             pub fn update(&mut self, bytes: &[u8]) -> &mut Self {
                 self.value = self.crc.update(self.value, bytes);
