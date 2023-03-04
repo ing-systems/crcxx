@@ -31,35 +31,11 @@ macro_rules! imp_crc_finalize {
 macro_rules! imp_crc_no_lut {
     ($ty: ty) => {
         impl<'a> Crc<'a, NoLookupTable> {
+            imp_const_compute_methods!($ty, NoLookupTable);
+
             #[inline]
             pub const fn new(params: &'a Params<$ty>) -> Self {
                 Self { params, lut: () }
-            }
-
-            /// Compute final CRC value for `bytes` using default initial value.
-            #[inline]
-            pub const fn compute(&self, bytes: &[u8]) -> $ty {
-                self.compute_with_initial(self.params.init, bytes)
-            }
-
-            /// Compute final CRC value for `bytes` using `initial` value.
-            #[inline]
-            pub const fn compute_with_initial(&self, initial: $ty, bytes: &[u8]) -> $ty {
-                let crc = self.update(initialize(self.params, initial), bytes);
-
-                finalize(self.params, crc)
-            }
-
-            #[inline]
-            pub const fn compute_multipart(&'a self) -> ComputeMultipart<'a, NoLookupTable> {
-                self.compute_multipart_with_initial(self.params.init)
-            }
-
-            #[inline]
-            pub const fn compute_multipart_with_initial(
-                &'a self, initial: $ty,
-            ) -> ComputeMultipart<'a, NoLookupTable> {
-                ComputeMultipart { crc: self, value: initialize(self.params, initial) }
             }
 
             #[inline]
@@ -75,35 +51,11 @@ macro_rules! imp_crc_no_lut {
 macro_rules! imp_crc_lut_32 {
     ($ty: ty) => {
         impl<'a> Crc<'a, LookupTable32> {
+            imp_const_compute_methods!($ty, LookupTable32);
+
             #[inline]
             pub const fn new(params: &'a Params<$ty>) -> Self {
                 Self { params, lut: make_lut_32(params.width, params.poly, params.refin) }
-            }
-
-            /// Compute final CRC value for `bytes` using default initial value.
-            #[inline]
-            pub const fn compute(&self, bytes: &[u8]) -> $ty {
-                self.compute_with_initial(self.params.init, bytes)
-            }
-
-            /// Compute final CRC value for `bytes` using `initial` value.
-            #[inline]
-            pub const fn compute_with_initial(&self, initial: $ty, bytes: &[u8]) -> $ty {
-                let crc = self.update(initialize(self.params, initial), bytes);
-
-                finalize(self.params, crc)
-            }
-
-            #[inline]
-            pub const fn compute_multipart(&'a self) -> ComputeMultipart<'a, LookupTable32> {
-                self.compute_multipart_with_initial(self.params.init)
-            }
-
-            #[inline]
-            pub const fn compute_multipart_with_initial(
-                &'a self, initial: $ty,
-            ) -> ComputeMultipart<'a, LookupTable32> {
-                ComputeMultipart { crc: self, value: initialize(self.params, initial) }
             }
 
             #[inline]
@@ -119,35 +71,11 @@ macro_rules! imp_crc_lut_32 {
 macro_rules! imp_crc_lut_256 {
     ($ty: ty) => {
         impl<'a> Crc<'a, LookupTable256> {
+            imp_const_compute_methods!($ty, LookupTable256);
+
             #[inline]
             pub const fn new(params: &'a Params<$ty>) -> Self {
                 Self { params, lut: make_lut_256(params.width, params.poly, params.refin) }
-            }
-
-            /// Compute final CRC value for `bytes` using default initial value.
-            #[inline]
-            pub const fn compute(&self, bytes: &[u8]) -> $ty {
-                self.compute_with_initial(self.params.init, bytes)
-            }
-
-            /// Compute final CRC value for `bytes` using `initial` value.
-            #[inline]
-            pub const fn compute_with_initial(&self, initial: $ty, bytes: &[u8]) -> $ty {
-                let crc = self.update(initialize(self.params, initial), bytes);
-
-                finalize(self.params, crc)
-            }
-
-            #[inline]
-            pub const fn compute_multipart(&'a self) -> ComputeMultipart<'a, LookupTable256> {
-                self.compute_multipart_with_initial(self.params.init)
-            }
-
-            #[inline]
-            pub const fn compute_multipart_with_initial(
-                &'a self, initial: $ty,
-            ) -> ComputeMultipart<'a, LookupTable256> {
-                ComputeMultipart { crc: self, value: initialize(self.params, initial) }
             }
 
             #[inline]
@@ -169,6 +97,11 @@ macro_rules! imp_crc_lut_256x_n {
                     params,
                     lut: make_lut_256x_n::<$slices>(params.width, params.poly, params.refin),
                 }
+            }
+
+            #[inline]
+            fn update(&self, crc: $ty, bytes: &[u8]) -> $ty {
+                update_lut_256x_n(crc, bytes, &self.lut, self.params.refin)
             }
 
             /// Compute final CRC value for `bytes` using default initial value.
@@ -198,14 +131,39 @@ macro_rules! imp_crc_lut_256x_n {
             ) -> ComputeMultipart<'a, LookupTable256xN<$slices>> {
                 ComputeMultipart { crc: self, value: initialize(self.params, initial) }
             }
-
-            #[inline]
-            fn update(&self, crc: $ty, bytes: &[u8]) -> $ty {
-                update_lut_256x_n(crc, bytes, &self.lut, self.params.refin)
-            }
         }
 
         imp_compute_multipart!($ty, LookupTable256xN<$slices>);
+    };
+}
+
+macro_rules! imp_const_compute_methods {
+    ($ty: ty, $table: ty) => {
+        /// Compute final CRC value for `bytes` using default initial value.
+        #[inline]
+        pub const fn compute(&self, bytes: &[u8]) -> $ty {
+            self.compute_with_initial(self.params.init, bytes)
+        }
+
+        /// Compute final CRC value for `bytes` using `initial` value.
+        #[inline]
+        pub const fn compute_with_initial(&self, initial: $ty, bytes: &[u8]) -> $ty {
+            let crc = self.update(initialize(self.params, initial), bytes);
+
+            finalize(self.params, crc)
+        }
+
+        #[inline]
+        pub const fn compute_multipart(&'a self) -> ComputeMultipart<'a, $table> {
+            self.compute_multipart_with_initial(self.params.init)
+        }
+
+        #[inline]
+        pub const fn compute_multipart_with_initial(
+            &'a self, initial: $ty,
+        ) -> ComputeMultipart<'a, $table> {
+            ComputeMultipart { crc: self, value: initialize(self.params, initial) }
+        }
     };
 }
 
